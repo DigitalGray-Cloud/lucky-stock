@@ -23,9 +23,6 @@ const AUTO_COMPLETE_LIMIT = 12;
 const els = {
   resultPanel: document.getElementById("result-panel"),
   searchLoading: document.getElementById("search-loading"),
-  analysisModal: document.getElementById("analysis-modal"),
-  analysisProgressText: document.getElementById("analysis-progress-text"),
-  analysisProgressFill: document.getElementById("analysis-progress-fill"),
   manualToggle: document.getElementById("manual-toggle"),
   manualPanel: document.getElementById("manual-panel"),
   searchInput: document.getElementById("stock-search"),
@@ -69,7 +66,6 @@ const NEWS_CACHE = new Map();
 const NAVER_AC_CACHE = new Map();
 const PRICE_CACHE = new Map();
 const PRICE_STORAGE_KEY = "ls_price_cache_v1";
-let analysisModalFailSafeTimer = null;
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
@@ -194,54 +190,6 @@ function initEmptyResultState() {
   els.catalystScore.textContent = "-";
   els.decisionDesc.textContent = "종목을 검색하면 분석 결과가 표시됩니다.";
   els.newsList.innerHTML = `<li><span>검색 후 뉴스 근거가 표시됩니다.</span><span class="rank-meta">-</span></li>`;
-}
-
-function setAnalysisProgress(value) {
-  const pct = Math.max(0, Math.min(100, Math.round(value)));
-  if (els.analysisProgressText) els.analysisProgressText.textContent = `${pct}%`;
-  if (els.analysisProgressFill) els.analysisProgressFill.style.width = `${pct}%`;
-}
-
-function openAnalysisModal() {
-  if (els.analysisModal) {
-    els.analysisModal.removeAttribute("hidden");
-    setAnalysisProgress(0);
-  }
-  if (analysisModalFailSafeTimer) clearTimeout(analysisModalFailSafeTimer);
-  analysisModalFailSafeTimer = setTimeout(() => {
-    closeAnalysisModal();
-  }, 2500);
-}
-
-function closeAnalysisModal() {
-  if (analysisModalFailSafeTimer) {
-    clearTimeout(analysisModalFailSafeTimer);
-    analysisModalFailSafeTimer = null;
-  }
-  if (els.analysisModal) {
-    els.analysisModal.setAttribute("hidden", "");
-  }
-}
-
-function startAnalysisProgress() {
-  const duration = 1100;
-  const started = Date.now();
-  setAnalysisProgress(0);
-  const timer = setInterval(() => {
-    const elapsed = Date.now() - started;
-    const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
-    setAnalysisProgress(pct);
-    if (pct >= 100) clearInterval(timer);
-  }, 40);
-
-  return {
-    async done() {
-      clearInterval(timer);
-      setAnalysisProgress(100);
-      await new Promise((r) => setTimeout(r, 120));
-      closeAnalysisModal();
-    }
-  };
 }
 
 async function withTimeout(promise, ms, fallbackValue) {
@@ -848,15 +796,12 @@ function renderNews(news) {
 async function searchAndRender(query) {
   const q = String(query || "").trim();
   if (!q) return;
-  openAnalysisModal();
   setSearchLoading(true);
-  const progress = startAnalysisProgress();
 
   try {
     const stock = await withTimeout(findStockAsync(query), 2200, null);
     if (!stock) {
       showResultPanel();
-      await progress.done();
       setSearchLoading(false);
       els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
       return;
@@ -900,18 +845,15 @@ async function searchAndRender(query) {
       result.triggerCount = result.signalFlags.filter((s) => s.active).length;
     }
 
-    await progress.done();
     renderDecision(result);
     renderNews(news);
     NEWS_CACHE.set(stock.code, news);
     renderClickedRationale(result, news);
   } catch {
     showResultPanel();
-    await progress.done();
     els.decisionDesc.textContent = "분석 중 일시 지연이 발생했습니다. 다시 시도해주세요.";
   } finally {
     setSearchLoading(false);
-    closeAnalysisModal();
   }
 }
 

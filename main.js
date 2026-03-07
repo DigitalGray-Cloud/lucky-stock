@@ -116,6 +116,10 @@ function formatMMDD(date) {
   return `${mm}.${dd}`;
 }
 
+function formatYYYYMMDD(date) {
+  return date.toISOString().slice(0, 10);
+}
+
 function updateResultUrl(code) {
   if (!code || suppressUrlUpdate) return;
   const url = new URL(window.location.href);
@@ -262,7 +266,7 @@ function makeAnalysis(stock) {
   const reasons = [
     `${baseReasons(stock)[0]} (뉴스 점수 ${scores.news}점)`,
     `외국인/기관 5일 합계 ${foreignTotal + instTotal >= 0 ? "+" : ""}${foreignTotal + instTotal}억`,
-    `1개월 상승확률 ${prob1m}% · Catalyst ${catalyst}점`
+    `1개월 상승확률 ${prob1m}% · AI 분석 점수 ${catalyst}점`
   ];
   const risks = baseRisks(stock);
   const desc =
@@ -354,6 +358,23 @@ function decisionClass(decision) {
   return "hold";
 }
 
+function getInvestmentSignal(result) {
+  const score = Number(result?.catalyst || 0);
+  if (result?.decision === "SELL" || score < 45) return { emoji: "🔻", label: "리스크" };
+  if (score >= 90) return { emoji: "🔥", label: "강한 상승" };
+  if (score >= 70) return { emoji: "📈", label: "상승 가능" };
+  if (score >= 55) return { emoji: "➖", label: "중립" };
+  return { emoji: "⚠️", label: "주의" };
+}
+
+function scoreLine(result) {
+  return `AI 분석 점수(100점 만점) ${result.catalyst}점`;
+}
+
+function priceLine(result) {
+  return `${formatNumber(result.currentPrice)}원`;
+}
+
 function getLogoUrl(stock) {
   if (stock.domain) {
     return `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
@@ -384,37 +405,43 @@ function renderTodayAndTomorrow(analyses) {
   }
   if (els.tomorrowHeadline) {
     const tradingDate = nextTradingDay(new Date());
-    els.tomorrowHeadline.textContent = `내일(${formatMMDD(tradingDate)}) 급등 가능성 TOP 10`;
+    els.tomorrowHeadline.textContent = `AI 급등 가능성 추천 TOP10 (내일 ${formatYYYYMMDD(tradingDate)})`;
   }
 
   els.todaySurgeList.innerHTML = today
-    .map((a, idx) => `
+    .map((a, idx) => {
+      const signal = getInvestmentSignal(a);
+      return `
       <div class="rank-item clickable" data-code="${a.stock.code}" data-type="today">
         <div class="rank-top">
           <div class="rank-row">
-            <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://www.google.com/s2/favicons?domain=${encodeURIComponent(a.stock.domain)}&sz=128'"></div>
+            <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
             <span class="rank-name">${idx + 1}위 ${a.stock.name}</span>
           </div>
           <strong>${a.catalyst}점</strong>
         </div>
-        <div class="rank-meta"><span class="emph-catalyst">Catalyst 점수 ${a.catalyst}점</span>AI Decision ${a.decision}</div>
+        <div class="rank-meta"><span class="emph-catalyst">${scoreLine(a)}</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
       </div>
-    `)
+    `;
+    })
     .join("");
 
   els.tomorrowTop10.innerHTML = tomorrow
-    .map((a, idx) => `
+    .map((a, idx) => {
+      const signal = getInvestmentSignal(a);
+      return `
       <div class="rank-item clickable" data-code="${a.stock.code}" data-type="tomorrow">
         <div class="rank-top">
           <div class="rank-row">
-            <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://www.google.com/s2/favicons?domain=${encodeURIComponent(a.stock.domain)}&sz=128'"></div>
+            <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
             <span class="rank-name">${idx + 1}. ${a.stock.name}</span>
           </div>
           <strong>${a.tomorrowProb}%</strong>
         </div>
-        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrowProb}%</span>${a.stock.code}</div>
+        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrowProb}%</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
       </div>
-    `)
+    `;
+    })
     .join("");
 }
 
@@ -423,29 +450,35 @@ function renderSignals(analyses) {
     .filter((a) => a.triggerCount >= 3)
     .sort((a, b) => b.catalyst - a.catalyst)
     .slice(0, 6)
-    .map((a) => `
+    .map((a) => {
+      const signal = getInvestmentSignal(a);
+      return `
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="signal">
         <div class="rank-row">
-          <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://www.google.com/s2/favicons?domain=${encodeURIComponent(a.stock.domain)}&sz=128'"></div>
+          <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
           <strong>${a.stock.name}</strong>
         </div>
-        <div class="rank-meta"><span class="signal-strong">Signal ${a.triggerCount}개 충족</span>${a.catalyst}점 · ${a.decision}</div>
+        <div class="rank-meta"><span class="signal-strong">Signal ${a.triggerCount}개 충족</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
       </div>
-    `)
+    `;
+    })
     .join("");
 
   const popular = [...analyses]
     .sort((a, b) => hashCode(b.stock.name) - hashCode(a.stock.name))
     .slice(0, 10)
-    .map((a, i) => `
+    .map((a, i) => {
+      const signal = getInvestmentSignal(a);
+      return `
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="popular">
         <div class="rank-row">
-          <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://www.google.com/s2/favicons?domain=${encodeURIComponent(a.stock.domain)}&sz=128'"></div>
+          <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
           <strong>${i + 1}. ${a.stock.name}</strong>
         </div>
-        <div class="rank-meta">${a.stock.code}</div>
+        <div class="rank-meta">${a.stock.code} · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
       </div>
-    `)
+    `;
+    })
     .join("");
 
   const themeMap = analyses.reduce((acc, cur) => {
@@ -458,7 +491,7 @@ function renderSignals(analyses) {
     .map(([theme, values]) => ({ theme, avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length) }))
     .sort((a, b) => b.avg - a.avg)
     .slice(0, 5)
-    .map((t) => `<div class="feed-item"><strong>${t.theme} 테마</strong><div class="rank-meta">평균 Catalyst ${t.avg}</div></div>`)
+    .map((t) => `<div class="feed-item"><strong>${t.theme} 테마</strong><div class="rank-meta">평균 AI 분석 점수 ${t.avg}</div></div>`)
     .join("");
 
   els.signalFeed.innerHTML = signalRows || `<div class="feed-item">현재 강한 신호 없음</div>`;
@@ -509,6 +542,7 @@ function renderSignalVisual(result) {
 
 function renderClickedRationale(result, news = []) {
   const signedFlow = result.flow.foreignTotal + result.flow.institutionTotal;
+  const signal = getInvestmentSignal(result);
   const newsLinks = news.length
     ? `<ul class="rationale-news">${news
         .slice(0, 3)
@@ -521,7 +555,8 @@ function renderClickedRationale(result, news = []) {
   els.clickedRationale.innerHTML = `
     <p class="rationale-title"><strong>${result.stock.name} 판단 근거</strong></p>
     <ul class="rationale-list">
-      <li>Catalyst ${result.catalyst}점 (${scoreGrade(result.catalyst)})</li>
+      <li>${scoreLine(result)} (${scoreGrade(result.catalyst)})</li>
+      <li>현재가 ${priceLine(result)} · AI 투자 신호 ${signal.emoji} ${signal.label}</li>
       <li>1개월 상승확률 ${result.probabilities.m1}%</li>
       <li>최근 5일 수급 합계 ${signedFlow >= 0 ? "+" : ""}${signedFlow}억</li>
       <li>Decision ${result.decision} · Confidence ${result.confidence}%</li>
@@ -550,6 +585,7 @@ function renderList(el, items) {
 }
 
 function renderDecision(result) {
+  const signal = getInvestmentSignal(result);
   els.companyLogo.src = getLogoUrl(result.stock);
   els.companyLogo.alt = `${result.stock.name} 로고`;
   els.companyLogo.onerror = () => {
@@ -557,7 +593,7 @@ function renderDecision(result) {
   };
 
   els.companyName.textContent = result.stock.name;
-  els.companyCode.textContent = `${result.stock.code} · ${result.stock.market}`;
+  els.companyCode.textContent = `${result.stock.code} · ${result.stock.market} · ${priceLine(result)} · ${signal.emoji} ${signal.label}`;
 
   els.aiDecision.textContent = result.decision;
   els.aiDecision.className = `decision ${decisionClass(result.decision)}`;
@@ -568,7 +604,7 @@ function renderDecision(result) {
       ? "SELL: 과열/수급 악화 신호 우세, 리스크 관리 우선"
       : "HOLD: 방향성 확인 전 구간 (분할매수 또는 관망 권장)";
   els.aiConfidence.textContent = `${result.confidence}%`;
-  els.catalystScore.textContent = `${result.catalyst} / 100`;
+  els.catalystScore.textContent = `100점 만점에 ${result.catalyst}점`;
 
   els.decisionDesc.textContent = result.desc;
   renderList(els.buyReasons, result.reasons.slice(0, 3));
@@ -705,7 +741,11 @@ async function renderAutocomplete(keyword) {
   }
 
   els.autoList.innerHTML = items
-    .map((s) => `<li data-key="${s.code}">${s.name} (${s.code}) <span class="rank-meta">${s.market}</span></li>`)
+    .map((s) => {
+      const a = makeAnalysis(s);
+      const signal = getInvestmentSignal(a);
+      return `<li data-key="${s.code}">${s.name} (${s.code}) <span class="rank-meta">${s.market} · ${priceLine(a)} · ${signal.emoji} ${signal.label}</span></li>`;
+    })
     .join("");
   els.autoList.classList.add("active");
 }

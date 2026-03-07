@@ -201,10 +201,12 @@ body {
   padding: 10px 12px;
   border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
+  line-height: 1.35;
 }
 
 .autocomplete-list li:last-child { border-bottom: 0; }
 .autocomplete-list li:hover { background: #f8fbff; }
+.autocomplete-list li .rank-meta { display: block; margin-top: 2px; font-size: 0.78rem; }
 
 .quick-tags {
   margin-top: 12px;
@@ -352,6 +354,13 @@ body {
   margin: 8px 0 0;
   color: #0f4f76;
   font-size: 1rem;
+  font-weight: 700;
+}
+
+.signal-legend-line {
+  margin-top: 8px;
+  color: #1e3a8a;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 

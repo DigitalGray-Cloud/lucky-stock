@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LuckyStock AI | AI 한국 주식 투자 판단 엔진</title>
-  <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, Catalyst Score, 수급, 위험, 전망 제공." />
-  <link rel="stylesheet" href="/style.css?v=20260307g" />
+  <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, AI 분석 점수, 수급, 위험, 전망 제공." />
+  <link rel="stylesheet" href="/style.css?v=20260307h" />
 </head>
 <body>
   <header class="topbar">
@@ -62,7 +62,7 @@
 
       <article class="card">
         <div class="section-head emph">
-          <h2 id="tomorrow-headline">내일 급등 가능성 TOP 10</h2>
+          <h2 id="tomorrow-headline">AI 급등 가능성 추천 TOP10 (내일 2026-03-09)</h2>
           <span class="chip">예측</span>
         </div>
         <div id="tomorrow-top10" class="rank-list compact"></div>
@@ -71,7 +71,7 @@
 
     <section class="grid-three">
       <article class="card">
-        <h3><span class="mini-badge signal">Signal</span>실시간 AI Signal</h3>
+        <h3><span class="mini-badge signal">Signal</span>실시간 AI 투자 신호</h3>
         <div id="signal-feed" class="mini-feed"></div>
       </article>
       <article class="card">
@@ -93,6 +93,7 @@
           <h2>검색 결과</h2>
         </div>
         <p>검색 → 결론 → 이유 → 점수 → 위험 → 수급 → 전망</p>
+        <p class="signal-legend-line">AI 투자 신호: 🔥 강한 상승 · 📈 상승 가능 · ➖ 중립 · ⚠️ 주의 · 🔻 리스크</p>
       </div>
 
       <div class="dashboard">
@@ -107,7 +108,7 @@
           <div class="decision-grid">
             <div><span>AI Decision</span><strong id="ai-decision" class="decision buy">BUY</strong></div>
             <div><span>AI Confidence</span><strong id="ai-confidence">78%</strong></div>
-            <div><span>Catalyst Score</span><strong id="catalyst-score">82 / 100</strong></div>
+            <div><span>AI 분석 점수 (100점 만점)</span><strong id="catalyst-score">100점 만점에 82점</strong></div>
           </div>
           <p id="decision-guide" class="decision-guide">HOLD: 신호 대기 구간 (분할매수/관망)</p>
           <div class="decision-legend">
@@ -158,7 +159,7 @@
         </article>
 
         <article class="card">
-          <h3>Catalyst Score 구성</h3>
+          <h3>AI 분석 점수 구성</h3>
           <div id="score-breakdown" class="score-breakdown"></div>
         </article>
 
@@ -208,6 +209,6 @@
     </div>
   </footer>
 
-  <script defer src="/main.js?v=20260307g"></script>
+  <script defer src="/main.js?v=20260307h"></script>
 </body>
 </html>

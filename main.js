@@ -23,6 +23,9 @@ const AUTO_COMPLETE_LIMIT = 12;
 const els = {
   resultPanel: document.getElementById("result-panel"),
   searchLoading: document.getElementById("search-loading"),
+  analysisModal: document.getElementById("analysis-modal"),
+  analysisProgressText: document.getElementById("analysis-progress-text"),
+  analysisProgressFill: document.getElementById("analysis-progress-fill"),
   manualToggle: document.getElementById("manual-toggle"),
   manualPanel: document.getElementById("manual-panel"),
   searchInput: document.getElementById("stock-search"),
@@ -169,6 +172,11 @@ function showResultPanel() {
   els.resultPanel.classList.remove("hidden");
 }
 
+function hideResultPanel() {
+  if (!els.resultPanel) return;
+  els.resultPanel.classList.add("hidden");
+}
+
 function setSearchLoading(active) {
   if (!els.searchLoading) return;
   if (active) els.searchLoading.removeAttribute("hidden");
@@ -185,6 +193,44 @@ function initEmptyResultState() {
   els.catalystScore.textContent = "-";
   els.decisionDesc.textContent = "종목을 검색하면 분석 결과가 표시됩니다.";
   els.newsList.innerHTML = `<li><span>검색 후 뉴스 근거가 표시됩니다.</span><span class="rank-meta">-</span></li>`;
+}
+
+function setAnalysisProgress(value) {
+  const pct = Math.max(0, Math.min(100, Math.round(value)));
+  if (els.analysisProgressText) els.analysisProgressText.textContent = `${pct}%`;
+  if (els.analysisProgressFill) els.analysisProgressFill.style.width = `${pct}%`;
+}
+
+function openAnalysisModal() {
+  if (els.analysisModal) {
+    els.analysisModal.removeAttribute("hidden");
+    setAnalysisProgress(0);
+  }
+}
+
+function closeAnalysisModal() {
+  if (els.analysisModal) {
+    els.analysisModal.setAttribute("hidden", "");
+  }
+}
+
+function startAnalysisProgress() {
+  let progress = 0;
+  setAnalysisProgress(progress);
+  const timer = setInterval(() => {
+    progress = Math.min(94, progress + Math.max(1, Math.round(Math.random() * 6)));
+    setAnalysisProgress(progress);
+    if (progress >= 94) clearInterval(timer);
+  }, 150);
+
+  return {
+    async done() {
+      clearInterval(timer);
+      setAnalysisProgress(100);
+      await new Promise((r) => setTimeout(r, 220));
+      closeAnalysisModal();
+    }
+  };
 }
 
 function findStock(query) {
@@ -303,10 +349,8 @@ async function fetchNaverAutocomplete(query) {
   if (NAVER_AC_CACHE.has(key)) return NAVER_AC_CACHE.get(key);
 
   const targetUrl = `${NAVER_AC_ENDPOINT}?q=${encodeURIComponent(q)}&target=stock`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-  const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error(`naver ac ${res.status}`);
-  const data = await res.json();
+  const data = await fetchJsonFromProxy(targetUrl);
+  if (!data) throw new Error("naver ac unavailable");
   const items = Array.isArray(data?.items) ? data.items : [];
   const mapped = items.map(mapNaverItemToStock).filter(Boolean);
   NAVER_AC_CACHE.set(key, mapped);
@@ -786,38 +830,28 @@ function renderNews(news) {
 async function searchAndRender(query) {
   const q = String(query || "").trim();
   if (!q) return;
-  showResultPanel();
+  hideResultPanel();
+  openAnalysisModal();
   setSearchLoading(true);
-  scrollToResult();
-
-  const stock = await findStockAsync(query);
-  if (!stock) {
-    els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
-    setSearchLoading(false);
-    return;
-  }
-
-  let result = makeAnalysis(stock);
-  updateResultUrl(stock.code);
-  renderDecision(result);
-  renderNews([]);
-  renderClickedRationale(result, []);
-
-  const priceTask = Promise.race([
-    ensureRealtimePrices([stock]),
-    new Promise((resolve) => setTimeout(resolve, 1800))
-  ])
-    .then(() => {
-      const next = makeAnalysis(stock);
-      if (next.currentPrice) {
-        result = next;
-        renderDecision(result);
-      }
-    })
-    .catch(() => {});
+  const progress = startAnalysisProgress();
 
   try {
-    const news = await fetchGoogleNews(`${stock.name} ${stock.code}`);
+    const stock = await findStockAsync(query);
+    if (!stock) {
+      await progress.done();
+      setSearchLoading(false);
+      els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
+      return;
+    }
+
+    const [news] = await Promise.all([
+      fetchGoogleNews(`${stock.name} ${stock.code}`).catch(() => []),
+      Promise.race([ensureRealtimePrices([stock]), new Promise((resolve) => setTimeout(resolve, 2200))]).catch(() => {})
+    ]);
+
+    const result = makeAnalysis(stock);
+    updateResultUrl(stock.code);
+
     if (news.length) {
       const sentimentScore = clamp(Math.round(result.scoreParts.news * 0.5 + news.length * 6), 35, 96);
       result.scoreParts.news = sentimentScore;
@@ -837,17 +871,18 @@ async function searchAndRender(query) {
       const newsFlag = result.signalFlags.find((s) => s.key === "news_spike");
       if (newsFlag) newsFlag.active = result.scoreParts.news >= 62;
       result.triggerCount = result.signalFlags.filter((s) => s.active).length;
-      renderDecision(result);
     }
+
+    await progress.done();
+    showResultPanel();
+    renderDecision(result);
     renderNews(news);
     NEWS_CACHE.set(stock.code, news);
     renderClickedRationale(result, news);
-  } catch {
-    renderNews([]);
-    renderClickedRationale(result, []);
+    scrollToResult();
+  } finally {
+    setSearchLoading(false);
   }
-  await priceTask;
-  setSearchLoading(false);
 }
 
 function initRankingClicks() {

@@ -63,6 +63,7 @@ const els = {
 
 const NEWS_CACHE = new Map();
 const NAVER_AC_CACHE = new Map();
+const PRICE_CACHE = new Map();
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
@@ -138,6 +139,66 @@ function findStock(query) {
   const q = normalize(query);
   if (!q) return null;
   return STOCKS.find((s) => [s.name, s.code].map(normalize).some((v) => v.includes(q)));
+}
+
+function marketSuffix(stock) {
+  return String(stock?.market || "").toUpperCase().includes("KOSDAQ") ? "KQ" : "KS";
+}
+
+function symbolFromStock(stock, suffix = marketSuffix(stock)) {
+  const code = String(stock?.code || "").trim();
+  if (!/^\d{6}$/.test(code)) return "";
+  return `${code}.${suffix}`;
+}
+
+function parseCodeFromSymbol(symbol) {
+  const m = String(symbol || "").match(/^(\d{6})\./);
+  return m ? m[1] : "";
+}
+
+async function ensureRealtimePrices(stocks) {
+  const targets = (stocks || []).filter((s) => /^\d{6}$/.test(String(s?.code || "")));
+  if (!targets.length) return;
+
+  const symbols = new Set();
+  targets.forEach((s) => {
+    if (PRICE_CACHE.has(s.code)) return;
+    const primary = symbolFromStock(s);
+    const secondary = symbolFromStock(s, primary.endsWith(".KS") ? "KQ" : "KS");
+    if (primary) symbols.add(primary);
+    if (secondary) symbols.add(secondary);
+  });
+  if (!symbols.size) return;
+
+  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(Array.from(symbols).join(","))}`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxyUrl);
+  if (!res.ok) return;
+  const data = await res.json();
+  const rows = Array.isArray(data?.quoteResponse?.result) ? data.quoteResponse.result : [];
+
+  const byCode = new Map();
+  rows.forEach((row) => {
+    const code = parseCodeFromSymbol(row?.symbol);
+    const price = Number(row?.regularMarketPrice);
+    if (!code || !Number.isFinite(price) || price <= 0) return;
+    if (!byCode.has(code)) byCode.set(code, []);
+    byCode.get(code).push(row);
+  });
+
+  targets.forEach((s) => {
+    if (PRICE_CACHE.has(s.code)) return;
+    const candidates = byCode.get(s.code) || [];
+    if (!candidates.length) return;
+    const prefSuffix = marketSuffix(s);
+    const preferred =
+      candidates.find((r) => String(r?.symbol || "").endsWith(`.${prefSuffix}`)) ||
+      candidates.find((r) => Number.isFinite(Number(r?.regularMarketPrice)));
+    const price = Number(preferred?.regularMarketPrice);
+    if (Number.isFinite(price) && price > 0) {
+      PRICE_CACHE.set(s.code, Math.round(price));
+    }
+  });
 }
 
 function mapNaverItemToStock(item) {
@@ -239,7 +300,7 @@ function makeAnalysis(stock) {
   const prob1y = clamp(prob3m + Math.round(seededRange(seed + 9, 5, 11)), 52, 95);
 
   const highDiff = -Math.round(seededRange(seed + 10, 6, 29));
-  const currentPrice = buildBasePrice(seed);
+  const currentPrice = PRICE_CACHE.get(stock.code) || buildBasePrice(seed);
   const support = Math.round(currentPrice * seededRange(seed + 11, 0.88, 0.95));
   const resistance = Math.round(currentPrice * seededRange(seed + 12, 1.05, 1.18));
 
@@ -656,6 +717,11 @@ async function searchAndRender(query) {
     return;
   }
 
+  await Promise.race([
+    ensureRealtimePrices([stock]),
+    new Promise((resolve) => setTimeout(resolve, 1200))
+  ]).catch(() => {});
+
   const result = makeAnalysis(stock);
   updateResultUrl(stock.code);
   renderDecision(result);
@@ -862,9 +928,16 @@ function initAdsense() {
 }
 
 function initHomeWidgets() {
-  const analyses = STOCKS.map(makeAnalysis);
-  renderTodayAndTomorrow(analyses);
-  renderSignals(analyses);
+  const first = STOCKS.map(makeAnalysis);
+  renderTodayAndTomorrow(first);
+  renderSignals(first);
+  ensureRealtimePrices(STOCKS)
+    .then(() => {
+      const refreshed = STOCKS.map(makeAnalysis);
+      renderTodayAndTomorrow(refreshed);
+      renderSignals(refreshed);
+    })
+    .catch(() => {});
 }
 
 function initFromUrl() {
@@ -883,6 +956,3 @@ initHomeWidgets();
 initRankingClicks();
 initAdsense();
 initFromUrl();
-if (!new URL(window.location.href).searchParams.get("code")) {
-  searchAndRender("005930");
-}

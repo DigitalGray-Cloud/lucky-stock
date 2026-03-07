@@ -7,7 +7,7 @@
   <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, AI 분석 점수, 수급, 위험, 전망 제공." />
   <link rel="icon" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
-  <link rel="stylesheet" href="/style.css?v=20260307i" />
+  <link rel="stylesheet" href="/style.css?v=20260307k" />
 </head>
 <body>
   <header class="topbar">
@@ -86,13 +86,14 @@
       </article>
     </section>
 
-    <section id="result-panel" class="result-panel">
+    <section id="result-panel" class="result-panel hidden">
       <div class="result-flow-banner">
         <div class="result-banner-head">
           <div class="result-mark" aria-hidden="true">
             <img src="https://cdn.simpleicons.org/chartdotjs/1d4ed8" alt="검색 결과 아이콘" />
           </div>
           <h2>검색 결과</h2>
+          <div id="search-loading" class="search-loading" hidden><span class="spinner"></span>검색 중...</div>
         </div>
         <p>검색 → 결론 → 이유 → 점수 → 위험 → 수급 → 전망</p>
         <p class="signal-legend-line">AI 투자 신호: 🔥 강한 상승 · 📈 상승 가능 · ➖ 중립 · ⚠️ 주의 · 🔻 리스크</p>
@@ -211,6 +212,6 @@
     </div>
   </footer>
 
-  <script defer src="/main.js?v=20260307i"></script>
+  <script defer src="/main.js?v=20260307k"></script>
 </body>
 </html>

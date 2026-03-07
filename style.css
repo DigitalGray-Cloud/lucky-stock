@@ -328,6 +328,30 @@ body {
   gap: 10px;
 }
 
+.search-loading {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0b357f;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #bfd3f6;
+  border-top-color: #1146a7;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .result-mark {
   width: 34px;
   height: 34px;
@@ -526,6 +550,7 @@ body {
 }
 
 .result-panel { margin-top: 18px; }
+.result-panel.hidden { display: none; }
 
 .dashboard {
   display: grid;

@@ -145,60 +145,87 @@ function marketSuffix(stock) {
   return String(stock?.market || "").toUpperCase().includes("KOSDAQ") ? "KQ" : "KS";
 }
 
-function symbolFromStock(stock, suffix = marketSuffix(stock)) {
-  const code = String(stock?.code || "").trim();
-  if (!/^\d{6}$/.test(code)) return "";
-  return `${code}.${suffix}`;
-}
-
-function parseCodeFromSymbol(symbol) {
-  const m = String(symbol || "").match(/^(\d{6})\./);
-  return m ? m[1] : "";
+function isKrCode(code) {
+  return /^\d{6}$/.test(String(code || "").trim());
 }
 
 async function ensureRealtimePrices(stocks) {
-  const targets = (stocks || []).filter((s) => /^\d{6}$/.test(String(s?.code || "")));
+  const targets = (stocks || []).filter((s) => isKrCode(s?.code));
   if (!targets.length) return;
 
-  const symbols = new Set();
-  targets.forEach((s) => {
-    if (PRICE_CACHE.has(s.code)) return;
-    const primary = symbolFromStock(s);
-    const secondary = symbolFromStock(s, primary.endsWith(".KS") ? "KQ" : "KS");
-    if (primary) symbols.add(primary);
-    if (secondary) symbols.add(secondary);
-  });
-  if (!symbols.size) return;
+  const codes = [...new Set(targets.map((s) => String(s.code).trim()).filter((code) => !PRICE_CACHE.has(code)))];
+  if (!codes.length) return;
 
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(Array.from(symbols).join(","))}`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxyUrl);
-  if (!res.ok) return;
-  const data = await res.json();
-  const rows = Array.isArray(data?.quoteResponse?.result) ? data.quoteResponse.result : [];
+  const chunkSize = 40;
+  for (let i = 0; i < codes.length; i += chunkSize) {
+    const chunk = codes.slice(i, i + chunkSize);
+    const query = chunk.map((code) => `SERVICE_ITEM:${code}`).join("|");
+    const url = `https://polling.finance.naver.com/api/realtime?query=${encodeURIComponent(query)}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) continue;
+    const data = await res.json();
+    const areas = Array.isArray(data?.result?.areas) ? data.result.areas : [];
+    const serviceItem = areas.find((x) => x?.name === "SERVICE_ITEM");
+    const rows = Array.isArray(serviceItem?.datas) ? serviceItem.datas : [];
+    rows.forEach((row) => {
+      const code = String(row?.cd || "").trim();
+      const price = Number(row?.nv);
+      if (isKrCode(code) && Number.isFinite(price) && price > 0) {
+        PRICE_CACHE.set(code, Math.round(price));
+      }
+    });
+  }
+}
 
-  const byCode = new Map();
-  rows.forEach((row) => {
-    const code = parseCodeFromSymbol(row?.symbol);
-    const price = Number(row?.regularMarketPrice);
-    if (!code || !Number.isFinite(price) || price <= 0) return;
-    if (!byCode.has(code)) byCode.set(code, []);
-    byCode.get(code).push(row);
-  });
+async function ensureRealtimePriceBySearch(stock) {
+  if (!stock || !isKrCode(stock.code) || PRICE_CACHE.has(stock.code)) return;
+  const q = `${stock.name} ${stock.code}`;
+  const matches = await fetchNaverAutocomplete(q).catch(() => []);
+  const exact = matches.find((m) => String(m.code) === String(stock.code));
+  if (exact) {
+    stock.market = exact.market || stock.market;
+    stock.name = exact.name || stock.name;
+  }
+  await ensureRealtimePrices([stock]);
+}
 
-  targets.forEach((s) => {
-    if (PRICE_CACHE.has(s.code)) return;
-    const candidates = byCode.get(s.code) || [];
-    if (!candidates.length) return;
-    const prefSuffix = marketSuffix(s);
-    const preferred =
-      candidates.find((r) => String(r?.symbol || "").endsWith(`.${prefSuffix}`)) ||
-      candidates.find((r) => Number.isFinite(Number(r?.regularMarketPrice)));
-    const price = Number(preferred?.regularMarketPrice);
-    if (Number.isFinite(price) && price > 0) {
-      PRICE_CACHE.set(s.code, Math.round(price));
+function fallbackMarketByCode(code) {
+  const c = String(code || "");
+  if (c.startsWith("0") || c.startsWith("1")) return "KOSPI";
+  if (c.startsWith("2") || c.startsWith("3") || c.startsWith("4")) return "KOSDAQ";
+  return "KOSPI";
+}
+
+async function findStockAsync(query) {
+  const local = findStock(query);
+  if (local) {
+    await ensureRealtimePriceBySearch(local);
+    return local;
+  }
+
+  const remote = await fetchNaverAutocomplete(query);
+  if (remote.length) {
+    await ensureRealtimePrices(remote.slice(0, 5));
+    return remote[0];
+  }
+
+  const codeQuery = String(query || "").trim();
+  if (isKrCode(codeQuery)) {
+    const inferred = {
+      name: codeQuery,
+      code: codeQuery,
+      market: fallbackMarketByCode(codeQuery),
+      sector: "기타",
+      theme: "시장",
+      domain: ""
+    };
+    await ensureRealtimePriceBySearch(inferred);
+    if (inferred.name !== codeQuery || PRICE_CACHE.has(codeQuery)) {
+      return inferred;
     }
-  });
+  }
+  return null;
 }
 
 function mapNaverItemToStock(item) {
@@ -230,15 +257,6 @@ async function fetchNaverAutocomplete(query) {
   const mapped = items.map(mapNaverItemToStock).filter(Boolean);
   NAVER_AC_CACHE.set(key, mapped);
   return mapped;
-}
-
-async function findStockAsync(query) {
-  const local = findStock(query);
-  if (local) return local;
-
-  const remote = await fetchNaverAutocomplete(query);
-  if (!remote.length) return null;
-  return remote[0];
 }
 
 function buildBasePrice(seed) {

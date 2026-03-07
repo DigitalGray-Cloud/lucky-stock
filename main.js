@@ -36,7 +36,6 @@ const els = {
   themeFeed: document.getElementById("theme-feed"),
   companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
-  companyInlinePrice: document.getElementById("company-inline-price"),
   companyCode: document.getElementById("company-code"),
   aiDecision: document.getElementById("ai-decision"),
   decisionGuide: document.getElementById("decision-guide"),
@@ -64,11 +63,39 @@ const els = {
 const NEWS_CACHE = new Map();
 const NAVER_AC_CACHE = new Map();
 const PRICE_CACHE = new Map();
+const PRICE_STORAGE_KEY = "ls_price_cache_v1";
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
+}
+
+function loadPersistedPrices() {
+  try {
+    const raw = localStorage.getItem(PRICE_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    Object.entries(parsed || {}).forEach(([code, price]) => {
+      const n = Number(price);
+      if (isKrCode(code) && Number.isFinite(n) && n > 0) {
+        PRICE_CACHE.set(code, Math.round(n));
+      }
+    });
+  } catch {
+    // ignore
+  }
+}
+
+function persistPrice(code, price) {
+  try {
+    const raw = localStorage.getItem(PRICE_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    parsed[code] = Math.round(price);
+    localStorage.setItem(PRICE_STORAGE_KEY, JSON.stringify(parsed));
+  } catch {
+    // ignore
+  }
 }
 
 function hashCode(text) {
@@ -149,6 +176,30 @@ function isKrCode(code) {
   return /^\d{6}$/.test(String(code || "").trim());
 }
 
+async function fetchJsonFromProxy(targetUrl) {
+  const candidates = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`
+  ];
+
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      if (url.includes("/get?")) {
+        const wrapped = await res.json();
+        const body = String(wrapped?.contents || "").trim();
+        if (!body) continue;
+        return JSON.parse(body);
+      }
+      return await res.json();
+    } catch {
+      // next proxy candidate
+    }
+  }
+  return null;
+}
+
 async function ensureRealtimePrices(stocks) {
   const targets = (stocks || []).filter((s) => isKrCode(s?.code));
   if (!targets.length) return;
@@ -161,10 +212,8 @@ async function ensureRealtimePrices(stocks) {
     const chunk = codes.slice(i, i + chunkSize);
     const query = chunk.map((code) => `SERVICE_ITEM:${code}`).join("|");
     const url = `https://polling.finance.naver.com/api/realtime?query=${encodeURIComponent(query)}`;
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) continue;
-    const data = await res.json();
+    const data = await fetchJsonFromProxy(url);
+    if (!data) continue;
     const areas = Array.isArray(data?.result?.areas) ? data.result.areas : [];
     const serviceItem = areas.find((x) => x?.name === "SERVICE_ITEM");
     const rows = Array.isArray(serviceItem?.datas) ? serviceItem.datas : [];
@@ -173,21 +222,10 @@ async function ensureRealtimePrices(stocks) {
       const price = Number(row?.nv);
       if (isKrCode(code) && Number.isFinite(price) && price > 0) {
         PRICE_CACHE.set(code, Math.round(price));
+        persistPrice(code, price);
       }
     });
   }
-}
-
-async function ensureRealtimePriceBySearch(stock) {
-  if (!stock || !isKrCode(stock.code) || PRICE_CACHE.has(stock.code)) return;
-  const q = `${stock.name} ${stock.code}`;
-  const matches = await fetchNaverAutocomplete(q).catch(() => []);
-  const exact = matches.find((m) => String(m.code) === String(stock.code));
-  if (exact) {
-    stock.market = exact.market || stock.market;
-    stock.name = exact.name || stock.name;
-  }
-  await ensureRealtimePrices([stock]);
 }
 
 function fallbackMarketByCode(code) {
@@ -199,16 +237,10 @@ function fallbackMarketByCode(code) {
 
 async function findStockAsync(query) {
   const local = findStock(query);
-  if (local) {
-    await ensureRealtimePriceBySearch(local);
-    return local;
-  }
+  if (local) return local;
 
   const remote = await fetchNaverAutocomplete(query);
-  if (remote.length) {
-    await ensureRealtimePrices(remote.slice(0, 5));
-    return remote[0];
-  }
+  if (remote.length) return remote[0];
 
   const codeQuery = String(query || "").trim();
   if (isKrCode(codeQuery)) {
@@ -220,10 +252,7 @@ async function findStockAsync(query) {
       theme: "시장",
       domain: ""
     };
-    await ensureRealtimePriceBySearch(inferred);
-    if (inferred.name !== codeQuery || PRICE_CACHE.has(codeQuery)) {
-      return inferred;
-    }
+    return inferred;
   }
   return null;
 }
@@ -455,9 +484,7 @@ function scoreLine(result) {
 }
 
 function priceLine(result) {
-  if (!Number.isFinite(Number(result?.currentPrice)) || Number(result.currentPrice) <= 0) {
-    return "가격 불러오는 중";
-  }
+  if (!Number.isFinite(Number(result?.currentPrice)) || Number(result.currentPrice) <= 0) return "-";
   return `${formatNumber(result.currentPrice)}원`;
 }
 
@@ -505,7 +532,7 @@ function renderTodayAndTomorrow(analyses) {
         <div class="rank-top">
           <div class="rank-row">
             <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-            <span class="name-with-price"><span class="rank-name">${idx + 1}위 ${a.stock.name}</span><strong class="inline-price">${priceLine(a)}</strong></span>
+            <span class="rank-name">${idx + 1}위 ${a.stock.name}</span>
           </div>
           <strong>${a.catalyst}점</strong>
         </div>
@@ -523,7 +550,7 @@ function renderTodayAndTomorrow(analyses) {
         <div class="rank-top">
           <div class="rank-row">
             <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-            <span class="name-with-price"><span class="rank-name">${idx + 1}. ${a.stock.name}</span><strong class="inline-price">${priceLine(a)}</strong></span>
+            <span class="rank-name">${idx + 1}. ${a.stock.name}</span>
           </div>
           <strong>${a.tomorrowProb}%</strong>
         </div>
@@ -545,7 +572,7 @@ function renderSignals(analyses) {
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="signal">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-          <span class="name-with-price"><strong>${a.stock.name}</strong><strong class="inline-price">${priceLine(a)}</strong></span>
+          <strong>${a.stock.name}</strong>
         </div>
         <div class="rank-meta"><span class="signal-strong">Signal ${a.triggerCount}개 충족</span> · ${signal.emoji} ${signal.label}</div>
       </div>
@@ -562,7 +589,7 @@ function renderSignals(analyses) {
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="popular">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-          <span class="name-with-price"><strong>${i + 1}. ${a.stock.name}</strong><strong class="inline-price">${priceLine(a)}</strong></span>
+          <strong>${i + 1}. ${a.stock.name}</strong>
         </div>
         <div class="rank-meta">${a.stock.code} · ${signal.emoji} ${signal.label}</div>
       </div>
@@ -682,9 +709,6 @@ function renderDecision(result) {
   };
 
   els.companyName.textContent = result.stock.name;
-  if (els.companyInlinePrice) {
-    els.companyInlinePrice.textContent = priceLine(result);
-  }
   els.companyCode.textContent = `${result.stock.code} · ${result.stock.market} · ${signal.emoji} ${signal.label}`;
 
   els.aiDecision.textContent = result.decision;
@@ -838,11 +862,7 @@ async function renderAutocomplete(keyword) {
   }
 
   els.autoList.innerHTML = items
-    .map((s) => {
-      const a = makeAnalysis(s);
-      const signal = getInvestmentSignal(a);
-      return `<li data-key="${s.code}"><span class="name-with-price"><span class="rank-name">${s.name} (${s.code})</span><strong class="inline-price">${priceLine(a)}</strong></span><span class="rank-meta">${s.market} · ${signal.emoji} ${signal.label}</span></li>`;
-    })
+    .map((s) => `<li data-key="${s.code}"><span class="rank-name">${s.name} (${s.code})</span><span class="rank-meta">${s.market}</span></li>`)
     .join("");
   els.autoList.classList.add("active");
 }
@@ -955,13 +975,6 @@ function initHomeWidgets() {
   const first = STOCKS.map(makeAnalysis);
   renderTodayAndTomorrow(first);
   renderSignals(first);
-  ensureRealtimePrices(STOCKS)
-    .then(() => {
-      const refreshed = STOCKS.map(makeAnalysis);
-      renderTodayAndTomorrow(refreshed);
-      renderSignals(refreshed);
-    })
-    .catch(() => {});
 }
 
 function initFromUrl() {

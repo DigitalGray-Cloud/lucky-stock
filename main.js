@@ -215,13 +215,15 @@ function closeAnalysisModal() {
 }
 
 function startAnalysisProgress() {
+  const started = Date.now();
   let progress = 0;
-  setAnalysisProgress(progress);
+  setAnalysisProgress(0);
   const timer = setInterval(() => {
-    progress = Math.min(94, progress + Math.max(1, Math.round(Math.random() * 6)));
+    const elapsed = Date.now() - started;
+    progress = Math.min(94, Math.floor((elapsed / 900) * 94));
     setAnalysisProgress(progress);
     if (progress >= 94) clearInterval(timer);
-  }, 150);
+  }, 60);
 
   return {
     async done() {
@@ -837,34 +839,36 @@ function renderNews(news) {
 async function searchAndRender(query) {
   const q = String(query || "").trim();
   if (!q) return;
-  hideResultPanel();
   openAnalysisModal();
   setSearchLoading(true);
   const progress = startAnalysisProgress();
-  let modalFinished = false;
-  const finishModal = async () => {
-    if (modalFinished) return;
-    modalFinished = true;
-    await progress.done();
-  };
 
   try {
-    const stock = await findStockAsync(query);
+    const stock = await withTimeout(findStockAsync(query), 2200, null);
     if (!stock) {
-      await finishModal();
       showResultPanel();
+      await progress.done();
       setSearchLoading(false);
       els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
       return;
     }
+
+    showResultPanel();
+    scrollToResult();
+
+    let result = makeAnalysis(stock);
+    updateResultUrl(stock.code);
+    renderDecision(result);
+    renderNews([]);
+    renderClickedRationale(result, []);
 
     const [news] = await Promise.all([
       withTimeout(fetchGoogleNews(`${stock.name} ${stock.code}`).catch(() => []), 2800, []),
       withTimeout(ensureRealtimePrices([stock]).catch(() => null), 2200, null)
     ]);
 
-    const result = makeAnalysis(stock);
-    updateResultUrl(stock.code);
+    const next = makeAnalysis(stock);
+    if (next.currentPrice) result = next;
 
     if (news.length) {
       const sentimentScore = clamp(Math.round(result.scoreParts.news * 0.5 + news.length * 6), 35, 96);
@@ -887,16 +891,14 @@ async function searchAndRender(query) {
       result.triggerCount = result.signalFlags.filter((s) => s.active).length;
     }
 
-    await finishModal();
-    showResultPanel();
+    await progress.done();
     renderDecision(result);
     renderNews(news);
     NEWS_CACHE.set(stock.code, news);
     renderClickedRationale(result, news);
-    scrollToResult();
   } catch {
-    await finishModal();
     showResultPanel();
+    await progress.done();
     els.decisionDesc.textContent = "분석 중 일시 지연이 발생했습니다. 다시 시도해주세요.";
   } finally {
     setSearchLoading(false);

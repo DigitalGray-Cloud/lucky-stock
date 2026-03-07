@@ -36,6 +36,7 @@ const els = {
   themeFeed: document.getElementById("theme-feed"),
   companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
+  companyInlinePrice: document.getElementById("company-inline-price"),
   companyCode: document.getElementById("company-code"),
   aiDecision: document.getElementById("ai-decision"),
   decisionGuide: document.getElementById("decision-guide"),
@@ -376,6 +377,9 @@ function priceLine(result) {
 }
 
 function getLogoUrl(stock) {
+  if (/^\d{6}$/.test(String(stock.code || ""))) {
+    return `https://static.toss.im/png-icons/securities/icn-sec-fill-${stock.code}.png`;
+  }
   if (stock.domain) {
     return `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
   }
@@ -416,11 +420,11 @@ function renderTodayAndTomorrow(analyses) {
         <div class="rank-top">
           <div class="rank-row">
             <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-            <span class="rank-name">${idx + 1}위 ${a.stock.name}</span>
+            <span class="name-with-price"><span class="rank-name">${idx + 1}위 ${a.stock.name}</span><strong class="inline-price">${priceLine(a)}</strong></span>
           </div>
           <strong>${a.catalyst}점</strong>
         </div>
-        <div class="rank-meta"><span class="emph-catalyst">${scoreLine(a)}</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
+        <div class="rank-meta"><span class="emph-catalyst">${scoreLine(a)}</span> · ${signal.emoji} ${signal.label}</div>
       </div>
     `;
     })
@@ -434,11 +438,11 @@ function renderTodayAndTomorrow(analyses) {
         <div class="rank-top">
           <div class="rank-row">
             <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-            <span class="rank-name">${idx + 1}. ${a.stock.name}</span>
+            <span class="name-with-price"><span class="rank-name">${idx + 1}. ${a.stock.name}</span><strong class="inline-price">${priceLine(a)}</strong></span>
           </div>
           <strong>${a.tomorrowProb}%</strong>
         </div>
-        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrowProb}%</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
+        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrowProb}%</span> · ${signal.emoji} ${signal.label}</div>
       </div>
     `;
     })
@@ -456,9 +460,9 @@ function renderSignals(analyses) {
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="signal">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-          <strong>${a.stock.name}</strong>
+          <span class="name-with-price"><strong>${a.stock.name}</strong><strong class="inline-price">${priceLine(a)}</strong></span>
         </div>
-        <div class="rank-meta"><span class="signal-strong">Signal ${a.triggerCount}개 충족</span> · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
+        <div class="rank-meta"><span class="signal-strong">Signal ${a.triggerCount}개 충족</span> · ${signal.emoji} ${signal.label}</div>
       </div>
     `;
     })
@@ -473,9 +477,9 @@ function renderSignals(analyses) {
       <div class="feed-item clickable" data-code="${a.stock.code}" data-type="popular">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.stock)}" alt="${a.stock.name} 로고" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128'"></div>
-          <strong>${i + 1}. ${a.stock.name}</strong>
+          <span class="name-with-price"><strong>${i + 1}. ${a.stock.name}</strong><strong class="inline-price">${priceLine(a)}</strong></span>
         </div>
-        <div class="rank-meta">${a.stock.code} · ${priceLine(a)} · ${signal.emoji} ${signal.label}</div>
+        <div class="rank-meta">${a.stock.code} · ${signal.emoji} ${signal.label}</div>
       </div>
     `;
     })
@@ -593,7 +597,10 @@ function renderDecision(result) {
   };
 
   els.companyName.textContent = result.stock.name;
-  els.companyCode.textContent = `${result.stock.code} · ${result.stock.market} · ${priceLine(result)} · ${signal.emoji} ${signal.label}`;
+  if (els.companyInlinePrice) {
+    els.companyInlinePrice.textContent = priceLine(result);
+  }
+  els.companyCode.textContent = `${result.stock.code} · ${result.stock.market} · ${signal.emoji} ${signal.label}`;
 
   els.aiDecision.textContent = result.decision;
   els.aiDecision.className = `decision ${decisionClass(result.decision)}`;
@@ -744,7 +751,7 @@ async function renderAutocomplete(keyword) {
     .map((s) => {
       const a = makeAnalysis(s);
       const signal = getInvestmentSignal(a);
-      return `<li data-key="${s.code}">${s.name} (${s.code}) <span class="rank-meta">${s.market} · ${priceLine(a)} · ${signal.emoji} ${signal.label}</span></li>`;
+      return `<li data-key="${s.code}"><span class="name-with-price"><span class="rank-name">${s.name} (${s.code})</span><strong class="inline-price">${priceLine(a)}</strong></span><span class="rank-meta">${s.market} · ${signal.emoji} ${signal.label}</span></li>`;
     })
     .join("");
   els.autoList.classList.add("active");

@@ -424,6 +424,17 @@ body {
 }
 
 .rank-name { font-weight: 800; font-size: 1rem; }
+.name-with-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.inline-price {
+  font-weight: 900;
+  color: #0b357f;
+  font-size: 0.95rem;
+}
 .rank-meta { color: var(--muted); font-size: 0.84rem; margin-top: 5px; }
 
 .emph-catalyst {
@@ -550,7 +561,8 @@ body {
   padding: 5px;
 }
 
-.stock-name { margin: 0; font-size: 1.08rem; font-weight: 800; }
+.stock-name { margin: 0; font-size: 1.08rem; font-weight: 800; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.company-inline-price { font-size: 1.02rem; font-weight: 900; color: #0b357f; }
 .stock-code { margin: 3px 0 0; color: var(--muted); font-size: 0.87rem; }
 
 .decision-grid,

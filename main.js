@@ -17,6 +17,8 @@ const STOCKS = [
 ];
 
 const QUICK_TAGS = ["삼성전자", "005930", "SK하이닉스", "000660", "두산로보틱스", "454910", "NAVER", "035420"];
+const NAVER_AC_ENDPOINT = "https://ac.stock.naver.com/ac";
+const AUTO_COMPLETE_LIMIT = 12;
 
 const els = {
   manualToggle: document.getElementById("manual-toggle"),
@@ -59,6 +61,8 @@ const els = {
 };
 
 const NEWS_CACHE = new Map();
+const NAVER_AC_CACHE = new Map();
+let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
 function normalize(text) {
@@ -129,6 +133,46 @@ function findStock(query) {
   const q = normalize(query);
   if (!q) return null;
   return STOCKS.find((s) => [s.name, s.code].map(normalize).some((v) => v.includes(q)));
+}
+
+function mapNaverItemToStock(item) {
+  const code = String(item?.code || "").trim();
+  const name = String(item?.name || "").trim();
+  if (!code || !name) return null;
+  return {
+    name,
+    code,
+    market: String(item?.typeCode || "").toUpperCase().includes("KOSDAQ") ? "KOSDAQ" : "KOSPI",
+    sector: "기타",
+    theme: "시장",
+    domain: ""
+  };
+}
+
+async function fetchNaverAutocomplete(query) {
+  const q = String(query || "").trim();
+  if (!q) return [];
+  const key = normalize(q);
+  if (NAVER_AC_CACHE.has(key)) return NAVER_AC_CACHE.get(key);
+
+  const targetUrl = `${NAVER_AC_ENDPOINT}?q=${encodeURIComponent(q)}&target=stock`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+  const res = await fetch(proxyUrl);
+  if (!res.ok) throw new Error(`naver ac ${res.status}`);
+  const data = await res.json();
+  const items = Array.isArray(data?.items) ? data.items : [];
+  const mapped = items.map(mapNaverItemToStock).filter(Boolean);
+  NAVER_AC_CACHE.set(key, mapped);
+  return mapped;
+}
+
+async function findStockAsync(query) {
+  const local = findStock(query);
+  if (local) return local;
+
+  const remote = await fetchNaverAutocomplete(query);
+  if (!remote.length) return null;
+  return remote[0];
 }
 
 function buildBasePrice(seed) {
@@ -311,7 +355,10 @@ function decisionClass(decision) {
 }
 
 function getLogoUrl(stock) {
-  return `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
+  if (stock.domain) {
+    return `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128`;
 }
 
 async function fetchGoogleNews(query) {
@@ -506,7 +553,7 @@ function renderDecision(result) {
   els.companyLogo.src = getLogoUrl(result.stock);
   els.companyLogo.alt = `${result.stock.name} 로고`;
   els.companyLogo.onerror = () => {
-    els.companyLogo.src = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(result.stock.domain)}&sz=128`;
+    els.companyLogo.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(result.stock.name)}&background=0B1F3A&color=ffffff&rounded=true&size=128`;
   };
 
   els.companyName.textContent = result.stock.name;
@@ -560,7 +607,7 @@ function renderNews(news) {
 }
 
 async function searchAndRender(query) {
-  const stock = findStock(query);
+  const stock = await findStockAsync(query);
   if (!stock) {
     els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
     return;
@@ -626,7 +673,7 @@ function initRankingClicks() {
   els.popularList.addEventListener("click", onClick);
 }
 
-function renderAutocomplete(keyword) {
+async function renderAutocomplete(keyword) {
   const q = normalize(keyword);
   if (!q) {
     els.autoList.classList.remove("active");
@@ -634,14 +681,32 @@ function renderAutocomplete(keyword) {
     return;
   }
 
-  const items = STOCKS.filter((s) => [s.name, s.code].map(normalize).some((x) => x.includes(q))).slice(0, 8);
+  const currentSeq = ++autoCompleteSeq;
+  const localItems = STOCKS.filter((s) => [s.name, s.code].map(normalize).some((x) => x.includes(q)));
+  const remoteItems = await fetchNaverAutocomplete(q).catch(() => []);
+
+  if (currentSeq !== autoCompleteSeq) return;
+
+  const seen = new Set(localItems.map((s) => `${s.code}:${s.name}`));
+  const merged = [...localItems];
+  remoteItems.forEach((s) => {
+    const key = `${s.code}:${s.name}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(s);
+    }
+  });
+
+  const items = merged.slice(0, AUTO_COMPLETE_LIMIT);
   if (!items.length) {
     els.autoList.classList.remove("active");
     els.autoList.innerHTML = "";
     return;
   }
 
-  els.autoList.innerHTML = items.map((s) => `<li data-key="${s.code}">${s.name} (${s.code})</li>`).join("");
+  els.autoList.innerHTML = items
+    .map((s) => `<li data-key="${s.code}">${s.name} (${s.code}) <span class="rank-meta">${s.market}</span></li>`)
+    .join("");
   els.autoList.classList.add("active");
 }
 
@@ -677,7 +742,9 @@ function initEvents() {
   let timer = null;
   els.searchInput.addEventListener("input", () => {
     clearTimeout(timer);
-    timer = setTimeout(() => renderAutocomplete(els.searchInput.value), 140);
+    timer = setTimeout(() => {
+      renderAutocomplete(els.searchInput.value);
+    }, 180);
   });
 
   els.autoList.addEventListener("click", (e) => {
@@ -757,10 +824,8 @@ function initFromUrl() {
   const url = new URL(window.location.href);
   const code = url.searchParams.get("code");
   if (!code) return;
-  const stock = findStock(code);
-  if (!stock) return;
   suppressUrlUpdate = true;
-  searchAndRender(stock.code).finally(() => {
+  searchAndRender(code).finally(() => {
     suppressUrlUpdate = false;
   });
 }

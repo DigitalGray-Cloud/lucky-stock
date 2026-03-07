@@ -69,6 +69,7 @@ const NEWS_CACHE = new Map();
 const NAVER_AC_CACHE = new Map();
 const PRICE_CACHE = new Map();
 const PRICE_STORAGE_KEY = "ls_price_cache_v1";
+let analysisModalFailSafeTimer = null;
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
@@ -206,30 +207,38 @@ function openAnalysisModal() {
     els.analysisModal.removeAttribute("hidden");
     setAnalysisProgress(0);
   }
+  if (analysisModalFailSafeTimer) clearTimeout(analysisModalFailSafeTimer);
+  analysisModalFailSafeTimer = setTimeout(() => {
+    closeAnalysisModal();
+  }, 2500);
 }
 
 function closeAnalysisModal() {
+  if (analysisModalFailSafeTimer) {
+    clearTimeout(analysisModalFailSafeTimer);
+    analysisModalFailSafeTimer = null;
+  }
   if (els.analysisModal) {
     els.analysisModal.setAttribute("hidden", "");
   }
 }
 
 function startAnalysisProgress() {
+  const duration = 1100;
   const started = Date.now();
-  let progress = 0;
   setAnalysisProgress(0);
   const timer = setInterval(() => {
     const elapsed = Date.now() - started;
-    progress = Math.min(94, Math.floor((elapsed / 900) * 94));
-    setAnalysisProgress(progress);
-    if (progress >= 94) clearInterval(timer);
-  }, 60);
+    const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
+    setAnalysisProgress(pct);
+    if (pct >= 100) clearInterval(timer);
+  }, 40);
 
   return {
     async done() {
       clearInterval(timer);
       setAnalysisProgress(100);
-      await new Promise((r) => setTimeout(r, 220));
+      await new Promise((r) => setTimeout(r, 120));
       closeAnalysisModal();
     }
   };

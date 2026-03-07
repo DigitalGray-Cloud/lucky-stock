@@ -318,9 +318,12 @@ function makeAnalysis(stock) {
   const prob1y = clamp(prob3m + Math.round(seededRange(seed + 9, 5, 11)), 52, 95);
 
   const highDiff = -Math.round(seededRange(seed + 10, 6, 29));
-  const currentPrice = PRICE_CACHE.get(stock.code) || buildBasePrice(seed);
-  const support = Math.round(currentPrice * seededRange(seed + 11, 0.88, 0.95));
-  const resistance = Math.round(currentPrice * seededRange(seed + 12, 1.05, 1.18));
+  const realtimePrice = Number(PRICE_CACHE.get(stock.code));
+  const hasRealtimePrice = Number.isFinite(realtimePrice) && realtimePrice > 0;
+  const currentPrice = hasRealtimePrice ? realtimePrice : null;
+  const technicalBasePrice = hasRealtimePrice ? realtimePrice : buildBasePrice(seed);
+  const support = Math.round(technicalBasePrice * seededRange(seed + 11, 0.88, 0.95));
+  const resistance = Math.round(technicalBasePrice * seededRange(seed + 12, 1.05, 1.18));
 
   const per = Number(seededRange(seed + 13, 8, 63).toFixed(1));
   const pbr = Number(seededRange(seed + 14, 0.7, 12).toFixed(1));
@@ -452,6 +455,9 @@ function scoreLine(result) {
 }
 
 function priceLine(result) {
+  if (!Number.isFinite(Number(result?.currentPrice)) || Number(result.currentPrice) <= 0) {
+    return "가격 불러오는 중";
+  }
   return `${formatNumber(result.currentPrice)}원`;
 }
 

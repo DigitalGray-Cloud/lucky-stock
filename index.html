@@ -3,168 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StockRadar AI</title>
-  <link rel="stylesheet" href="/style.css?v=20260307f" />
+  <title>LuckyStock AI | AI 한국 주식 투자 판단 엔진</title>
+  <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, Catalyst Score, 수급, 위험, 전망 제공." />
+  <link rel="stylesheet" href="/style.css?v=20260307g" />
 </head>
 <body>
   <header class="topbar">
-    <div class="logo-wrap">
-      <div class="logo-badge">
-        <img
-          src="https://lh3.googleusercontent.com/gg/AMW1TPqDJJPxR6_F6c2OSBFEUa_u-JL2kRVlNT5oS8npgux8JOcG1Ynd2T2TKFf_WNZhHxgkmMotV_PEKu1VmpcABjiwMgVIQg31QH-wlzibWVxME0JWl809jPI_xyBlv9ErRDmHGy1MLhncDExwKiF6RqZGfWzLXrzH3LLTFj4YKFVv7DA2iOzG=s1024-rj"
-          alt="StockRadar AI 로고"
-        />
+    <div class="brand-wrap">
+      <div class="brand-badge" aria-hidden="true">
+        <img src="https://lh3.googleusercontent.com/gg/AMW1TPqDJJPxR6_F6c2OSBFEUa_u-JL2kRVlNT5oS8npgux8JOcG1Ynd2T2TKFf_WNZhHxgkmMotV_PEKu1VmpcABjiwMgVIQg31QH-wlzibWVxME0JWl809jPI_xyBlv9ErRDmHGy1MLhncDExwKiF6RqZGfWzLXrzH3LLTFj4YKFVv7DA2iOzG=s1024-rj" alt="LuckyStock AI 로고" />
       </div>
       <div>
-        <p class="service-ko">StockRadar AI</p>
-        <p class="service-en">AI Stock Catalyst Finder</p>
+        <p class="brand-title">LuckyStock AI</p>
+        <p class="brand-sub">AI 한국 주식 투자 판단 엔진</p>
       </div>
     </div>
-    <p class="stamp">검색 10초 요약 대시보드 · v1.1.0</p>
+    <p class="build-note">KOSPI · KOSDAQ · v2.0.0</p>
   </header>
 
   <main class="container">
-    <section class="search-panel">
-      <h1>종목을 검색하면 투자 핵심 정보와 최근 호재 뉴스를 한 화면에 보여줍니다</h1>
-      <div class="search-box-wrap">
-        <input id="stock-search" type="text" placeholder="종목명 또는 티커를 검색하세요 (예: Tesla, NVDA, 삼성전자)" autocomplete="off" />
-        <button id="search-btn" type="button">분석</button>
+    <section class="hero card">
+      <h1>AI가 말해주는 지금 사야 할 한국 주식</h1>
+      <p>분석 사이트가 아니라 결론 엔진입니다. 검색하면 3초 내 투자 판단을 제공합니다.</p>
+      <div class="search-row">
+        <input id="stock-search" type="text" placeholder="종목명 또는 종목코드 입력 (예: 삼성전자, 005930)" autocomplete="off" />
+        <button id="search-btn" type="button">지금 판단</button>
       </div>
       <ul id="autocomplete-list" class="autocomplete-list"></ul>
-      <div class="quick-tags" id="quick-tags"></div>
+      <div id="quick-tags" class="quick-tags"></div>
     </section>
 
     <section class="ad-card" aria-label="광고 영역">
       <div class="ad-label">광고</div>
-      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000001" data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <p class="ad-hint">콘텐츠를 가리지 않는 위치에만 광고를 표시합니다.</p>
+      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000101" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <p class="ad-note">광고는 콘텐츠와 명확히 구분되어 표시됩니다.</p>
     </section>
 
-    <section class="result-top-grid">
-      <article class="card company-card">
-        <h2>기업 기본 정보</h2>
-        <div class="company-row">
-          <div class="company-logo" id="company-logo">
-            <img id="company-logo-img" alt="기업 로고" />
-          </div>
-          <div>
-            <p id="company-name" class="company-name">NVIDIA</p>
-            <p id="company-ticker" class="ticker">NVDA</p>
-          </div>
+    <section class="grid-two">
+      <article class="card">
+        <div class="section-head">
+          <h2>오늘 AI 발견 급등주</h2>
+          <span class="chip">Top 5</span>
         </div>
-        <div class="metric-grid">
-          <div><span>현재가</span><strong id="metric-price">-</strong></div>
-          <div><span>시가총액</span><strong id="metric-marketcap">-</strong></div>
-          <div><span>PER</span><strong id="metric-per">-</strong></div>
-          <div><span>PBR</span><strong id="metric-pbr">-</strong></div>
-          <div><span>산업</span><strong id="metric-sector">-</strong></div>
-        </div>
+        <div id="today-surge-list" class="rank-list"></div>
       </article>
 
-      <article class="card score-card">
-        <h2>호재 점수 (Catalyst Score)</h2>
-        <div class="score-main">
-          <div class="score-ring">
-            <svg viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" class="ring-bg"></circle>
-              <circle cx="60" cy="60" r="52" class="ring-fill" id="score-ring-fill"></circle>
-            </svg>
-            <div class="score-value"><span id="catalyst-score">0</span><small>/100</small></div>
-          </div>
-          <div>
-            <p class="score-grade" id="score-grade">중립</p>
-            <p class="score-desc" id="score-desc">데이터 분석 대기 중</p>
-          </div>
+      <article class="card">
+        <div class="section-head">
+          <h2>내일 급등 가능성 TOP 10</h2>
+          <span class="chip">예측</span>
         </div>
-        <div id="score-breakdown" class="score-breakdown"></div>
+        <div id="tomorrow-top10" class="rank-list compact"></div>
       </article>
     </section>
 
-    <section class="dashboard-grid">
+    <section class="grid-three">
       <article class="card">
-        <h2>AI 한줄 투자 요약</h2>
-        <p id="ai-summary" class="lead">검색 후 AI 요약이 표시됩니다.</p>
+        <h3>실시간 AI Signal</h3>
+        <div id="signal-feed" class="mini-feed"></div>
       </article>
+      <article class="card">
+        <h3>인기 검색 TOP 10</h3>
+        <div id="popular-list" class="mini-feed"></div>
+      </article>
+      <article class="card">
+        <h3>테마 급등 탐지</h3>
+        <div id="theme-feed" class="mini-feed"></div>
+      </article>
+    </section>
 
-      <article class="card">
-        <h2>최근 호재 분석 (30일)</h2>
-        <ul id="bull-list" class="list"></ul>
-      </article>
+    <section id="result-panel" class="result-panel">
+      <div class="section-head large">
+        <h2>검색 결과</h2>
+        <p>검색 → 결론 → 이유 → 점수 → 위험 → 수급 → 전망</p>
+      </div>
 
-      <article class="card">
-        <h2>미래 성장성 분석</h2>
-        <ul id="growth-list" class="list"></ul>
-      </article>
+      <div class="dashboard">
+        <article class="card decision-card">
+          <div class="stock-head">
+            <div class="stock-logo"><img id="company-logo-img" alt="기업 로고" /></div>
+            <div>
+              <p id="company-name" class="stock-name">삼성전자</p>
+              <p id="company-code" class="stock-code">005930 · KOSPI</p>
+            </div>
+          </div>
+          <div class="decision-grid">
+            <div><span>AI Decision</span><strong id="ai-decision" class="decision buy">BUY</strong></div>
+            <div><span>AI Confidence</span><strong id="ai-confidence">78%</strong></div>
+            <div><span>Catalyst Score</span><strong id="catalyst-score">82 / 100</strong></div>
+          </div>
+          <p id="decision-desc" class="desc">반도체 업황 회복과 외국인 매수 증가로 상승 가능성</p>
+        </article>
 
-      <article class="card">
-        <h2>리스크 / 유의점</h2>
-        <ul id="risk-list" class="list"></ul>
-      </article>
+        <article class="card">
+          <h3>지금 사는 이유</h3>
+          <ul id="buy-reasons" class="bullet"></ul>
+        </article>
 
-      <article class="card">
-        <h2>외국인 및 기관 수급 (최근 5일)</h2>
-        <div id="flow-chart" class="flow-chart"></div>
-      </article>
+        <article class="card">
+          <h3>주의 사항</h3>
+          <ul id="risk-points" class="bullet"></ul>
+        </article>
 
-      <article class="card">
-        <h2>기술적 분석</h2>
-        <div class="metric-grid compact">
-          <div><span>52주 최고 대비</span><strong id="tech-52w">-</strong></div>
-          <div><span>지지선</span><strong id="tech-support">-</strong></div>
-          <div><span>저항선</span><strong id="tech-resistance">-</strong></div>
-        </div>
-      </article>
+        <article class="card">
+          <h3>상승 확률</h3>
+          <div class="prob-grid">
+            <div><span>1개월</span><strong id="prob-1m">62%</strong></div>
+            <div><span>3개월</span><strong id="prob-3m">71%</strong></div>
+            <div><span>1년</span><strong id="prob-1y">79%</strong></div>
+          </div>
+        </article>
 
-      <article class="card">
-        <h2>밸류에이션 평가</h2>
-        <p id="valuation-badge" class="valuation-badge">적정</p>
-        <p id="valuation-text" class="muted">동종 업계 대비 결과가 표시됩니다.</p>
-      </article>
+        <article class="card">
+          <h3>외국인 및 기관 수급 (최근 5일)</h3>
+          <div id="flow-table" class="flow-table"></div>
+        </article>
 
-      <article class="card">
-        <h2>투자 관점 정리</h2>
-        <div id="view-list" class="view-list"></div>
-      </article>
+        <article class="card">
+          <h3>기술적 분석</h3>
+          <div class="prob-grid">
+            <div><span>52주 최고 대비</span><strong id="tech-high-diff">-18%</strong></div>
+            <div><span>지지선</span><strong id="tech-support">68,000</strong></div>
+            <div><span>저항선</span><strong id="tech-resistance">75,000</strong></div>
+          </div>
+        </article>
 
-      <article class="card">
-        <h2>투자 스타일 적합도</h2>
-        <div id="style-fit" class="style-fit"></div>
-      </article>
+        <article class="card">
+          <h3>밸류에이션 평가</h3>
+          <p id="valuation-badge" class="valuation">적정</p>
+          <p id="valuation-desc" class="muted">동종 업계 대비 상대 밸류에이션 기준</p>
+        </article>
 
-      <article class="card">
-        <h2>투자자 관심도 분석</h2>
-        <div class="metric-grid compact">
-          <div><span>Twitter</span><strong id="sns-twitter">-</strong></div>
-          <div><span>Reddit</span><strong id="sns-reddit">-</strong></div>
-          <div><span>뉴스 언급</span><strong id="sns-news">-</strong></div>
-          <div><span>오늘 언급량</span><strong id="sns-delta">-</strong></div>
-        </div>
-      </article>
+        <article class="card">
+          <h3>Catalyst Score 구성</h3>
+          <div id="score-breakdown" class="score-breakdown"></div>
+        </article>
+
+        <article class="card full">
+          <h3>최신 뉴스 근거</h3>
+          <ul id="news-list" class="news-list"></ul>
+        </article>
+      </div>
     </section>
 
     <section class="ad-card" aria-label="광고 영역">
       <div class="ad-label">광고</div>
-      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000002" data-ad-format="rectangle" data-full-width-responsive="true"></ins>
-      <p class="ad-hint">광고와 분석 카드를 명확히 구분했습니다.</p>
+      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000102" data-ad-format="rectangle" data-full-width-responsive="true"></ins>
+      <p class="ad-note">광고 클릭 유도 문구 없이 정보 콘텐츠를 우선 제공합니다.</p>
     </section>
 
-    <section class="today-picks card">
-      <h2>오늘의 호재 종목</h2>
-      <div id="today-list" class="today-list"></div>
-    </section>
-
-    <section class="policy-card card">
-      <h2>AdSense 적용 체크</h2>
-      <ul class="policy-list">
-        <li>광고는 "광고" 라벨로 명확히 표시</li>
-        <li>검색/버튼/핵심 정보와 광고를 분리 배치</li>
-        <li>분석 콘텐츠를 먼저 보여주고 광고는 보조로 배치</li>
+    <section class="content-quality card">
+      <h2>서비스 운영 원칙</h2>
+      <ul class="bullet">
+        <li>중복 페이지/중복 콘텐츠를 만들지 않고, 한 페이지에 핵심 정보를 집중 제공합니다.</li>
+        <li>광고보다 콘텐츠가 먼저 보이도록 구성하며 광고와 본문을 명확히 구분합니다.</li>
+        <li>투자 판단 보조 도구이며 최종 투자 책임은 사용자에게 있습니다.</li>
       </ul>
     </section>
-
-    <section class="alert-banner" id="alert-banner"></section>
   </main>
 
-  <script defer src="/main.js?v=20260307f"></script>
+  <footer class="footer">
+    <div>
+      <strong>LuckyStock AI</strong>
+      <p>데이터 출처: KRX/네이버금융/Google News 기반 가공 데이터</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">서비스 소개</a>
+      <a href="#">개인정보 처리방침</a>
+      <a href="#">면책조항</a>
+    </div>
+  </footer>
+
+  <script defer src="/main.js?v=20260307g"></script>
 </body>
 </html>

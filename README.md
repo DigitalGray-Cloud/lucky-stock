@@ -1,39 +1,37 @@
-# AI 주식 호재 검색기 (Stock Catalyst Finder)
+# LuckyStock AI
 
-실제 뉴스 기반 분석 대시보드를 보여주는 웹 서비스입니다.
+AI 한국 주식 투자 판단 엔진.
 
-## 버전
+- 프로덕션: https://luckystock.pages.dev
+- 배포 플랫폼: Cloudflare Pages
+- 타깃: KOSPI, KOSDAQ
 
-- `v1.1.0` (날짜 라벨 개선, 화이트 UI 고도화, 기업 로고 안정화)
+## 핵심 UX
 
-## 배포 링크
+검색하면 3초 내 아래 순서로 결과 제공:
 
-- https://ai-product-9194a.web.app
+1. AI Decision (BUY/HOLD/SELL)
+2. 지금 사는 이유
+3. 주의 사항
+4. 상승 확률 (1M/3M/1Y)
+5. 외국인·기관 수급 (최근 5일)
+6. 기술적 분석
+7. 밸류에이션
 
-## 실행
+## 점수 체계
 
-```bash
-cd /home/user/luckstock
-npm start
-```
+Catalyst Score (0~100):
 
-## 접속 링크
+- 뉴스 긍정도 20%
+- 실적 성장률 20%
+- 외국인 수급 15%
+- 기관 수급 15%
+- 산업 성장성 20%
+- 투자 심리 10%
 
-- 로컬 링크: http://localhost:8787
-- 헬스체크: http://localhost:8787/api/health
+## AdSense 적용 원칙
 
-## 백엔드 API
+- 광고/콘텐츠 명확 구분(광고 라벨 표시)
+- 콘텐츠 우선, 광고 후순위 배치
+- 과도한 광고 밀도/오해 유도 배치 금지
 
-- `GET /api/autocomplete?q=nvda`
-- `GET /api/news?q=NVIDIA`
-- `GET /api/analyze?q=NVDA`
-
-## 실제 데이터 소스
-
-- 시세: Yahoo Finance Quote API
-- 뉴스: Google News RSS
-
-## 현재 배포 상태
-
-Firebase CLI는 설치되어 있지만 이 작업공간은 현재 인증 계정이 없어(`firebase login` 필요) 퍼블릭 배포 링크 발급이 막혀 있습니다.
-인증 후에는 Firebase Hosting 또는 Cloud Run으로 바로 배포할 수 있습니다.

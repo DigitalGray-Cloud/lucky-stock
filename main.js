@@ -1,56 +1,57 @@
-const QUICK_TAGS = ["Tesla", "TSLA", "NVIDIA", "NVDA", "삼성전자", "005930"];
-
 const STOCKS = [
-  { name: "Tesla", ticker: "TSLA", aliases: ["테슬라"], sector: "전기차/에너지", price: 180, marketcap: 570e9, currency: "USD", domain: "tesla.com", logoUrl: "https://cdn.simpleicons.org/tesla/CC0000" },
-  { name: "NVIDIA", ticker: "NVDA", aliases: ["엔비디아", "Nvidia"], sector: "반도체/AI", price: 990, marketcap: 2450e9, currency: "USD", domain: "nvidia.com", logoUrl: "https://cdn.simpleicons.org/nvidia/76B900" },
-  { name: "AMD", ticker: "AMD", aliases: ["에이엠디"], sector: "반도체", price: 180, marketcap: 290e9, currency: "USD", domain: "amd.com", logoUrl: "https://cdn.simpleicons.org/amd/ED1C24" },
-  { name: "Apple", ticker: "AAPL", aliases: ["애플"], sector: "소비자 IT", price: 190, marketcap: 2900e9, currency: "USD", domain: "apple.com", logoUrl: "https://cdn.simpleicons.org/apple/111111" },
-  { name: "Microsoft", ticker: "MSFT", aliases: ["마이크로소프트"], sector: "클라우드/SaaS", price: 420, marketcap: 3100e9, currency: "USD", domain: "microsoft.com", logoUrl: "https://cdn.simpleicons.org/microsoft/5E5E5E" },
-  { name: "Amazon", ticker: "AMZN", aliases: ["아마존"], sector: "이커머스/클라우드", price: 182, marketcap: 1900e9, currency: "USD", domain: "amazon.com", logoUrl: "https://cdn.simpleicons.org/amazon/FF9900" },
-  { name: "Meta", ticker: "META", aliases: ["메타"], sector: "소셜/광고", price: 488, marketcap: 1230e9, currency: "USD", domain: "meta.com", logoUrl: "https://cdn.simpleicons.org/meta/0467DF" },
-  { name: "Samsung Electronics", ticker: "005930", aliases: ["삼성전자", "Samsung"], sector: "반도체/전자", price: 76000, marketcap: 520e9, currency: "KRW", domain: "samsung.com", logoUrl: "https://cdn.simpleicons.org/samsung/1428A0" },
+  { name: "삼성전자", code: "005930", market: "KOSPI", sector: "반도체", theme: "AI반도체", domain: "samsung.com" },
+  { name: "SK하이닉스", code: "000660", market: "KOSPI", sector: "반도체", theme: "AI반도체", domain: "skhynix.com" },
+  { name: "한미반도체", code: "042700", market: "KOSPI", sector: "반도체장비", theme: "AI반도체", domain: "hanmisemi.com" },
+  { name: "두산로보틱스", code: "454910", market: "KOSPI", sector: "로봇", theme: "로봇", domain: "doosanrobotics.com" },
+  { name: "에코프로", code: "086520", market: "KOSDAQ", sector: "2차전지", theme: "2차전지", domain: "ecopro.co.kr" },
+  { name: "레인보우로보틱스", code: "277810", market: "KOSDAQ", sector: "로봇", theme: "로봇", domain: "rainbow-robotics.com" },
+  { name: "포스코DX", code: "022100", market: "KOSPI", sector: "IT서비스", theme: "스마트팩토리", domain: "poscodx.com" },
+  { name: "알테오젠", code: "196170", market: "KOSDAQ", sector: "바이오", theme: "바이오", domain: "alteogen.com" },
+  { name: "에코프로비엠", code: "247540", market: "KOSDAQ", sector: "2차전지", theme: "2차전지", domain: "ecoprobm.co.kr" },
+  { name: "셀트리온", code: "068270", market: "KOSPI", sector: "바이오", theme: "바이오", domain: "celltrion.com" },
+  { name: "NAVER", code: "035420", market: "KOSPI", sector: "인터넷", theme: "AI플랫폼", domain: "navercorp.com" },
+  { name: "카카오", code: "035720", market: "KOSPI", sector: "인터넷", theme: "AI플랫폼", domain: "kakaocorp.com" },
+  { name: "LG에너지솔루션", code: "373220", market: "KOSPI", sector: "2차전지", theme: "2차전지", domain: "lgensol.com" },
+  { name: "현대차", code: "005380", market: "KOSPI", sector: "자동차", theme: "전기차", domain: "hyundai.com" },
+  { name: "기아", code: "000270", market: "KOSPI", sector: "자동차", theme: "전기차", domain: "kia.com" }
 ];
 
+const QUICK_TAGS = ["삼성전자", "005930", "SK하이닉스", "000660", "두산로보틱스", "454910", "NAVER", "035420"];
+
 const els = {
-  input: document.getElementById("stock-search"),
+  searchInput: document.getElementById("stock-search"),
   searchBtn: document.getElementById("search-btn"),
   autoList: document.getElementById("autocomplete-list"),
   quickTags: document.getElementById("quick-tags"),
-  companyLogoImg: document.getElementById("company-logo-img"),
+  todaySurgeList: document.getElementById("today-surge-list"),
+  tomorrowTop10: document.getElementById("tomorrow-top10"),
+  signalFeed: document.getElementById("signal-feed"),
+  popularList: document.getElementById("popular-list"),
+  themeFeed: document.getElementById("theme-feed"),
+  companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
-  companyTicker: document.getElementById("company-ticker"),
-  price: document.getElementById("metric-price"),
-  marketcap: document.getElementById("metric-marketcap"),
-  per: document.getElementById("metric-per"),
-  pbr: document.getElementById("metric-pbr"),
-  sector: document.getElementById("metric-sector"),
-  summary: document.getElementById("ai-summary"),
-  bullList: document.getElementById("bull-list"),
-  growthList: document.getElementById("growth-list"),
-  riskList: document.getElementById("risk-list"),
-  flowChart: document.getElementById("flow-chart"),
-  tech52w: document.getElementById("tech-52w"),
+  companyCode: document.getElementById("company-code"),
+  aiDecision: document.getElementById("ai-decision"),
+  aiConfidence: document.getElementById("ai-confidence"),
+  catalystScore: document.getElementById("catalyst-score"),
+  decisionDesc: document.getElementById("decision-desc"),
+  buyReasons: document.getElementById("buy-reasons"),
+  riskPoints: document.getElementById("risk-points"),
+  prob1m: document.getElementById("prob-1m"),
+  prob3m: document.getElementById("prob-3m"),
+  prob1y: document.getElementById("prob-1y"),
+  flowTable: document.getElementById("flow-table"),
+  techHighDiff: document.getElementById("tech-high-diff"),
   techSupport: document.getElementById("tech-support"),
   techResistance: document.getElementById("tech-resistance"),
   valuationBadge: document.getElementById("valuation-badge"),
-  valuationText: document.getElementById("valuation-text"),
-  viewList: document.getElementById("view-list"),
-  styleFit: document.getElementById("style-fit"),
-  snsTwitter: document.getElementById("sns-twitter"),
-  snsReddit: document.getElementById("sns-reddit"),
-  snsNews: document.getElementById("sns-news"),
-  snsDelta: document.getElementById("sns-delta"),
-  catalystScore: document.getElementById("catalyst-score"),
-  scoreGrade: document.getElementById("score-grade"),
-  scoreDesc: document.getElementById("score-desc"),
+  valuationDesc: document.getElementById("valuation-desc"),
   scoreBreakdown: document.getElementById("score-breakdown"),
-  ringFill: document.getElementById("score-ring-fill"),
-  todayList: document.getElementById("today-list"),
-  alertBanner: document.getElementById("alert-banner"),
+  newsList: document.getElementById("news-list")
 };
 
 function normalize(text) {
-  return (text || "").toLowerCase().trim();
+  return String(text || "").toLowerCase().trim();
 }
 
 function hashCode(text) {
@@ -68,279 +69,365 @@ function seededRange(seed, min, max) {
   return min + n * (max - min);
 }
 
-function scoreLabel(score) {
-  if (score >= 90) return "매우 강한 모멘텀";
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function formatNumber(value) {
+  return Number(value).toLocaleString("ko-KR");
+}
+
+function recent5Dates() {
+  const today = new Date();
+  return Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (4 - i));
+    return d.toISOString().slice(0, 10);
+  });
+}
+
+function findStock(query) {
+  const q = normalize(query);
+  if (!q) return null;
+  return STOCKS.find((s) => [s.name, s.code].map(normalize).some((v) => v.includes(q)));
+}
+
+function buildBasePrice(seed) {
+  return Math.round(seededRange(seed + 1, 8000, 220000));
+}
+
+function baseReasons(stock) {
+  const sectorReason = {
+    반도체: ["HBM 메모리 수요 증가", "외국인 순매수 확대", "반도체 업황 회복"],
+    반도체장비: ["고객사 CAPEX 확대", "패키징 장비 발주 증가", "수주 잔고 성장"],
+    로봇: ["로봇 자동화 수요 확대", "신규 수주 증가", "테마 거래대금 집중"],
+    "2차전지": ["양극재 수요 반등 기대", "정책 모멘텀 유입", "거래량 회복"],
+    바이오: ["파이프라인 기대감", "기술수출 모멘텀", "기관 매수 전환"],
+    인터넷: ["AI 서비스 확장", "광고 매출 개선", "실적 컨센서스 상향"],
+    자동차: ["전기차 판매 확대", "환율 우호 환경", "수익성 개선"],
+    IT서비스: ["스마트팩토리 투자 확대", "대형 프로젝트 수주", "기관 수급 개선"]
+  };
+  return sectorReason[stock.sector] || ["실적 개선 가능성", "수급 개선", "산업 모멘텀 유입"];
+}
+
+function baseRisks(stock) {
+  return [
+    `${stock.sector} 밸류에이션 부담`,
+    "매크로 변동성(금리/환율)",
+    "단기 과열 후 조정 가능성"
+  ];
+}
+
+function makeAnalysis(stock) {
+  const seed = hashCode(stock.code + stock.name);
+  const dates = recent5Dates();
+
+  const foreignFlow = dates.map((_, i) => Math.round(seededRange(seed + 20 + i, -350, 1600)));
+  const instFlow = dates.map((_, i) => Math.round(seededRange(seed + 30 + i, -300, 1400)));
+  const foreignTotal = foreignFlow.reduce((a, b) => a + b, 0);
+  const instTotal = instFlow.reduce((a, b) => a + b, 0);
+
+  const scores = {
+    news: Math.round(seededRange(seed + 2, 52, 93)),
+    earnings: Math.round(seededRange(seed + 3, 48, 92)),
+    foreign: clamp(Math.round(50 + foreignTotal / 90), 20, 98),
+    institution: clamp(Math.round(50 + instTotal / 95), 20, 98),
+    industry: Math.round(seededRange(seed + 6, 55, 96)),
+    sentiment: Math.round(seededRange(seed + 7, 45, 91))
+  };
+
+  const catalyst = Math.round(
+    scores.news * 0.2 +
+      scores.earnings * 0.2 +
+      scores.foreign * 0.15 +
+      scores.institution * 0.15 +
+      scores.industry * 0.2 +
+      scores.sentiment * 0.1
+  );
+
+  const flowMomentum = (foreignTotal + instTotal) / 250;
+  const prob1m = clamp(Math.round(40 + catalyst * 0.35 + flowMomentum), 40, 85);
+  const prob3m = clamp(prob1m + Math.round(seededRange(seed + 8, 4, 12)), 45, 90);
+  const prob1y = clamp(prob3m + Math.round(seededRange(seed + 9, 5, 11)), 52, 95);
+
+  const highDiff = -Math.round(seededRange(seed + 10, 6, 29));
+  const currentPrice = buildBasePrice(seed);
+  const support = Math.round(currentPrice * seededRange(seed + 11, 0.88, 0.95));
+  const resistance = Math.round(currentPrice * seededRange(seed + 12, 1.05, 1.18));
+
+  const per = Number(seededRange(seed + 13, 8, 63).toFixed(1));
+  const pbr = Number(seededRange(seed + 14, 0.7, 12).toFixed(1));
+
+  const valuation = catalyst >= 84 ? "고평가" : catalyst >= 58 ? "적정" : "저평가";
+
+  const positiveSignalCount = [
+    scores.news >= 60,
+    foreignTotal + instTotal >= 0,
+    highDiff > -22,
+    scores.earnings >= 60
+  ].filter(Boolean).length;
+
+  const confidence = positiveSignalCount >= 4 ? 90 : positiveSignalCount >= 3 ? 75 : positiveSignalCount >= 2 ? 60 : 45;
+
+  let decision = "HOLD";
+  if (catalyst >= 70 && prob1m >= 60 && (foreignTotal > 0 || instTotal > 0)) {
+    decision = "BUY";
+  } else if (catalyst <= 50 || (valuation === "고평가" && foreignTotal + instTotal < 0)) {
+    decision = "SELL";
+  }
+
+  const reasons = baseReasons(stock);
+  const risks = baseRisks(stock);
+  const desc =
+    decision === "BUY"
+      ? `${stock.sector} 모멘텀과 수급 우위로 상승 확률이 유의미합니다.`
+      : decision === "SELL"
+      ? `점수와 수급이 약해 단기 리스크 관리가 우선입니다.`
+      : `추가 신호 확인 전 분할 접근이 유효한 구간입니다.`;
+
+  const triggerCount = [
+    scores.news >= 62,
+    Math.abs(foreignFlow[4]) > 600,
+    Math.abs(instFlow[4]) > 500,
+    prob1m >= 60,
+    highDiff >= -18,
+    scores.industry >= 68
+  ].filter(Boolean).length;
+
+  return {
+    stock,
+    currentPrice,
+    per,
+    pbr,
+    catalyst,
+    decision,
+    confidence,
+    reasons,
+    risks,
+    desc,
+    valuation,
+    probabilities: { m1: prob1m, m3: prob3m, y1: prob1y },
+    technical: { highDiff, support, resistance },
+    flow: { dates, foreign: foreignFlow, institution: instFlow, foreignTotal, instTotal },
+    scoreParts: scores,
+    triggerCount,
+    tomorrowProb: clamp(Math.round(prob1m + seededRange(seed + 41, 2, 8)), 48, 79),
+    marketCapEok: Math.round(seededRange(seed + 15, 30000, 5600000))
+  };
+}
+
+function scoreGrade(score) {
+  if (score >= 90) return "강한 상승 모멘텀";
   if (score >= 70) return "긍정적";
   if (score >= 50) return "중립";
   return "주의";
 }
 
-function findStock(query) {
-  const q = normalize(query);
-  return STOCKS.find((stock) => [stock.name, stock.ticker, ...(stock.aliases || [])].map(normalize).some((v) => v.includes(q)));
+function decisionClass(decision) {
+  if (decision === "BUY") return "buy";
+  if (decision === "SELL") return "sell";
+  return "hold";
 }
 
-function formatMarketcap(raw, currency) {
-  if (!raw || Number.isNaN(raw)) return "-";
-  if (currency === "KRW") return `${Math.round(raw / 1e8).toLocaleString("ko-KR")}억 원`;
-  const billions = raw / 1e9;
-  if (billions >= 1000) return `$${(billions / 1000).toFixed(2)}T`;
-  return `$${billions.toFixed(0)}B`;
-}
-
-function formatPrice(price, currency, ticker) {
-  if (price == null || Number.isNaN(price)) return "-";
-  if (ticker === "005930" || currency === "KRW") return `${Math.round(price).toLocaleString("ko-KR")}원`;
-  return `$${Number(price).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-}
-
-function formatShortDate(date) {
-  const yy = String(date.getFullYear()).slice(2);
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yy}.${mm}.${dd}`;
-}
-
-function keywordSentimentScore(items) {
-  const positive = ["surge", "beat", "growth", "record", "partnership", "rise", "강세", "증가", "확대", "성장", "호조"];
-  const negative = ["drop", "miss", "lawsuit", "cut", "fall", "약세", "감소", "우려", "하락", "부진"];
-  let score = 50;
-  items.forEach((n) => {
-    const t = normalize(n.title);
-    score += positive.filter((w) => t.includes(w)).length * 4;
-    score -= negative.filter((w) => t.includes(w)).length * 5;
-  });
-  return Math.max(0, Math.min(100, Math.round(score)));
+function getLogoUrl(stock) {
+  return `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
 }
 
 async function fetchGoogleNews(query) {
-  const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
-  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
+  const rss = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
+  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rss)}`;
   const res = await fetch(proxy);
-  if (!res.ok) throw new Error(`뉴스 조회 실패(${res.status})`);
+  if (!res.ok) throw new Error(`news error ${res.status}`);
   const xml = await res.text();
   const doc = new DOMParser().parseFromString(xml, "text/xml");
-  const nodes = Array.from(doc.querySelectorAll("item")).slice(0, 8);
-
-  return nodes.map((node) => ({
-    title: node.querySelector("title")?.textContent || "",
-    link: node.querySelector("link")?.textContent || "",
-    date: node.querySelector("pubDate")?.textContent || "",
+  return Array.from(doc.querySelectorAll("item")).slice(0, 6).map((item) => ({
+    title: item.querySelector("title")?.textContent || "",
+    link: item.querySelector("link")?.textContent || "",
+    date: item.querySelector("pubDate")?.textContent || ""
   }));
 }
 
-function fillList(el, items, mapper) {
-  el.innerHTML = "";
-  items.forEach((item) => {
-    const li = document.createElement("li");
-    li.innerHTML = mapper(item);
-    el.appendChild(li);
-  });
-}
+function renderTodayAndTomorrow(analyses) {
+  const today = [...analyses].sort((a, b) => b.catalyst - a.catalyst).slice(0, 5);
+  const tomorrow = [...analyses].sort((a, b) => b.tomorrowProb - a.tomorrowProb).slice(0, 10);
 
-function renderFlow(foreignBuy, institutionBuy) {
-  const today = new Date();
-  const rows = Array.from({ length: 5 }, (_, i) => ({
-    day: (() => {
-      const d = new Date(today);
-      d.setDate(today.getDate() - (4 - i));
-      return formatShortDate(d);
-    })(),
-    foreign: foreignBuy[i] ?? 0,
-    institution: institutionBuy[i] ?? 0,
-  }));
-
-  const maxAbs = Math.max(...rows.map((x) => Math.max(Math.abs(x.foreign), Math.abs(x.institution))), 1);
-
-  els.flowChart.innerHTML = "";
-  rows.forEach((row) => {
-    const fWidth = Math.round((Math.abs(row.foreign) / maxAbs) * 100);
-    const iWidth = Math.round((Math.abs(row.institution) / maxAbs) * 100);
-    const div = document.createElement("div");
-    div.className = "flow-row";
-    div.innerHTML = `
-      <strong>${row.day}</strong>
-      <div class="bar-wrap">
-        <div class="bar foreign"><span style="width:${fWidth}%"></span></div>
-        <small>외 ${row.foreign >= 0 ? "+" : ""}${row.foreign}억</small>
-        <div class="bar institution"><span style="width:${iWidth}%"></span></div>
-        <small>기 ${row.institution >= 0 ? "+" : ""}${row.institution}억</small>
+  els.todaySurgeList.innerHTML = today
+    .map((a, idx) => `
+      <div class="rank-item">
+        <div class="rank-top">
+          <span class="rank-name">${idx + 1}위 ${a.stock.name}</span>
+          <strong>${a.catalyst}</strong>
+        </div>
+        <div class="rank-meta">Catalyst Score ${a.catalyst} · AI Decision ${a.decision}</div>
       </div>
-    `;
-    els.flowChart.appendChild(div);
-  });
-}
+    `)
+    .join("");
 
-function renderBreakdown(score) {
-  const rows = [
-    ["뉴스 긍정도", score.news_score],
-    ["실적 성장률", score.earnings_score],
-    ["수급 점수", score.flow_score],
-    ["산업 성장성", score.industry_score],
-    ["투자 심리", score.sentiment_score],
-  ];
-
-  els.scoreBreakdown.innerHTML = rows
-    .map(([label, value]) => `<div><span>${label}</span><strong>${value ?? "-"}</strong></div>`)
+  els.tomorrowTop10.innerHTML = tomorrow
+    .map((a, idx) => `
+      <div class="rank-item">
+        <div class="rank-top">
+          <span class="rank-name">${idx + 1}. ${a.stock.name}</span>
+          <strong>${a.tomorrowProb}%</strong>
+        </div>
+        <div class="rank-meta">상승 확률 ${a.tomorrowProb}% · ${a.stock.code}</div>
+      </div>
+    `)
     .join("");
 }
 
-function makeStars(count) {
-  return `${"★".repeat(count)}${"☆".repeat(5 - count)}`;
+function renderSignals(analyses) {
+  const signalRows = analyses
+    .filter((a) => a.triggerCount >= 3)
+    .sort((a, b) => b.catalyst - a.catalyst)
+    .slice(0, 6)
+    .map((a) => `
+      <div class="feed-item">
+        <strong>${a.stock.name}</strong>
+        <div class="rank-meta">Signal ${a.triggerCount}개 충족 · ${a.catalyst}점 · ${a.decision}</div>
+      </div>
+    `)
+    .join("");
+
+  const popular = [...analyses]
+    .sort((a, b) => hashCode(b.stock.name) - hashCode(a.stock.name))
+    .slice(0, 10)
+    .map((a, i) => `
+      <div class="feed-item"><strong>${i + 1}. ${a.stock.name}</strong><div class="rank-meta">${a.stock.code}</div></div>
+    `)
+    .join("");
+
+  const themeMap = analyses.reduce((acc, cur) => {
+    if (!acc[cur.stock.theme]) acc[cur.stock.theme] = [];
+    acc[cur.stock.theme].push(cur.catalyst);
+    return acc;
+  }, {});
+
+  const themes = Object.entries(themeMap)
+    .map(([theme, values]) => ({ theme, avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length) }))
+    .sort((a, b) => b.avg - a.avg)
+    .slice(0, 5)
+    .map((t) => `<div class="feed-item"><strong>${t.theme} 테마</strong><div class="rank-meta">평균 Catalyst ${t.avg}</div></div>`)
+    .join("");
+
+  els.signalFeed.innerHTML = signalRows || `<div class="feed-item">현재 강한 신호 없음</div>`;
+  els.popularList.innerHTML = popular;
+  els.themeFeed.innerHTML = themes;
 }
 
-function buildLocalAnalysis(stock, newsItems) {
-  const seed = hashCode(stock.ticker + stock.name);
-  const newsScore = keywordSentimentScore(newsItems);
-  const earningsScore = Math.round(seededRange(seed + 3, 52, 93));
-  const flowScore = Math.round(seededRange(seed + 4, 45, 94));
-  const industryScore = Math.round(seededRange(seed + 5, 55, 96));
-  const sentimentScore = Math.round((newsScore + seededRange(seed + 6, 42, 95)) / 2);
+function renderScoreBreakdown(result) {
+  const map = [
+    ["뉴스 긍정도 20%", result.scoreParts.news],
+    ["실적 성장률 20%", result.scoreParts.earnings],
+    ["외국인 수급 15%", result.scoreParts.foreign],
+    ["기관 수급 15%", result.scoreParts.institution],
+    ["산업 성장성 20%", result.scoreParts.industry],
+    ["투자 심리 10%", result.scoreParts.sentiment]
+  ];
 
-  const total = Math.round(
-    newsScore * 0.28 + earningsScore * 0.2 + flowScore * 0.18 + industryScore * 0.2 + sentimentScore * 0.14
-  );
+  els.scoreBreakdown.innerHTML = map
+    .map(([label, v]) => `<div><span>${label}</span><strong>${v}</strong></div>`)
+    .join("");
+}
 
-  const highDiff = -Math.round(seededRange(seed + 7, 4, 27));
-  const support = Number((stock.price * seededRange(seed + 8, 0.86, 0.95)).toFixed(2));
-  const resistance = Number((stock.price * seededRange(seed + 9, 1.06, 1.18)).toFixed(2));
+function renderFlow(result) {
+  els.flowTable.innerHTML = result.flow.dates
+    .map((date, i) => `
+      <div class="flow-row">
+        <div class="flow-row-top"><span>${date}</span><span>${scoreGrade(result.catalyst)}</span></div>
+        <div class="flow-values">
+          <strong class="foreign">외국인 ${result.flow.foreign[i] >= 0 ? "+" : ""}${result.flow.foreign[i]}억</strong>
+          <strong class="inst">기관 ${result.flow.institution[i] >= 0 ? "+" : ""}${result.flow.institution[i]}억</strong>
+        </div>
+      </div>
+    `)
+    .join("");
+}
 
-  const foreign = Array.from({ length: 5 }, (_, i) => Math.round(seededRange(seed + 20 + i, -300, 1500)));
-  const institution = Array.from({ length: 5 }, (_, i) => Math.round(seededRange(seed + 30 + i, -250, 1200)));
+function renderList(el, items) {
+  el.innerHTML = items.map((x) => `<li>${x}</li>`).join("");
+}
 
-  return {
-    total,
-    score: { news_score: newsScore, earnings_score: earningsScore, flow_score: flowScore, industry_score: industryScore, sentiment_score: sentimentScore },
-    summary: `${stock.name}은(는) 최근 뉴스 모멘텀이 ${newsScore >= 70 ? "강한 편" : newsScore >= 55 ? "보통" : "약한 편"}이며, ${total >= 70 ? "중단기 긍정 관점" : "보수적 접근"}이 유효합니다.`,
-    highDiff,
-    support,
-    resistance,
-    foreign,
-    institution,
-    valuation: total >= 83 ? "고평가" : total >= 63 ? "적정" : "저평가",
-    styleFit: {
-      short: Math.round(seededRange(seed + 40, 1, 4)),
-      swing: Math.round(seededRange(seed + 41, 2, 5)),
-      long: Math.round(seededRange(seed + 42, 3, 5)),
-    },
-    interest: {
-      twitter: `+${Math.round(seededRange(seed + 50, 20, 170))}%`,
-      reddit: `+${Math.round(seededRange(seed + 51, 10, 140))}%`,
-      news: `+${Math.round(seededRange(seed + 52, 8, 90))}%`,
-      delta: `+${Math.round(seededRange(seed + 53, 20, 130))}%`,
-    },
+function renderDecision(result) {
+  els.companyLogo.src = getLogoUrl(result.stock);
+  els.companyLogo.alt = `${result.stock.name} 로고`;
+  els.companyLogo.onerror = () => {
+    els.companyLogo.src = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(result.stock.domain)}&sz=128`;
   };
+
+  els.companyName.textContent = result.stock.name;
+  els.companyCode.textContent = `${result.stock.code} · ${result.stock.market}`;
+
+  els.aiDecision.textContent = result.decision;
+  els.aiDecision.className = `decision ${decisionClass(result.decision)}`;
+  els.aiConfidence.textContent = `${result.confidence}%`;
+  els.catalystScore.textContent = `${result.catalyst} / 100`;
+
+  els.decisionDesc.textContent = result.desc;
+  renderList(els.buyReasons, result.reasons.slice(0, 3));
+  renderList(els.riskPoints, result.risks.slice(0, 3));
+
+  els.prob1m.textContent = `${result.probabilities.m1}%`;
+  els.prob3m.textContent = `${result.probabilities.m3}%`;
+  els.prob1y.textContent = `${result.probabilities.y1}%`;
+
+  renderFlow(result);
+
+  els.techHighDiff.textContent = `${result.technical.highDiff}%`;
+  els.techSupport.textContent = formatNumber(result.technical.support);
+  els.techResistance.textContent = formatNumber(result.technical.resistance);
+
+  els.valuationBadge.textContent = result.valuation;
+  els.valuationDesc.textContent = `PER ${result.per} · PBR ${result.pbr} · 시가총액 ${formatNumber(result.marketCapEok)}억`;
+
+  renderScoreBreakdown(result);
 }
 
-async function renderTodayPicks() {
-  const picks = ["NVDA", "TSLA", "AMD"].map((ticker) => {
-    const stock = findStock(ticker);
-    const analysis = buildLocalAnalysis(stock, []);
-    return { name: stock.name, ticker: stock.ticker, score: analysis.total };
-  }).sort((a, b) => b.score - a.score);
+function renderNews(news) {
+  const rows = news.length
+    ? news
+        .map((n) => `
+      <li>
+        <span><a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a></span>
+        <span class="rank-meta">${n.date ? new Date(n.date).toISOString().slice(0, 10) : "-"}</span>
+      </li>
+    `)
+        .join("")
+    : `<li><span>뉴스 수집 중입니다.</span><span class="rank-meta">-</span></li>`;
 
-  els.todayList.innerHTML = picks.map((item, idx) => `
-    <div class="today-item">
-      <p>${idx + 1}위 ${item.name}</p>
-      <p>${item.ticker}</p>
-      <p>Catalyst Score <strong>${item.score}</strong></p>
-    </div>
-  `).join("");
+  els.newsList.innerHTML = rows;
 }
 
-async function renderAnalysis(query) {
+async function searchAndRender(query) {
   const stock = findStock(query);
   if (!stock) {
-    els.summary.textContent = "일치하는 종목이 없습니다. 예: Tesla, NVDA, 삼성전자";
+    els.decisionDesc.textContent = "종목을 찾지 못했습니다. 예: 삼성전자, 005930";
     return;
   }
 
-  els.summary.textContent = "실제 뉴스 분석 중...";
+  const result = makeAnalysis(stock);
+  renderDecision(result);
+  renderNews([]);
 
-  let newsItems = [];
   try {
-    newsItems = await fetchGoogleNews(`${stock.name} ${stock.ticker}`);
+    const news = await fetchGoogleNews(`${stock.name} ${stock.code}`);
+    if (news.length) {
+      const sentimentScore = clamp(Math.round(result.scoreParts.news * 0.5 + news.length * 6), 35, 96);
+      result.scoreParts.news = sentimentScore;
+      result.catalyst = Math.round(
+        result.scoreParts.news * 0.2 +
+          result.scoreParts.earnings * 0.2 +
+          result.scoreParts.foreign * 0.15 +
+          result.scoreParts.institution * 0.15 +
+          result.scoreParts.industry * 0.2 +
+          result.scoreParts.sentiment * 0.1
+      );
+      renderDecision(result);
+    }
+    renderNews(news);
   } catch {
-    newsItems = [];
+    renderNews([]);
   }
-
-  const analysis = buildLocalAnalysis(stock, newsItems);
-
-  els.companyLogoImg.src = stock.logoUrl || `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
-  els.companyLogoImg.alt = `${stock.name} 로고`;
-  els.companyLogoImg.onerror = () => {
-    els.companyLogoImg.onerror = () => {
-      els.companyLogoImg.src = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(stock.domain)}&sz=128`;
-    };
-    els.companyLogoImg.src = `https://logo.clearbit.com/${encodeURIComponent(stock.domain)}`;
-  };
-  els.companyName.textContent = stock.name;
-  els.companyTicker.textContent = stock.ticker;
-  els.price.textContent = formatPrice(stock.price, stock.currency, stock.ticker);
-  els.marketcap.textContent = formatMarketcap(stock.marketcap, stock.currency);
-  els.per.textContent = (seededRange(hashCode(stock.ticker), 12, 72)).toFixed(1);
-  els.pbr.textContent = (seededRange(hashCode(stock.name), 1.1, 16)).toFixed(1);
-  els.sector.textContent = stock.sector;
-
-  els.summary.textContent = analysis.summary;
-
-  const bulls = newsItems.length ? newsItems.slice(0, 4) : [{ title: "실시간 뉴스 수집 중", link: "#", date: "" }];
-  fillList(els.bullList, bulls, (item) => `<span>${item.link && item.link !== "#" ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>` : item.title}</span><span class="list-date">${item.date ? new Date(item.date).toLocaleDateString("ko-KR") : "-"}</span>`);
-
-  fillList(els.growthList, [
-    `${stock.sector} 시장 확대 수혜`,
-    "데이터센터/클라우드 투자 확대",
-    "고부가 제품 믹스 개선",
-    "글로벌 파트너십 확장",
-  ], (text) => `<span>${text}</span>`);
-
-  fillList(els.riskList, [
-    "밸류에이션 부담 확대 가능성",
-    "거시 경기 둔화 시 수요 변동",
-    "경쟁사 기술 추격 리스크",
-  ], (text) => `<span>${text}</span>`);
-
-  renderFlow(analysis.foreign, analysis.institution);
-
-  els.tech52w.textContent = `${analysis.highDiff}%`;
-  els.techSupport.textContent = formatPrice(analysis.support, stock.currency, stock.ticker);
-  els.techResistance.textContent = formatPrice(analysis.resistance, stock.currency, stock.ticker);
-
-  els.valuationBadge.textContent = analysis.valuation;
-  els.valuationText.textContent = "동종 업계 대비 상대 밸류에이션 및 뉴스 모멘텀 기준입니다.";
-
-  els.viewList.innerHTML = `
-    <div class="view-item"><strong>단기</strong><span>이벤트/뉴스 모멘텀 대응</span></div>
-    <div class="view-item"><strong>중기</strong><span>실적 추세와 수급 확인</span></div>
-    <div class="view-item"><strong>장기</strong><span>산업 구조적 성장 수혜</span></div>
-  `;
-
-  els.styleFit.innerHTML = `
-    <div class="style-row"><span>단타</span><strong class="stars">${makeStars(analysis.styleFit.short)}</strong></div>
-    <div class="style-row"><span>스윙</span><strong class="stars">${makeStars(analysis.styleFit.swing)}</strong></div>
-    <div class="style-row"><span>장기 투자</span><strong class="stars">${makeStars(analysis.styleFit.long)}</strong></div>
-  `;
-
-  els.snsTwitter.textContent = analysis.interest.twitter;
-  els.snsReddit.textContent = analysis.interest.reddit;
-  els.snsNews.textContent = analysis.interest.news;
-  els.snsDelta.textContent = analysis.interest.delta;
-
-  const total = analysis.total;
-  els.catalystScore.textContent = total;
-  const grade = scoreLabel(total);
-  els.scoreGrade.textContent = grade;
-  els.scoreDesc.textContent = `실제 뉴스 기반 ${grade} 구간입니다.`;
-  renderBreakdown(analysis.score);
-
-  const circumference = 327;
-  els.ringFill.style.strokeDashoffset = String(circumference - (total / 100) * circumference);
-
-  els.alertBanner.textContent = total >= 80
-    ? `${stock.name} Catalyst Score ${total} 상승 - 알림 기준(80+) 충족`
-    : `${stock.name} Catalyst Score ${total} - 알림 기준(80+) 미충족`;
-
-  await renderTodayPicks();
 }
 
 function renderAutocomplete(keyword) {
@@ -351,62 +438,59 @@ function renderAutocomplete(keyword) {
     return;
   }
 
-  const items = STOCKS.filter((stock) => [stock.name, stock.ticker, ...(stock.aliases || [])].map(normalize).some((v) => v.includes(q))).slice(0, 10);
-
+  const items = STOCKS.filter((s) => [s.name, s.code].map(normalize).some((x) => x.includes(q))).slice(0, 8);
   if (!items.length) {
     els.autoList.classList.remove("active");
     els.autoList.innerHTML = "";
     return;
   }
 
-  els.autoList.innerHTML = items.map((s) => `<li data-value="${s.ticker}">${s.name} (${s.ticker})</li>`).join("");
+  els.autoList.innerHTML = items.map((s) => `<li data-key="${s.code}">${s.name} (${s.code})</li>`).join("");
   els.autoList.classList.add("active");
 }
 
 function initQuickTags() {
-  els.quickTags.innerHTML = QUICK_TAGS.map((tag) => `<button class="quick-tag" type="button" data-value="${tag}">${tag}</button>`).join("");
+  els.quickTags.innerHTML = QUICK_TAGS.map((q) => `<button type="button" data-q="${q}">${q}</button>`).join("");
 }
 
 function initEvents() {
   els.searchBtn.addEventListener("click", () => {
-    const q = els.input.value;
-    if (q) renderAnalysis(q);
+    searchAndRender(els.searchInput.value);
     els.autoList.classList.remove("active");
   });
 
-  els.input.addEventListener("keydown", (e) => {
+  els.searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      const q = els.input.value;
-      if (q) renderAnalysis(q);
+      searchAndRender(els.searchInput.value);
       els.autoList.classList.remove("active");
     }
   });
 
-  let autocompleteTimer = null;
-  els.input.addEventListener("input", () => {
-    clearTimeout(autocompleteTimer);
-    autocompleteTimer = setTimeout(() => renderAutocomplete(els.input.value), 150);
+  let timer = null;
+  els.searchInput.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => renderAutocomplete(els.searchInput.value), 140);
   });
 
   els.autoList.addEventListener("click", (e) => {
     const li = e.target.closest("li");
     if (!li) return;
-    const value = li.dataset.value;
-    els.input.value = value;
-    renderAnalysis(value);
+    const key = li.dataset.key;
+    els.searchInput.value = key;
+    searchAndRender(key);
     els.autoList.classList.remove("active");
   });
 
   els.quickTags.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
-    const value = btn.dataset.value;
-    els.input.value = value;
-    renderAnalysis(value);
+    const q = btn.dataset.q;
+    els.searchInput.value = q;
+    searchAndRender(q);
   });
 
   document.addEventListener("click", (e) => {
-    if (!els.autoList.contains(e.target) && e.target !== els.input) {
+    if (!els.autoList.contains(e.target) && e.target !== els.searchInput) {
       els.autoList.classList.remove("active");
     }
   });
@@ -415,19 +499,18 @@ function initEvents() {
 function initAdsense() {
   const config = window.APP_CONFIG || {};
   const adClient = config.adsenseClient;
-  const adSlots = config.adsenseSlots || ["0000000001", "0000000002"];
+  const adSlots = config.adsenseSlots || ["0000000101", "0000000102"];
   const adUnits = Array.from(document.querySelectorAll(".adsbygoogle"));
   const adCards = Array.from(document.querySelectorAll(".ad-card"));
 
   if (!adClient || !String(adClient).startsWith("ca-pub-")) {
-    adCards.forEach((card) => card.classList.add("not-configured"));
+    adCards.forEach((c) => c.classList.add("not-configured"));
     return;
   }
 
-  adUnits.forEach((el, idx) => {
-    const slot = adSlots[idx] || adSlots[0];
-    el.setAttribute("data-ad-client", adClient);
-    el.setAttribute("data-ad-slot", slot);
+  adUnits.forEach((unit, i) => {
+    unit.setAttribute("data-ad-client", adClient);
+    unit.setAttribute("data-ad-slot", adSlots[i] || adSlots[0]);
   });
 
   const script = document.createElement("script");
@@ -439,15 +522,21 @@ function initAdsense() {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch {
-        // ignore ad push errors to keep app usable
+        // ignore
       }
     });
   };
-
   document.head.appendChild(script);
+}
+
+function initHomeWidgets() {
+  const analyses = STOCKS.map(makeAnalysis);
+  renderTodayAndTomorrow(analyses);
+  renderSignals(analyses);
 }
 
 initQuickTags();
 initEvents();
+initHomeWidgets();
 initAdsense();
-renderAnalysis("NVDA");
+searchAndRender("005930");

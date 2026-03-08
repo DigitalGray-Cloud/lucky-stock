@@ -1,0 +1,355 @@
+{
+  "generated_at": "2026-03-08T08:01:22.872Z",
+  "top": [
+    {
+      "code": "020560",
+      "favor_score": 87,
+      "rank": 1,
+      "name": "아시아나항공",
+      "market": "KOSPI"
+    },
+    {
+      "code": "019570",
+      "favor_score": 86,
+      "rank": 2,
+      "name": "플루토스",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "006400",
+      "favor_score": 85,
+      "rank": 3,
+      "name": "삼성SDI",
+      "market": "KOSPI"
+    },
+    {
+      "code": "032980",
+      "favor_score": 85,
+      "rank": 4,
+      "name": "바이온",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "105330",
+      "favor_score": 85,
+      "rank": 5,
+      "name": "케이엔더블유",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "434480",
+      "favor_score": 85,
+      "rank": 6,
+      "name": "모니터랩",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "060150",
+      "favor_score": 84,
+      "rank": 7,
+      "name": "인선이엔티",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "064400",
+      "favor_score": 84,
+      "rank": 8,
+      "name": "LG씨엔에스",
+      "market": "KOSPI"
+    },
+    {
+      "code": "205500",
+      "favor_score": 84,
+      "rank": 9,
+      "name": "넥써쓰",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "317870",
+      "favor_score": 84,
+      "rank": 10,
+      "name": "엔바이오니아",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "003380",
+      "favor_score": 83,
+      "rank": 11,
+      "name": "하림지주",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "010100",
+      "favor_score": 83,
+      "rank": 12,
+      "name": "한국무브넥스",
+      "market": "KOSPI"
+    },
+    {
+      "code": "010640",
+      "favor_score": 83,
+      "rank": 13,
+      "name": "진양폴리우레탄",
+      "market": "KOSPI"
+    },
+    {
+      "code": "092780",
+      "favor_score": 83,
+      "rank": 14,
+      "name": "DYP",
+      "market": "KOSPI"
+    },
+    {
+      "code": "023910",
+      "favor_score": 82,
+      "rank": 15,
+      "name": "대한약품",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "025620",
+      "favor_score": 82,
+      "rank": 16,
+      "name": "차AI헬스케어",
+      "market": "KOSPI"
+    },
+    {
+      "code": "032750",
+      "favor_score": 82,
+      "rank": 17,
+      "name": "삼진",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "070300",
+      "favor_score": 82,
+      "rank": 18,
+      "name": "엑스큐어",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "095720",
+      "favor_score": 82,
+      "rank": 19,
+      "name": "웅진씽크빅",
+      "market": "KOSPI"
+    },
+    {
+      "code": "131030",
+      "favor_score": 82,
+      "rank": 20,
+      "name": "옵투스제약",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "222080",
+      "favor_score": 82,
+      "rank": 21,
+      "name": "씨아이에스",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "306620",
+      "favor_score": 82,
+      "rank": 22,
+      "name": "지아이에스",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "000080",
+      "favor_score": 81,
+      "rank": 23,
+      "name": "하이트진로",
+      "market": "KOSPI"
+    },
+    {
+      "code": "000660",
+      "favor_score": 81,
+      "rank": 24,
+      "name": "SK하이닉스",
+      "market": "KOSPI"
+    },
+    {
+      "code": "005180",
+      "favor_score": 81,
+      "rank": 25,
+      "name": "빙그레",
+      "market": "KOSPI"
+    },
+    {
+      "code": "006920",
+      "favor_score": 81,
+      "rank": 26,
+      "name": "모헨즈",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "018500",
+      "favor_score": 81,
+      "rank": 27,
+      "name": "동원금속",
+      "market": "KOSPI"
+    },
+    {
+      "code": "020150",
+      "favor_score": 81,
+      "rank": 28,
+      "name": "롯데에너지머티리얼즈",
+      "market": "KOSPI"
+    },
+    {
+      "code": "052600",
+      "favor_score": 81,
+      "rank": 29,
+      "name": "한네트",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "064520",
+      "favor_score": 81,
+      "rank": 30,
+      "name": "테크엘",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "079950",
+      "favor_score": 81,
+      "rank": 31,
+      "name": "인베니아",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "079970",
+      "favor_score": 81,
+      "rank": 32,
+      "name": "투비소프트",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "086710",
+      "favor_score": 81,
+      "rank": 33,
+      "name": "선진뷰티사이언스",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "092220",
+      "favor_score": 81,
+      "rank": 34,
+      "name": "KEC",
+      "market": "KOSPI"
+    },
+    {
+      "code": "108860",
+      "favor_score": 81,
+      "rank": 35,
+      "name": "셀바스AI",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "173130",
+      "favor_score": 81,
+      "rank": 36,
+      "name": "오파스넷",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "196700",
+      "favor_score": 81,
+      "rank": 37,
+      "name": "웹스",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "250000",
+      "favor_score": 81,
+      "rank": 38,
+      "name": "보라티알",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "290550",
+      "favor_score": 81,
+      "rank": 39,
+      "name": "디케이티",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "000890",
+      "favor_score": 80,
+      "rank": 40,
+      "name": "보해양조",
+      "market": "KOSPI"
+    },
+    {
+      "code": "016090",
+      "favor_score": 80,
+      "rank": 41,
+      "name": "대현",
+      "market": "KOSPI"
+    },
+    {
+      "code": "059090",
+      "favor_score": 80,
+      "rank": 42,
+      "name": "미코",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "085310",
+      "favor_score": 80,
+      "rank": 43,
+      "name": "엔케이",
+      "market": "KOSPI"
+    },
+    {
+      "code": "085620",
+      "favor_score": 80,
+      "rank": 44,
+      "name": "미래에셋생명",
+      "market": "KOSPI"
+    },
+    {
+      "code": "101490",
+      "favor_score": 80,
+      "rank": 45,
+      "name": "에스앤에스텍",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "122310",
+      "favor_score": 80,
+      "rank": 46,
+      "name": "제노레이",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "131220",
+      "favor_score": 80,
+      "rank": 47,
+      "name": "대한과학",
+      "market": "KOSDAQ"
+    },
+    {
+      "code": "213500",
+      "favor_score": 80,
+      "rank": 48,
+      "name": "한솔제지",
+      "market": "KOSPI"
+    },
+    {
+      "code": "214320",
+      "favor_score": 80,
+      "rank": 49,
+      "name": "이노션",
+      "market": "KOSPI"
+    },
+    {
+      "code": "271560",
+      "favor_score": 80,
+      "rank": 50,
+      "name": "오리온",
+      "market": "KOSPI"
+    }
+  ]
+}

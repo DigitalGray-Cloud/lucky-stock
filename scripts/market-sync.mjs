@@ -27,15 +27,12 @@ function isMarketOpenKst() {
   return hm >= 900 && hm <= 1530;
 }
 
-function runBatch() {
+function runNode(scriptPath) {
   return new Promise((resolve, reject) => {
-    const p = spawn("node", ["scripts/build-stock-master.mjs"], {
-      stdio: "inherit"
-    });
-
+    const p = spawn("node", [scriptPath], { stdio: "inherit" });
     p.on("exit", (code) => {
       if (code === 0) resolve();
-      else reject(new Error(`build-stock-master exit=${code}`));
+      else reject(new Error(`${scriptPath} exit=${code}`));
     });
   });
 }
@@ -46,8 +43,12 @@ async function main() {
     return;
   }
 
-  console.log("[market-sync] running build-stock-master (KST market hours)");
-  await runBatch();
+  console.log("[market-sync] step1: prices sync");
+  await runNode("scripts/build-stock-master.mjs");
+
+  console.log("[market-sync] step2: analysis/ranking cache build");
+  await runNode("scripts/build-ui-cache.mjs");
+
   console.log("[market-sync] done");
 }
 

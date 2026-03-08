@@ -46,6 +46,31 @@ const els = {
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 
+const cacheState = {
+  loaded: false,
+  autocomplete: [],
+  analysisMap: {},
+  top: [],
+  recent: []
+};
+
+async function loadStaticCache() {
+  if (cacheState.loaded) return cacheState;
+  const [ac, amap, top, recent] = await Promise.all([
+    fetch('/data/ui_autocomplete.json').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch('/data/ui_analysis_map.json').then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
+    fetch('/data/ui_top_stocks.json').then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
+    fetch('/data/ui_recent_analysis.json').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
+  ]);
+
+  cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
+  cacheState.analysisMap = amap.map || {};
+  cacheState.top = Array.isArray(top.top) ? top.top : [];
+  cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
+  cacheState.loaded = true;
+  return cacheState;
+}
+
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
 }
@@ -205,8 +230,14 @@ async function resolveStockByQuery(query) {
     return { code: q, name: q, market: "KOSPI/KOSDAQ" };
   }
 
-  const ac = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
-  const items = Array.isArray(ac?.items) ? ac.items : [];
+  let items = [];
+  try {
+    const ac = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
+    items = Array.isArray(ac?.items) ? ac.items : [];
+  } catch {
+    const cache = await loadStaticCache();
+    items = cache.autocomplete.filter((x) => normalize(x.name).includes(normalize(q)) || String(x.code || "").includes(q)).slice(0, AUTO_COMPLETE_LIMIT);
+  }
   if (!items.length) return null;
 
   const exact = items.find((x) => normalize(x.name) === normalize(q));
@@ -231,7 +262,14 @@ async function searchAndRender(query) {
       return;
     }
 
-    const data = await apiGet(`/api/analyze?code=${encodeURIComponent(stock.code)}`);
+    let data;
+    try {
+      data = await apiGet(`/api/analyze?code=${encodeURIComponent(stock.code)}`);
+    } catch {
+      const cache = await loadStaticCache();
+      data = cache.analysisMap[stock.code];
+      if (!data) throw new Error("analysis_cache_miss");
+    }
     showResultPanel();
     updateResultUrl(stock.code);
     renderDecisionFromApi(data, stock);
@@ -253,10 +291,17 @@ async function renderAutocomplete(keyword) {
 
   const currentSeq = ++autoCompleteSeq;
   try {
-    const data = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
+    let items = [];
+    try {
+      const data = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
+      items = Array.isArray(data?.items) ? data.items : [];
+    } catch {
+      const cache = await loadStaticCache();
+      items = cache.autocomplete.filter((x) => normalize(x.name).includes(q) || String(x.code || "").includes(q));
+    }
     if (currentSeq !== autoCompleteSeq) return;
 
-    const items = (Array.isArray(data?.items) ? data.items : []).slice(0, AUTO_COMPLETE_LIMIT);
+    items = items.slice(0, AUTO_COMPLETE_LIMIT);
     if (!items.length) {
       els.autoList.classList.remove("active");
       els.autoList.innerHTML = "";
@@ -282,8 +327,14 @@ async function initHomeWidgets() {
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
 
   try {
-    const top = await apiGet("/api/top-stocks?limit=10");
-    const items = Array.isArray(top?.top) ? top.top : [];
+    let items = [];
+    try {
+      const top = await apiGet("/api/top-stocks?limit=10");
+      items = Array.isArray(top?.top) ? top.top : [];
+    } catch {
+      const cache = await loadStaticCache();
+      items = cache.top.slice(0, 10);
+    }
 
     const top5 = items.slice(0, 5);
     els.todaySurgeList.innerHTML = top5.map((a, idx) => `

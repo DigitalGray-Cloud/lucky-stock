@@ -1,37 +1,101 @@
-# LuckyStock AI
+# LuckyStock Backend (Production Spec)
 
-AI 한국 주식 투자 판단 엔진.
+LuckyStock 백엔드는 한국 주식 분석 API, DB 스키마, 배치 워커를 포함합니다.
 
-- 프로덕션: https://luckystock.pages.dev
-- 배포 플랫폼: Cloudflare Pages
-- 타깃: KOSPI, KOSDAQ
+## Architecture
 
-## 핵심 UX
+- Frontend: Cloudflare Pages (정적 페이지)
+- Backend API: Node.js + Express
+- Database: PostgreSQL
+- AI Analysis: OpenAI API
+- Batch Worker: Node.js scripts + Cron
 
-검색하면 3초 내 아래 순서로 결과 제공:
+## Core Features
 
-1. AI Decision (BUY/HOLD/SELL)
-2. 지금 사는 이유
-3. 주의 사항
-4. 상승 확률 (1M/3M/1Y)
-5. 외국인·기관 수급 (최근 5일)
-6. 기술적 분석
-7. 밸류에이션
+- `GET /api/analyze?code=005930`
+- `GET /api/top-stocks`
+- `GET /api/recent-analysis`
+- `GET /api/health`
+- `GET /api/db-status`
+- `GET /api/autocomplete?q=삼성`
 
-## 점수 체계
+## Analysis Cache Policy
 
-Catalyst Score (0~100):
+- `analysis_cache = 24시간`
+- 분석 데이터(`stock_analysis.updated_at`)가 24시간 이내면 DB 캐시 즉시 반환
+- 24시간 초과 시 OpenAI 재분석 후 저장
 
-- 뉴스 긍정도 20%
-- 실적 성장률 20%
-- 외국인 수급 15%
-- 기관 수급 15%
-- 산업 성장성 20%
-- 투자 심리 10%
+## Environment Variables
 
-## AdSense 적용 원칙
+`.env` 파일 예시:
 
-- 광고/콘텐츠 명확 구분(광고 라벨 표시)
-- 콘텐츠 우선, 광고 후순위 배치
-- 과도한 광고 밀도/오해 유도 배치 금지
+```bash
+PORT=8787
+DATABASE_URL=postgres://user:password@localhost:5432/luckystock
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4.1-mini
+ANALYSIS_CACHE_HOURS=24
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX=60
+PGSSL=disable
+```
 
+## Install & Run
+
+```bash
+npm install
+npm run migrate
+npm run batch:stocks
+npm run batch:daily
+npm run batch:ranking
+npm start
+```
+
+## Database Schema
+
+마이그레이션 파일: `sql/001_init.sql`
+
+- `stocks`
+- `stock_analysis`
+- `stock_ranking`
+- `batch_runs`
+
+## Batch Jobs
+
+- Daily 00:10: `npm run batch:stocks`
+- Market hours sync (every 10m): `npm run batch:market-sync`
+- Daily 00:30: `npm run batch:daily`
+- Hourly: `npm run batch:ranking`
+
+예시 crontab:
+
+```cron
+10 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:stocks >> /var/log/luckystock-stocks.log 2>&1
+*/10 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:market-sync >> /var/log/luckystock-market-sync.log 2>&1
+30 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:daily >> /var/log/luckystock-daily.log 2>&1
+0 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:ranking >> /var/log/luckystock-ranking.log 2>&1
+```
+
+`batch:market-sync`는 내부에서 KST 기준 평일 09:00~15:30만 실행하고, 그 외 시간은 자동 skip 합니다.
+
+## API Examples
+
+### Analyze
+
+`GET /api/analyze?code=005930`
+
+```json
+{
+  "code": "005930",
+  "summary": "AI 반도체 시장 성장 수혜 기업",
+  "favor_score": 82,
+  "signal": "상승 가능",
+  "bull_points": ["...", "...", "..."],
+  "future_outlook": "...",
+  "risk": "...",
+  "foreign_flow": "...",
+  "updated_at": "2026-03-08T07:30:00.000Z",
+  "cache_hit": true,
+  "analysis_source": "cache"
+}
+```

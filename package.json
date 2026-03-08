@@ -1,0 +1,24 @@
+{
+  "name": "luckystock-backend",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "migrate": "node scripts/migrate.mjs",
+    "batch:stocks": "node scripts/sync-stocks.mjs",
+    "batch:prices": "node scripts/build-stock-master.mjs",
+    "batch:market-sync": "node scripts/market-sync.mjs",
+    "batch:daily": "node scripts/run-daily-analysis.mjs",
+    "batch:ranking": "node scripts/run-ranking-batch.mjs",
+    "db:status": "node scripts/db-status.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "iconv-lite": "^0.7.2",
+    "pg": "^8.16.3"
+  }
+}

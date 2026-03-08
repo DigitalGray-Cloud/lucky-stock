@@ -139,9 +139,10 @@ function decisionClass(signal) {
   return "hold";
 }
 
-function getLogoUrl(code, name = "") {
+function getLogoUrl(code, name = "", explicit = "") {
+  if (explicit) return explicit;
   if (/^\d{6}$/.test(String(code || ""))) {
-    return `https://static.toss.im/png-icons/securities/icn-sec-fill-${code}.png`;
+    return `/data/logos/${code}.png`;
   }
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || code || "stock")}&background=0B1F3A&color=ffffff&rounded=true&size=128`;
 }
@@ -167,16 +168,17 @@ function renderDecisionFromApi(data, stockMeta = {}) {
   const name = stockMeta.name || code;
   const market = stockMeta.market || "KOSPI/KOSDAQ";
   const favor = Number(data.favor_score || 0);
+  const price = Number(data.close_price ?? stockMeta.close_price ?? 0) || null;
   const d = makeDerivedMetrics(code, favor);
 
-  els.companyLogo.src = getLogoUrl(code, name);
+  els.companyLogo.src = getLogoUrl(code, name, data.logo_url || stockMeta.logo_url || "");
   els.companyLogo.alt = `${name} 로고`;
   els.companyLogo.onerror = () => {
     els.companyLogo.src = getLogoUrl("", name);
   };
 
   els.companyName.textContent = name;
-  els.companyCode.textContent = `${code} · ${market}`;
+  els.companyCode.textContent = `${code} · ${market}${price ? ` · ${formatNumber(price)}원` : ""}`;
 
   els.aiDecision.textContent = data.signal;
   els.aiDecision.className = `decision ${decisionClass(data.signal)}`;
@@ -245,7 +247,9 @@ async function resolveStockByQuery(query) {
   return {
     code: String(pick.code || ""),
     name: String(pick.name || pick.code || ""),
-    market: String(pick.market || "KOSPI/KOSDAQ")
+    market: String(pick.market || "KOSPI/KOSDAQ"),
+    close_price: Number(pick.close_price || 0) || null,
+    logo_url: String(pick.logo_url || "")
   };
 }
 
@@ -339,24 +343,48 @@ async function initHomeWidgets() {
     const top5 = items.slice(0, 5);
     els.todaySurgeList.innerHTML = top5.map((a, idx) => `
       <div class="rank-item clickable" data-code="${a.code}">
-        <div class="rank-top"><span class="rank-name">${idx + 1}위 ${a.name || a.code}</span><strong>${a.favor_score}점</strong></div>
-        <div class="rank-meta">${a.code} · ${a.market || "-"}</div>
+        <div class="rank-top">
+          <div class="rank-row">
+            <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+            <span class="rank-name">${idx + 1}위 ${a.name || a.code}</span>
+          </div>
+          <strong>${a.favor_score}점</strong>
+        </div>
+        <div class="rank-meta">${a.code} · ${a.market || "-"}${a.close_price ? ` · ${formatNumber(a.close_price)}원` : ""}</div>
       </div>
     `).join("");
 
     els.tomorrowTop10.innerHTML = items.map((a, idx) => `
       <div class="rank-item clickable" data-code="${a.code}">
-        <div class="rank-top"><span class="rank-name">${idx + 1}. ${a.name || a.code}</span><strong>${a.favor_score}점</strong></div>
-        <div class="rank-meta">rank ${a.rank}</div>
+        <div class="rank-top">
+          <div class="rank-row">
+            <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+            <span class="rank-name">${idx + 1}. ${a.name || a.code}</span>
+          </div>
+          <strong>${a.favor_score}점</strong>
+        </div>
+        <div class="rank-meta">rank ${a.rank}${a.close_price ? ` · ${formatNumber(a.close_price)}원` : ""}</div>
       </div>
     `).join("");
 
     els.signalFeed.innerHTML = items.slice(0, 6).map((a) => `
-      <div class="feed-item clickable" data-code="${a.code}"><strong>${a.name || a.code}</strong><div class="rank-meta">Signal · ${a.favor_score}점</div></div>
+      <div class="feed-item clickable" data-code="${a.code}">
+        <div class="rank-row">
+          <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+          <strong>${a.name || a.code}</strong>
+        </div>
+        <div class="rank-meta">Signal · ${a.favor_score}점${a.close_price ? ` · ${formatNumber(a.close_price)}원` : ""}</div>
+      </div>
     `).join("");
 
     els.popularList.innerHTML = items.slice(0, 10).map((a, i) => `
-      <div class="feed-item clickable" data-code="${a.code}"><strong>${i + 1}. ${a.name || a.code}</strong><div class="rank-meta">${a.code}</div></div>
+      <div class="feed-item clickable" data-code="${a.code}">
+        <div class="rank-row">
+          <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+          <strong>${i + 1}. ${a.name || a.code}</strong>
+        </div>
+        <div class="rank-meta">${a.code}${a.close_price ? ` · ${formatNumber(a.close_price)}원` : ""}</div>
+      </div>
     `).join("");
 
     els.themeFeed.innerHTML = `<div class="feed-item"><strong>DB 기반 추천 활성</strong><div class="rank-meta">랭킹 데이터 ${items.length}건</div></div>`;

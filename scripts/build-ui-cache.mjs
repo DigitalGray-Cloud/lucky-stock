@@ -94,7 +94,7 @@ function buildAnalysis(stock) {
 }
 
 const stocks = db
-  .prepare("SELECT code, name, market, close_price FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
+  .prepare("SELECT code, name, market, close_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
   .all();
 
 const now = new Date().toISOString();
@@ -136,7 +136,9 @@ const top = ordered.slice(0, 50).map((r, i) => ({
   favor_score: r.favor_score,
   rank: i + 1,
   name: names.get(r.code)?.name || r.code,
-  market: names.get(r.code)?.market || '-'
+  market: names.get(r.code)?.market || '-',
+  close_price: names.get(r.code)?.close_price ?? null,
+  logo_url: names.get(r.code)?.logo_url || null
 }));
 
 const recent = ordered.slice(0, 100).map((r) => {
@@ -147,6 +149,8 @@ const recent = ordered.slice(0, 100).map((r) => {
     summary: a?.summary || '',
     favor_score: r.favor_score,
     signal: a?.signal || '중립',
+    close_price: names.get(r.code)?.close_price ?? null,
+    logo_url: names.get(r.code)?.logo_url || null,
     updated_at: now
   };
 });
@@ -163,6 +167,8 @@ const analysisMap = Object.fromEntries(
       future_outlook: a.future_outlook,
       risk: a.risk,
       foreign_flow: a.foreign_flow,
+      close_price: names.get(a.code)?.close_price ?? null,
+      logo_url: names.get(a.code)?.logo_url || null,
       updated_at: now,
       cache_hit: true,
       analysis_source: 'sqlite_batch'
@@ -170,7 +176,13 @@ const analysisMap = Object.fromEntries(
   ])
 );
 
-const autocomplete = stocks.map((s) => ({ code: s.code, name: s.name, market: s.market }));
+const autocomplete = stocks.map((s) => ({
+  code: s.code,
+  name: s.name,
+  market: s.market,
+  close_price: s.close_price ?? null,
+  logo_url: s.logo_url || null
+}));
 
 fs.writeFileSync(path.join(OUT_DIR, 'ui_top_stocks.json'), JSON.stringify({ generated_at: now, top }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_recent_analysis.json'), JSON.stringify({ generated_at: now, items: recent }, null, 2));

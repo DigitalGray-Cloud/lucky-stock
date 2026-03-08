@@ -9,6 +9,7 @@
     "migrate": "node scripts/migrate.mjs",
     "batch:stocks": "node scripts/sync-stocks.mjs",
     "batch:prices": "node scripts/build-stock-master.mjs",
+    "batch:logos": "node scripts/build-stock-logos.mjs",
     "batch:cache": "node scripts/build-ui-cache.mjs",
     "batch:market-sync": "node scripts/market-sync.mjs",
     "batch:daily": "node scripts/run-daily-analysis.mjs",

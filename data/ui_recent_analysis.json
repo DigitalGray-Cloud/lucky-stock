@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-08T08:01:22.872Z",
+  "generated_at": "2026-03-08T08:14:32.694Z",
   "items": [
     {
       "code": "020560",
@@ -7,7 +7,9 @@
       "summary": "아시아나항공(020560)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 87,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 7050,
+      "logo_url": "/data/logos/020560.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "019570",
@@ -15,7 +17,9 @@
       "summary": "플루토스(019570)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 86,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 351,
+      "logo_url": "/data/logos/019570.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "006400",
@@ -23,7 +27,9 @@
       "summary": "삼성SDI(006400)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 85,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 410500,
+      "logo_url": "/data/logos/006400.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "032980",
@@ -31,7 +37,9 @@
       "summary": "바이온(032980)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 85,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 604,
+      "logo_url": "/data/logos/032980.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "105330",
@@ -39,7 +47,9 @@
       "summary": "케이엔더블유(105330)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 85,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 6250,
+      "logo_url": "/data/logos/105330.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "434480",
@@ -47,7 +57,9 @@
       "summary": "모니터랩(434480)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 85,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 3470,
+      "logo_url": "/data/logos/434480.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "060150",
@@ -55,7 +67,9 @@
       "summary": "인선이엔티(060150)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 84,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4095,
+      "logo_url": "/data/logos/060150.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "064400",
@@ -63,7 +77,9 @@
       "summary": "LG씨엔에스(064400)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 84,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 64900,
+      "logo_url": "/data/logos/064400.svg",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "205500",
@@ -71,7 +87,9 @@
       "summary": "넥써쓰(205500)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 84,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1577,
+      "logo_url": "/data/logos/205500.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "317870",
@@ -79,7 +97,9 @@
       "summary": "엔바이오니아(317870)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 84,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 9130,
+      "logo_url": "/data/logos/317870.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "003380",
@@ -87,7 +107,9 @@
       "summary": "하림지주(003380)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 83,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 16100,
+      "logo_url": "/data/logos/003380.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "010100",
@@ -95,7 +117,9 @@
       "summary": "한국무브넥스(010100)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 83,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4680,
+      "logo_url": "/data/logos/010100.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "010640",
@@ -103,7 +127,9 @@
       "summary": "진양폴리우레탄(010640)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 83,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2570,
+      "logo_url": "/data/logos/010640.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "092780",
@@ -111,7 +137,9 @@
       "summary": "DYP(092780)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 83,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4610,
+      "logo_url": "/data/logos/092780.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "023910",
@@ -119,7 +147,9 @@
       "summary": "대한약품(023910)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 29400,
+      "logo_url": "/data/logos/023910.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "025620",
@@ -127,7 +157,9 @@
       "summary": "차AI헬스케어(025620)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 9570,
+      "logo_url": "/data/logos/025620.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "032750",
@@ -135,7 +167,9 @@
       "summary": "삼진(032750)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 3320,
+      "logo_url": "/data/logos/032750.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "070300",
@@ -143,7 +177,9 @@
       "summary": "엑스큐어(070300)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1527,
+      "logo_url": "/data/logos/070300.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "095720",
@@ -151,7 +187,9 @@
       "summary": "웅진씽크빅(095720)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1063,
+      "logo_url": "/data/logos/095720.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "131030",
@@ -159,7 +197,9 @@
       "summary": "옵투스제약(131030)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 10560,
+      "logo_url": "/data/logos/131030.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "222080",
@@ -167,7 +207,9 @@
       "summary": "씨아이에스(222080)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 15100,
+      "logo_url": "/data/logos/222080.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "306620",
@@ -175,7 +217,9 @@
       "summary": "지아이에스(306620)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 82,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2800,
+      "logo_url": "/data/logos/306620.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000080",
@@ -183,7 +227,9 @@
       "summary": "하이트진로(000080)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 16430,
+      "logo_url": "/data/logos/000080.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000660",
@@ -191,7 +237,9 @@
       "summary": "SK하이닉스(000660)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 924000,
+      "logo_url": "/data/logos/000660.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "005180",
@@ -199,7 +247,9 @@
       "summary": "빙그레(005180)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 76400,
+      "logo_url": "/data/logos/005180.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "006920",
@@ -207,7 +257,9 @@
       "summary": "모헨즈(006920)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5620,
+      "logo_url": "/data/logos/006920.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "018500",
@@ -215,7 +267,9 @@
       "summary": "동원금속(018500)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1505,
+      "logo_url": "/data/logos/018500.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "020150",
@@ -223,7 +277,9 @@
       "summary": "롯데에너지머티리얼즈(020150)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 41000,
+      "logo_url": "/data/logos/020150.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "052600",
@@ -231,7 +287,9 @@
       "summary": "한네트(052600)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 3275,
+      "logo_url": "/data/logos/052600.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "064520",
@@ -239,7 +297,9 @@
       "summary": "테크엘(064520)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1620,
+      "logo_url": "/data/logos/064520.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "079950",
@@ -247,7 +307,9 @@
       "summary": "인베니아(079950)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1221,
+      "logo_url": "/data/logos/079950.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "079970",
@@ -255,7 +317,9 @@
       "summary": "투비소프트(079970)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 596,
+      "logo_url": "/data/logos/079970.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "086710",
@@ -263,7 +327,9 @@
       "summary": "선진뷰티사이언스(086710)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 9020,
+      "logo_url": "/data/logos/086710.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "092220",
@@ -271,7 +337,9 @@
       "summary": "KEC(092220)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1398,
+      "logo_url": "/data/logos/092220.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "108860",
@@ -279,7 +347,9 @@
       "summary": "셀바스AI(108860)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 10230,
+      "logo_url": "/data/logos/108860.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "173130",
@@ -287,7 +357,9 @@
       "summary": "오파스넷(173130)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 7250,
+      "logo_url": "/data/logos/173130.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "196700",
@@ -295,7 +367,9 @@
       "summary": "웹스(196700)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2540,
+      "logo_url": "/data/logos/196700.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "250000",
@@ -303,7 +377,9 @@
       "summary": "보라티알(250000)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 7960,
+      "logo_url": "/data/logos/250000.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "290550",
@@ -311,7 +387,9 @@
       "summary": "디케이티(290550)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 81,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 14680,
+      "logo_url": "/data/logos/290550.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000890",
@@ -319,7 +397,9 @@
       "summary": "보해양조(000890)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 464,
+      "logo_url": "/data/logos/000890.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "016090",
@@ -327,7 +407,9 @@
       "summary": "대현(016090)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1665,
+      "logo_url": "/data/logos/016090.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "059090",
@@ -335,7 +417,9 @@
       "summary": "미코(059090)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 15080,
+      "logo_url": "/data/logos/059090.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "085310",
@@ -343,7 +427,9 @@
       "summary": "엔케이(085310)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1013,
+      "logo_url": "/data/logos/085310.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "085620",
@@ -351,7 +437,9 @@
       "summary": "미래에셋생명(085620)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 14570,
+      "logo_url": "/data/logos/085620.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "101490",
@@ -359,7 +447,9 @@
       "summary": "에스앤에스텍(101490)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 93700,
+      "logo_url": "/data/logos/101490.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "122310",
@@ -367,7 +457,9 @@
       "summary": "제노레이(122310)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4070,
+      "logo_url": "/data/logos/122310.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "131220",
@@ -375,7 +467,9 @@
       "summary": "대한과학(131220)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4520,
+      "logo_url": "/data/logos/131220.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "213500",
@@ -383,7 +477,9 @@
       "summary": "한솔제지(213500)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 8350,
+      "logo_url": "/data/logos/213500.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "214320",
@@ -391,7 +487,9 @@
       "summary": "이노션(214320)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 19300,
+      "logo_url": "/data/logos/214320.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "271560",
@@ -399,7 +497,9 @@
       "summary": "오리온(271560)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 126500,
+      "logo_url": "/data/logos/271560.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "417970",
@@ -407,7 +507,9 @@
       "summary": "모델솔루션(417970)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 80,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 18900,
+      "logo_url": "/data/logos/417970.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000240",
@@ -415,7 +517,9 @@
       "summary": "한국앤컴퍼니(000240)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 26000,
+      "logo_url": "/data/logos/000240.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "001200",
@@ -423,7 +527,9 @@
       "summary": "유진증권(001200)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4970,
+      "logo_url": "/data/logos/001200.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "001450",
@@ -431,7 +537,9 @@
       "summary": "현대해상(001450)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 30850,
+      "logo_url": "/data/logos/001450.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "001770",
@@ -439,7 +547,9 @@
       "summary": "SHD(001770)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 16940,
+      "logo_url": "/data/logos/001770.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "003000",
@@ -447,7 +557,9 @@
       "summary": "부광약품(003000)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5140,
+      "logo_url": "/data/logos/003000.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "006490",
@@ -455,7 +567,9 @@
       "summary": "인스코비(006490)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 457,
+      "logo_url": "/data/logos/006490.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "007070",
@@ -463,7 +577,9 @@
       "summary": "GS리테일(007070)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 18770,
+      "logo_url": "/data/logos/007070.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "007210",
@@ -471,7 +587,9 @@
       "summary": "벽산(007210)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1880,
+      "logo_url": "/data/logos/007210.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "009290",
@@ -479,7 +597,9 @@
       "summary": "광동제약(009290)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 8820,
+      "logo_url": "/data/logos/009290.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "033780",
@@ -487,7 +607,9 @@
       "summary": "케이티앤지(033780)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 154700,
+      "logo_url": "/data/logos/033780.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "078930",
@@ -495,7 +617,9 @@
       "summary": "GS(078930)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 65600,
+      "logo_url": "/data/logos/078930.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "084440",
@@ -503,7 +627,9 @@
       "summary": "유비온(084440)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 954,
+      "logo_url": "/data/logos/084440.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "107590",
@@ -511,7 +637,9 @@
       "summary": "미원홀딩스(107590)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 67000,
+      "logo_url": "/data/logos/107590.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "119650",
@@ -519,7 +647,9 @@
       "summary": "KC코트렐(119650)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 918,
+      "logo_url": "/data/logos/119650.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "122990",
@@ -527,7 +657,9 @@
       "summary": "와이솔(122990)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 6920,
+      "logo_url": "/data/logos/122990.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "177900",
@@ -535,7 +667,9 @@
       "summary": "쓰리에이로직스(177900)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5840,
+      "logo_url": "/data/logos/177900.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "180400",
@@ -543,7 +677,9 @@
       "summary": "DXVX(180400)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4075,
+      "logo_url": "/data/logos/180400.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "187420",
@@ -551,7 +687,9 @@
       "summary": "HLB제넥스(187420)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2555,
+      "logo_url": "/data/logos/187420.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "206400",
@@ -559,7 +697,9 @@
       "summary": "베노티앤알(206400)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1178,
+      "logo_url": "/data/logos/206400.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "228340",
@@ -567,7 +707,9 @@
       "summary": "동양파일(228340)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2415,
+      "logo_url": "/data/logos/228340.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "259630",
@@ -575,7 +717,9 @@
       "summary": "엠플러스(259630)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 12560,
+      "logo_url": "/data/logos/259630.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "290670",
@@ -583,7 +727,9 @@
       "summary": "대보마그네틱(290670)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 11800,
+      "logo_url": "/data/logos/290670.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "293580",
@@ -591,7 +737,9 @@
       "summary": "나우IB(293580)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1996,
+      "logo_url": "/data/logos/293580.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "332290",
@@ -599,7 +747,9 @@
       "summary": "누보(332290)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1265,
+      "logo_url": "/data/logos/332290.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "361610",
@@ -607,7 +757,9 @@
       "summary": "SK아이이테크놀로지(361610)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 23450,
+      "logo_url": "/data/logos/361610.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "365590",
@@ -615,7 +767,9 @@
       "summary": "하이딥(365590)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2205,
+      "logo_url": "/data/logos/365590.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "457940",
@@ -623,7 +777,9 @@
       "summary": "SK증권제10호스팩(457940)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2105,
+      "logo_url": "/data/logos/457940.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "900290",
@@ -631,7 +787,9 @@
       "summary": "GRT(900290)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 79,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 6740,
+      "logo_url": "/data/logos/900290.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000480",
@@ -639,7 +797,9 @@
       "summary": "시알홀딩스(000480)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 4895,
+      "logo_url": "/data/logos/000480.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "000680",
@@ -647,7 +807,9 @@
       "summary": "LS네트웍스(000680)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 3210,
+      "logo_url": "/data/logos/000680.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "002800",
@@ -655,7 +817,9 @@
       "summary": "신신제약(002800)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5680,
+      "logo_url": "/data/logos/002800.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "003010",
@@ -663,7 +827,9 @@
       "summary": "혜인(003010)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5260,
+      "logo_url": "/data/logos/003010.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "003240",
@@ -671,7 +837,9 @@
       "summary": "태광산업(003240)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 1220000,
+      "logo_url": "/data/logos/003240.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "005290",
@@ -679,7 +847,9 @@
       "summary": "동진쎄미켐(005290)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 55000,
+      "logo_url": "/data/logos/005290.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "005490",
@@ -687,7 +857,9 @@
       "summary": "POSCO홀딩스(005490)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 353500,
+      "logo_url": "/data/logos/005490.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "007590",
@@ -695,7 +867,9 @@
       "summary": "동방아그로(007590)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5870,
+      "logo_url": "/data/logos/007590.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "008060",
@@ -703,7 +877,9 @@
       "summary": "대덕(008060)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 11880,
+      "logo_url": "/data/logos/008060.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "012510",
@@ -711,7 +887,9 @@
       "summary": "더존비즈온(012510)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 118700,
+      "logo_url": "/data/logos/012510.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "022100",
@@ -719,7 +897,9 @@
       "summary": "포스코DX(022100)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 33650,
+      "logo_url": "/data/logos/022100.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "025770",
@@ -727,7 +907,9 @@
       "summary": "한국정보통신(025770)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 7830,
+      "logo_url": "/data/logos/025770.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "027580",
@@ -735,7 +917,9 @@
       "summary": "상보(027580)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 572,
+      "logo_url": "/data/logos/027580.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "029480",
@@ -743,7 +927,9 @@
       "summary": "광무(029480)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 2440,
+      "logo_url": "/data/logos/029480.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "035200",
@@ -751,7 +937,9 @@
       "summary": "프럼파스트(035200)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 3400,
+      "logo_url": "/data/logos/035200.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "038530",
@@ -759,7 +947,9 @@
       "summary": "케이바이오(038530)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 346,
+      "logo_url": "/data/logos/038530.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "049470",
@@ -767,7 +957,9 @@
       "summary": "비트플래닛(049470)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 658,
+      "logo_url": "/data/logos/049470.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "067370",
@@ -775,7 +967,9 @@
       "summary": "선바이오(067370)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 5310,
+      "logo_url": "/data/logos/067370.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "071840",
@@ -783,7 +977,9 @@
       "summary": "롯데하이마트(071840)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 7820,
+      "logo_url": "/data/logos/071840.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "084670",
@@ -791,7 +987,9 @@
       "summary": "동양고속(084670)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 44300,
+      "logo_url": "/data/logos/084670.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     },
     {
       "code": "092200",
@@ -799,7 +997,9 @@
       "summary": "디아이씨(092200)은 상승 가능 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.",
       "favor_score": 78,
       "signal": "상승 가능",
-      "updated_at": "2026-03-08T08:01:22.872Z"
+      "close_price": 9460,
+      "logo_url": "/data/logos/092200.png",
+      "updated_at": "2026-03-08T08:14:32.694Z"
     }
   ]
 }

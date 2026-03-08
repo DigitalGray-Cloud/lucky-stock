@@ -52,7 +52,8 @@ const cacheState = {
   analysisMap: {},
   top: [],
   recent: [],
-  themes: []
+  themes: [],
+  newsMap: {}
 };
 
 function normalize(text) {
@@ -106,6 +107,11 @@ function showResultPanel() {
   if (els.resultPanel) els.resultPanel.classList.remove("hidden");
 }
 
+function scrollToResult() {
+  if (!els.resultPanel) return;
+  els.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function initEmptyResultState() {
   if (!els.resultPanel) return;
   els.resultPanel.classList.add("hidden");
@@ -133,12 +139,13 @@ async function apiGet(path) {
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
 
-  const [ac, amap, top, recent, themes] = await Promise.all([
+  const [ac, amap, top, recent, themes, news] = await Promise.all([
     fetch("/data/ui_autocomplete.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_analysis_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
     fetch("/data/ui_top_stocks.json").then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
     fetch("/data/ui_recent_analysis.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
+    fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_news_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} }))
   ]);
 
   cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
@@ -146,6 +153,7 @@ async function loadStaticCache() {
   cacheState.top = Array.isArray(top.top) ? top.top : [];
   cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
   cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
+  cacheState.newsMap = news.map || {};
   cacheState.loaded = true;
   return cacheState;
 }
@@ -261,7 +269,12 @@ function renderDecisionFromData(data, stockMeta = {}) {
 
   renderSignalCards(data);
 
-  els.newsList.innerHTML = `<li><span>요약: ${data.summary || "-"}</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
+  const newsItems = (cacheState.newsMap && cacheState.newsMap[code]) ? cacheState.newsMap[code] : [];
+  if (Array.isArray(newsItems) && newsItems.length) {
+    els.newsList.innerHTML = newsItems.slice(0, 5).map((n) => `<li><span><a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a></span><span class="rank-meta">${(n.date || "").slice(0, 16)}</span></li>`).join("");
+  } else {
+    els.newsList.innerHTML = `<li><span>요약: ${data.summary || "-"}</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
+  }
   els.clickedRationale.innerHTML = `
     <p class="rationale-title"><strong>${name} 판단 근거</strong></p>
     <ul class="rationale-list">
@@ -325,6 +338,7 @@ async function searchAndRender(query) {
     showResultPanel();
     updateResultUrl(stock.code);
     renderDecisionFromData(data, stock);
+    scrollToResult();
   } catch {
     showResultPanel();
     els.decisionDesc.textContent = "분석 API 연결에 실패했습니다. 백엔드 상태를 확인해주세요.";

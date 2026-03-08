@@ -49,6 +49,9 @@ async function main() {
   console.log("[market-sync] step2: analysis/ranking cache build");
   await runNode("scripts/build-ui-cache.mjs");
 
+  console.log("[market-sync] step3: latest news cache build");
+  await runNode("scripts/build-news-cache.mjs");
+
   console.log("[market-sync] done");
 }
 

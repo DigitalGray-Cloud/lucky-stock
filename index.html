@@ -7,6 +7,7 @@
   <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, AI 분석 점수, 수급, 위험, 전망 제공." />
   <link rel="icon" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2579165029846981" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/style.css?v=20260308a" />
 </head>
 <body>
@@ -97,6 +98,29 @@
         </div>
         <p>검색 → 결론 → 이유 → 점수 → 위험 → 수급 → 전망</p>
         <p class="signal-legend-line">AI 투자 신호: 🔥 강한 상승 · 📈 상승 가능 · ➖ 중립 · ⚠️ 주의 · 🔻 리스크</p>
+        <div class="share-row" aria-label="공유 버튼">
+          <button type="button" class="share-btn" data-share="twitter" aria-label="X 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.77 7.74L23 22h-6.1l-4.78-6.26L6.64 22H3.5l7.24-8.28L1 2h6.24l4.32 5.7L18.9 2zm-1.07 18h1.69L6.32 3.9H4.5L17.83 20z"/></svg>
+            <span>X</span>
+          </button>
+          <button type="button" class="share-btn" data-share="instagram" aria-label="인스타 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm11.5 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+            <span>인스타</span>
+          </button>
+          <button type="button" class="share-btn" data-share="kakao" aria-label="카톡 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.48 3 2 6.59 2 11c0 2.86 1.9 5.36 4.77 6.75L6 22l4.52-3.02c.49.06.98.1 1.48.1 5.52 0 10-3.59 10-8.08S17.52 3 12 3z"/></svg>
+            <span>카톡</span>
+          </button>
+          <button type="button" class="share-btn" data-share="telegram" aria-label="텔레그램 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 3.8 11c-1.2.48-1.2 1.14-.22 1.44l4.56 1.42 1.74 5.5c.22.68.4.94.82.94.32 0 .46-.14.64-.32l2.2-2.14 4.58 3.38c.84.46 1.44.22 1.66-.78L23 6.1c.32-1.2-.46-1.74-1.4-1.9zM9.7 13.55l9.6-6.06c.48-.3.92-.14.56.18l-7.9 7.12-.3 3.44-1.96-4.68z"/></svg>
+            <span>텔레그램</span>
+          </button>
+          <button type="button" class="share-btn copy" id="share-copy-btn" aria-label="URL 복사">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h10a2 2 0 0 1 2 2v10h-2V5H8V3zm-3 4h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm0 2v10h10V9H5z"/></svg>
+            <span>URL 복사</span>
+          </button>
+          <span id="share-status" class="share-status" aria-live="polite"></span>
+        </div>
       </div>
 
       <div class="dashboard">

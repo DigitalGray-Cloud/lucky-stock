@@ -4,9 +4,9 @@ LuckyStock AI provides Korean stock analysis support pages and structured summar
 
 ## Site
 - https://luckystock.pages.dev/
-- https://luckystock.pages.dev/about.html
-- https://luckystock.pages.dev/privacy.html
-- https://luckystock.pages.dev/contact.html
+- https://luckystock.pages.dev/about
+- https://luckystock.pages.dev/privacy
+- https://luckystock.pages.dev/contact
 
 ## Content
 - Korean stock ticker analysis summaries

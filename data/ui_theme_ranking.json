@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-03-08T08:26:25.713Z",
+  "items": [
+    {
+      "theme": "로봇",
+      "avg_score": 81,
+      "count": 543
+    },
+    {
+      "theme": "AI플랫폼",
+      "avg_score": 77,
+      "count": 510
+    },
+    {
+      "theme": "전기차",
+      "avg_score": 74,
+      "count": 550
+    },
+    {
+      "theme": "AI반도체",
+      "avg_score": 73,
+      "count": 514
+    },
+    {
+      "theme": "2차전지",
+      "avg_score": 72,
+      "count": 505
+    }
+  ]
+}

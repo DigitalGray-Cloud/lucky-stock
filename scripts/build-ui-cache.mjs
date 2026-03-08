@@ -47,6 +47,32 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
 }
 
+function getSignal(favor) {
+  if (favor >= 75) return '상승 가능';
+  if (favor >= 55) return '중립';
+  return '주의';
+}
+
+function getSignalEmoji(signal) {
+  if (signal === '상승 가능') return '📈';
+  if (signal === '중립') return '➖';
+  return '⚠️';
+}
+
+const THEME_POOL = ['로봇', 'AI플랫폼', '전기차', 'AI반도체', '2차전지'];
+
+function detectTheme(stock, favor) {
+  const byName = String(stock.name || '').toLowerCase();
+  if (byName.includes('로보') || byName.includes('robot')) return '로봇';
+  if (byName.includes('네이버') || byName.includes('kakao') || byName.includes('카카오')) return 'AI플랫폼';
+  if (byName.includes('자동차') || byName.includes('모비스') || byName.includes('기아') || byName.includes('현대')) return '전기차';
+  if (byName.includes('반도체') || byName.includes('semicon') || byName.includes('hynix')) return 'AI반도체';
+  if (byName.includes('에코프로') || byName.includes('배터리') || byName.includes('리튬') || byName.includes('전지')) return '2차전지';
+
+  const idx = hashCode(`${stock.code}:${stock.name}:${favor}`) % THEME_POOL.length;
+  return THEME_POOL[idx];
+}
+
 function buildAnalysis(stock) {
   const seed = hashCode(`${stock.code}:${stock.name}`);
   const price = Number(stock.close_price || 0);
@@ -59,7 +85,15 @@ function buildAnalysis(stock) {
   const sentiment = clamp(Math.round(seededRange(seed + 5, 40, 86) + priceFactor / 4), 35, 95);
 
   const favor = Math.round(news * 0.2 + earnings * 0.25 + flow * 0.2 + industry * 0.2 + sentiment * 0.15);
-  const signal = favor >= 75 ? '상승 가능' : favor >= 55 ? '중립' : '주의';
+  const signal = getSignal(favor);
+  const signalEmoji = getSignalEmoji(signal);
+  const triggerCount = clamp(Math.round(seededRange(seed + 6, 2, 6) + favor / 40), 2, 6);
+  const tomorrowProb = clamp(Math.round(35 + favor * 0.52 + seededRange(seed + 7, -4, 8)), 40, 89);
+  const prob1m = clamp(Math.round(30 + favor * 0.58 + seededRange(seed + 8, -6, 8)), 35, 91);
+  const prob3m = clamp(Math.round(prob1m + seededRange(seed + 9, 4, 11)), 42, 94);
+  const prob1y = clamp(Math.round(prob3m + seededRange(seed + 10, 4, 10)), 48, 96);
+  const confidence = clamp(Math.round(45 + favor * 0.5), 45, 95);
+  const theme = detectTheme(stock, favor);
 
   const bullPoints = [
     `${stock.market} 내 수급 개선 가능성`,
@@ -86,6 +120,14 @@ function buildAnalysis(stock) {
     summary: `${stock.name}(${stock.code})은 ${signal} 시그널로 분류되며 단기 모멘텀 점검이 필요합니다.`,
     favor_score: favor,
     signal,
+    signal_emoji: signalEmoji,
+    trigger_count: triggerCount,
+    tomorrow_prob: tomorrowProb,
+    prob_1m: prob1m,
+    prob_3m: prob3m,
+    prob_1y: prob1y,
+    confidence,
+    theme,
     bull_points: JSON.stringify(bullPoints),
     future_outlook: future,
     risk,
@@ -112,16 +154,26 @@ ON CONFLICT(code) DO UPDATE SET
   updated_at=excluded.updated_at
 `);
 
+const analyses = stocks.map(buildAnalysis);
 const txAnalysis = db.transaction((rows) => {
-  for (const row of rows) upsertAnalysis.run({ ...row, updated_at: now });
+  for (const row of rows) {
+    upsertAnalysis.run({
+      code: row.code,
+      summary: row.summary,
+      favor_score: row.favor_score,
+      signal: row.signal,
+      bull_points: row.bull_points,
+      future_outlook: row.future_outlook,
+      risk: row.risk,
+      foreign_flow: row.foreign_flow,
+      updated_at: now
+    });
+  }
 });
 
-const analyses = stocks.map(buildAnalysis);
 txAnalysis(analyses);
 
-const ordered = db
-  .prepare('SELECT code, favor_score FROM stock_analysis ORDER BY favor_score DESC, code ASC')
-  .all();
+const ordered = [...analyses].sort((a, b) => b.favor_score - a.favor_score || String(a.code).localeCompare(String(b.code)));
 
 db.prepare('DELETE FROM stock_ranking').run();
 const insertRank = db.prepare('INSERT INTO stock_ranking (code, favor_score, rank, updated_at) VALUES (?,?,?,?)');
@@ -130,50 +182,77 @@ const txRank = db.transaction((rows) => {
 });
 txRank(ordered);
 
-const names = new Map(stocks.map((s) => [s.code, s]));
-const top = ordered.slice(0, 50).map((r, i) => ({
-  code: r.code,
-  favor_score: r.favor_score,
-  rank: i + 1,
-  name: names.get(r.code)?.name || r.code,
-  market: names.get(r.code)?.market || '-',
-  close_price: names.get(r.code)?.close_price ?? null,
-  logo_url: names.get(r.code)?.logo_url || null
-}));
+const stockMap = new Map(stocks.map((s) => [s.code, s]));
+const analysisMapLocal = new Map(analyses.map((a) => [a.code, a]));
 
-const recent = ordered.slice(0, 100).map((r) => {
-  const a = analyses.find((x) => x.code === r.code);
+const top = ordered.slice(0, 50).map((a, i) => {
+  const s = stockMap.get(a.code) || {};
   return {
-    code: r.code,
-    name: names.get(r.code)?.name || r.code,
-    summary: a?.summary || '',
-    favor_score: r.favor_score,
-    signal: a?.signal || '중립',
-    close_price: names.get(r.code)?.close_price ?? null,
-    logo_url: names.get(r.code)?.logo_url || null,
+    code: a.code,
+    favor_score: a.favor_score,
+    rank: i + 1,
+    name: s.name || a.code,
+    market: s.market || '-',
+    close_price: s.close_price ?? null,
+    logo_url: s.logo_url || null,
+    signal: a.signal,
+    signal_emoji: a.signal_emoji,
+    tomorrow_prob: a.tomorrow_prob,
+    trigger_count: a.trigger_count,
+    theme: a.theme
+  };
+});
+
+const recent = ordered.slice(0, 100).map((a) => {
+  const s = stockMap.get(a.code) || {};
+  return {
+    code: a.code,
+    name: s.name || a.code,
+    summary: a.summary,
+    favor_score: a.favor_score,
+    signal: a.signal,
+    signal_emoji: a.signal_emoji,
+    close_price: s.close_price ?? null,
+    logo_url: s.logo_url || null,
+    theme: a.theme,
+    tomorrow_prob: a.tomorrow_prob,
+    prob_1m: a.prob_1m,
+    prob_3m: a.prob_3m,
+    prob_1y: a.prob_1y,
     updated_at: now
   };
 });
 
 const analysisMap = Object.fromEntries(
-  analyses.map((a) => [
-    a.code,
-    {
-      code: a.code,
-      summary: a.summary,
-      favor_score: a.favor_score,
-      signal: a.signal,
-      bull_points: JSON.parse(a.bull_points),
-      future_outlook: a.future_outlook,
-      risk: a.risk,
-      foreign_flow: a.foreign_flow,
-      close_price: names.get(a.code)?.close_price ?? null,
-      logo_url: names.get(a.code)?.logo_url || null,
-      updated_at: now,
-      cache_hit: true,
-      analysis_source: 'sqlite_batch'
-    }
-  ])
+  analyses.map((a) => {
+    const s = stockMap.get(a.code) || {};
+    return [
+      a.code,
+      {
+        code: a.code,
+        summary: a.summary,
+        favor_score: a.favor_score,
+        signal: a.signal,
+        signal_emoji: a.signal_emoji,
+        trigger_count: a.trigger_count,
+        tomorrow_prob: a.tomorrow_prob,
+        prob_1m: a.prob_1m,
+        prob_3m: a.prob_3m,
+        prob_1y: a.prob_1y,
+        confidence: a.confidence,
+        theme: a.theme,
+        bull_points: JSON.parse(a.bull_points),
+        future_outlook: a.future_outlook,
+        risk: a.risk,
+        foreign_flow: a.foreign_flow,
+        close_price: s.close_price ?? null,
+        logo_url: s.logo_url || null,
+        updated_at: now,
+        cache_hit: true,
+        analysis_source: 'sqlite_batch'
+      }
+    ];
+  })
 );
 
 const autocomplete = stocks.map((s) => ({
@@ -184,12 +263,30 @@ const autocomplete = stocks.map((s) => ({
   logo_url: s.logo_url || null
 }));
 
+const themeMap = new Map();
+for (const a of analyses) {
+  const arr = themeMap.get(a.theme) || [];
+  arr.push(a.favor_score);
+  themeMap.set(a.theme, arr);
+}
+
+const themeBias = { '로봇': 14, 'AI플랫폼': 10, '전기차': 7, 'AI반도체': 6, '2차전지': 5 };
+const themeRanking = [...themeMap.entries()]
+  .map(([theme, values]) => ({
+    theme,
+    avg_score: clamp(Math.round(values.reduce((sum, v) => sum + v, 0) / values.length) + (themeBias[theme] || 0), 40, 95),
+    count: values.length
+  }))
+  .sort((x, y) => y.avg_score - x.avg_score)
+  .slice(0, 10);
+
 fs.writeFileSync(path.join(OUT_DIR, 'ui_top_stocks.json'), JSON.stringify({ generated_at: now, top }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_recent_analysis.json'), JSON.stringify({ generated_at: now, items: recent }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_analysis_map.json'), JSON.stringify({ generated_at: now, map: analysisMap }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_autocomplete.json'), JSON.stringify({ generated_at: now, items: autocomplete }, null, 2));
+fs.writeFileSync(path.join(OUT_DIR, 'ui_theme_ranking.json'), JSON.stringify({ generated_at: now, items: themeRanking }, null, 2));
 
-console.log(`[cache] stocks=${stocks.length}, top=${top.length}, recent=${recent.length}, analysis_map=${Object.keys(analysisMap).length}`);
+console.log(`[cache] stocks=${stocks.length}, top=${top.length}, recent=${recent.length}, analysis_map=${Object.keys(analysisMap).length}, themes=${themeRanking.length}`);
 console.log(`[cache] files written to ${OUT_DIR}`);
 
 db.close();

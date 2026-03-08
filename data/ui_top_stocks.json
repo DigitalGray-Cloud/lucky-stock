@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-08T08:14:32.694Z",
+  "generated_at": "2026-03-08T08:26:25.713Z",
   "top": [
     {
       "code": "020560",
@@ -8,7 +8,12 @@
       "name": "아시아나항공",
       "market": "KOSPI",
       "close_price": 7050,
-      "logo_url": "/data/logos/020560.png"
+      "logo_url": "/data/logos/020560.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 87,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "019570",
@@ -17,7 +22,12 @@
       "name": "플루토스",
       "market": "KOSDAQ",
       "close_price": 351,
-      "logo_url": "/data/logos/019570.png"
+      "logo_url": "/data/logos/019570.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 80,
+      "trigger_count": 5,
+      "theme": "2차전지"
     },
     {
       "code": "006400",
@@ -26,7 +36,12 @@
       "name": "삼성SDI",
       "market": "KOSPI",
       "close_price": 410500,
-      "logo_url": "/data/logos/006400.png"
+      "logo_url": "/data/logos/006400.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 86,
+      "trigger_count": 5,
+      "theme": "로봇"
     },
     {
       "code": "032980",
@@ -35,7 +50,12 @@
       "name": "바이온",
       "market": "KOSDAQ",
       "close_price": 604,
-      "logo_url": "/data/logos/032980.png"
+      "logo_url": "/data/logos/032980.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "105330",
@@ -44,7 +64,12 @@
       "name": "케이엔더블유",
       "market": "KOSDAQ",
       "close_price": 6250,
-      "logo_url": "/data/logos/105330.png"
+      "logo_url": "/data/logos/105330.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 82,
+      "trigger_count": 5,
+      "theme": "AI반도체"
     },
     {
       "code": "434480",
@@ -53,7 +78,12 @@
       "name": "모니터랩",
       "market": "KOSDAQ",
       "close_price": 3470,
-      "logo_url": "/data/logos/434480.png"
+      "logo_url": "/data/logos/434480.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 84,
+      "trigger_count": 6,
+      "theme": "로봇"
     },
     {
       "code": "060150",
@@ -62,7 +92,12 @@
       "name": "인선이엔티",
       "market": "KOSDAQ",
       "close_price": 4095,
-      "logo_url": "/data/logos/060150.png"
+      "logo_url": "/data/logos/060150.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 75,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "064400",
@@ -71,7 +106,12 @@
       "name": "LG씨엔에스",
       "market": "KOSPI",
       "close_price": 64900,
-      "logo_url": "/data/logos/064400.svg"
+      "logo_url": "/data/logos/064400.svg",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 86,
+      "trigger_count": 5,
+      "theme": "AI플랫폼"
     },
     {
       "code": "205500",
@@ -80,7 +120,12 @@
       "name": "넥써쓰",
       "market": "KOSDAQ",
       "close_price": 1577,
-      "logo_url": "/data/logos/205500.png"
+      "logo_url": "/data/logos/205500.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 81,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "317870",
@@ -89,7 +134,12 @@
       "name": "엔바이오니아",
       "market": "KOSDAQ",
       "close_price": 9130,
-      "logo_url": "/data/logos/317870.png"
+      "logo_url": "/data/logos/317870.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "003380",
@@ -98,7 +148,12 @@
       "name": "하림지주",
       "market": "KOSDAQ",
       "close_price": 16100,
-      "logo_url": "/data/logos/003380.png"
+      "logo_url": "/data/logos/003380.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 85,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "010100",
@@ -107,7 +162,12 @@
       "name": "한국무브넥스",
       "market": "KOSPI",
       "close_price": 4680,
-      "logo_url": "/data/logos/010100.png"
+      "logo_url": "/data/logos/010100.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 5,
+      "theme": "전기차"
     },
     {
       "code": "010640",
@@ -116,7 +176,12 @@
       "name": "진양폴리우레탄",
       "market": "KOSPI",
       "close_price": 2570,
-      "logo_url": "/data/logos/010640.png"
+      "logo_url": "/data/logos/010640.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 84,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "092780",
@@ -125,7 +190,12 @@
       "name": "DYP",
       "market": "KOSPI",
       "close_price": 4610,
-      "logo_url": "/data/logos/092780.png"
+      "logo_url": "/data/logos/092780.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 77,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "023910",
@@ -134,7 +204,12 @@
       "name": "대한약품",
       "market": "KOSDAQ",
       "close_price": 29400,
-      "logo_url": "/data/logos/023910.png"
+      "logo_url": "/data/logos/023910.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 85,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "025620",
@@ -143,7 +218,12 @@
       "name": "차AI헬스케어",
       "market": "KOSPI",
       "close_price": 9570,
-      "logo_url": "/data/logos/025620.png"
+      "logo_url": "/data/logos/025620.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 78,
+      "trigger_count": 6,
+      "theme": "전기차"
     },
     {
       "code": "032750",
@@ -152,7 +232,12 @@
       "name": "삼진",
       "market": "KOSDAQ",
       "close_price": 3320,
-      "logo_url": "/data/logos/032750.png"
+      "logo_url": "/data/logos/032750.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 74,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "070300",
@@ -161,7 +246,12 @@
       "name": "엑스큐어",
       "market": "KOSDAQ",
       "close_price": 1527,
-      "logo_url": "/data/logos/070300.png"
+      "logo_url": "/data/logos/070300.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 76,
+      "trigger_count": 5,
+      "theme": "전기차"
     },
     {
       "code": "095720",
@@ -170,7 +260,12 @@
       "name": "웅진씽크빅",
       "market": "KOSPI",
       "close_price": 1063,
-      "logo_url": "/data/logos/095720.png"
+      "logo_url": "/data/logos/095720.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 76,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "131030",
@@ -179,7 +274,12 @@
       "name": "옵투스제약",
       "market": "KOSDAQ",
       "close_price": 10560,
-      "logo_url": "/data/logos/131030.png"
+      "logo_url": "/data/logos/131030.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "222080",
@@ -188,7 +288,12 @@
       "name": "씨아이에스",
       "market": "KOSDAQ",
       "close_price": 15100,
-      "logo_url": "/data/logos/222080.png"
+      "logo_url": "/data/logos/222080.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 80,
+      "trigger_count": 5,
+      "theme": "AI플랫폼"
     },
     {
       "code": "306620",
@@ -197,7 +302,12 @@
       "name": "지아이에스",
       "market": "KOSDAQ",
       "close_price": 2800,
-      "logo_url": "/data/logos/306620.png"
+      "logo_url": "/data/logos/306620.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 78,
+      "trigger_count": 6,
+      "theme": "AI반도체"
     },
     {
       "code": "000080",
@@ -206,7 +316,12 @@
       "name": "하이트진로",
       "market": "KOSPI",
       "close_price": 16430,
-      "logo_url": "/data/logos/000080.png"
+      "logo_url": "/data/logos/000080.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 77,
+      "trigger_count": 6,
+      "theme": "전기차"
     },
     {
       "code": "000660",
@@ -215,7 +330,12 @@
       "name": "SK하이닉스",
       "market": "KOSPI",
       "close_price": 924000,
-      "logo_url": "/data/logos/000660.png"
+      "logo_url": "/data/logos/000660.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 78,
+      "trigger_count": 6,
+      "theme": "전기차"
     },
     {
       "code": "005180",
@@ -224,7 +344,12 @@
       "name": "빙그레",
       "market": "KOSPI",
       "close_price": 76400,
-      "logo_url": "/data/logos/005180.png"
+      "logo_url": "/data/logos/005180.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 83,
+      "trigger_count": 5,
+      "theme": "AI반도체"
     },
     {
       "code": "006920",
@@ -233,7 +358,12 @@
       "name": "모헨즈",
       "market": "KOSDAQ",
       "close_price": 5620,
-      "logo_url": "/data/logos/006920.png"
+      "logo_url": "/data/logos/006920.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 74,
+      "trigger_count": 4,
+      "theme": "AI반도체"
     },
     {
       "code": "018500",
@@ -242,7 +372,12 @@
       "name": "동원금속",
       "market": "KOSPI",
       "close_price": 1505,
-      "logo_url": "/data/logos/018500.png"
+      "logo_url": "/data/logos/018500.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 78,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "020150",
@@ -251,7 +386,12 @@
       "name": "롯데에너지머티리얼즈",
       "market": "KOSPI",
       "close_price": 41000,
-      "logo_url": "/data/logos/020150.png"
+      "logo_url": "/data/logos/020150.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 85,
+      "trigger_count": 6,
+      "theme": "전기차"
     },
     {
       "code": "052600",
@@ -260,7 +400,12 @@
       "name": "한네트",
       "market": "KOSDAQ",
       "close_price": 3275,
-      "logo_url": "/data/logos/052600.png"
+      "logo_url": "/data/logos/052600.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 74,
+      "trigger_count": 5,
+      "theme": "로봇"
     },
     {
       "code": "064520",
@@ -269,7 +414,12 @@
       "name": "테크엘",
       "market": "KOSDAQ",
       "close_price": 1620,
-      "logo_url": "/data/logos/064520.png"
+      "logo_url": "/data/logos/064520.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 85,
+      "trigger_count": 5,
+      "theme": "전기차"
     },
     {
       "code": "079950",
@@ -278,7 +428,12 @@
       "name": "인베니아",
       "market": "KOSDAQ",
       "close_price": 1221,
-      "logo_url": "/data/logos/079950.png"
+      "logo_url": "/data/logos/079950.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 80,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "079970",
@@ -287,7 +442,12 @@
       "name": "투비소프트",
       "market": "KOSDAQ",
       "close_price": 596,
-      "logo_url": "/data/logos/079970.png"
+      "logo_url": "/data/logos/079970.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 74,
+      "trigger_count": 5,
+      "theme": "2차전지"
     },
     {
       "code": "086710",
@@ -296,7 +456,12 @@
       "name": "선진뷰티사이언스",
       "market": "KOSDAQ",
       "close_price": 9020,
-      "logo_url": "/data/logos/086710.png"
+      "logo_url": "/data/logos/086710.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 5,
+      "theme": "AI반도체"
     },
     {
       "code": "092220",
@@ -305,7 +470,12 @@
       "name": "KEC",
       "market": "KOSPI",
       "close_price": 1398,
-      "logo_url": "/data/logos/092220.png"
+      "logo_url": "/data/logos/092220.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 83,
+      "trigger_count": 5,
+      "theme": "AI반도체"
     },
     {
       "code": "108860",
@@ -314,7 +484,12 @@
       "name": "셀바스AI",
       "market": "KOSDAQ",
       "close_price": 10230,
-      "logo_url": "/data/logos/108860.png"
+      "logo_url": "/data/logos/108860.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 76,
+      "trigger_count": 5,
+      "theme": "2차전지"
     },
     {
       "code": "173130",
@@ -323,7 +498,12 @@
       "name": "오파스넷",
       "market": "KOSDAQ",
       "close_price": 7250,
-      "logo_url": "/data/logos/173130.png"
+      "logo_url": "/data/logos/173130.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 82,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "196700",
@@ -332,7 +512,12 @@
       "name": "웹스",
       "market": "KOSDAQ",
       "close_price": 2540,
-      "logo_url": "/data/logos/196700.png"
+      "logo_url": "/data/logos/196700.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 75,
+      "trigger_count": 5,
+      "theme": "2차전지"
     },
     {
       "code": "250000",
@@ -341,7 +526,12 @@
       "name": "보라티알",
       "market": "KOSDAQ",
       "close_price": 7960,
-      "logo_url": "/data/logos/250000.png"
+      "logo_url": "/data/logos/250000.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 77,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "290550",
@@ -350,7 +540,12 @@
       "name": "디케이티",
       "market": "KOSDAQ",
       "close_price": 14680,
-      "logo_url": "/data/logos/290550.png"
+      "logo_url": "/data/logos/290550.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 77,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "000890",
@@ -359,7 +554,12 @@
       "name": "보해양조",
       "market": "KOSPI",
       "close_price": 464,
-      "logo_url": "/data/logos/000890.png"
+      "logo_url": "/data/logos/000890.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 4,
+      "theme": "AI플랫폼"
     },
     {
       "code": "016090",
@@ -368,7 +568,12 @@
       "name": "대현",
       "market": "KOSPI",
       "close_price": 1665,
-      "logo_url": "/data/logos/016090.png"
+      "logo_url": "/data/logos/016090.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 75,
+      "trigger_count": 6,
+      "theme": "로봇"
     },
     {
       "code": "059090",
@@ -377,7 +582,12 @@
       "name": "미코",
       "market": "KOSDAQ",
       "close_price": 15080,
-      "logo_url": "/data/logos/059090.png"
+      "logo_url": "/data/logos/059090.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 81,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "085310",
@@ -386,7 +596,12 @@
       "name": "엔케이",
       "market": "KOSPI",
       "close_price": 1013,
-      "logo_url": "/data/logos/085310.png"
+      "logo_url": "/data/logos/085310.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 82,
+      "trigger_count": 6,
+      "theme": "AI플랫폼"
     },
     {
       "code": "085620",
@@ -395,7 +610,12 @@
       "name": "미래에셋생명",
       "market": "KOSPI",
       "close_price": 14570,
-      "logo_url": "/data/logos/085620.png"
+      "logo_url": "/data/logos/085620.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 82,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "101490",
@@ -404,7 +624,12 @@
       "name": "에스앤에스텍",
       "market": "KOSDAQ",
       "close_price": 93700,
-      "logo_url": "/data/logos/101490.png"
+      "logo_url": "/data/logos/101490.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 83,
+      "trigger_count": 4,
+      "theme": "로봇"
     },
     {
       "code": "122310",
@@ -413,7 +638,12 @@
       "name": "제노레이",
       "market": "KOSDAQ",
       "close_price": 4070,
-      "logo_url": "/data/logos/122310.png"
+      "logo_url": "/data/logos/122310.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 84,
+      "trigger_count": 6,
+      "theme": "로봇"
     },
     {
       "code": "131220",
@@ -422,7 +652,12 @@
       "name": "대한과학",
       "market": "KOSDAQ",
       "close_price": 4520,
-      "logo_url": "/data/logos/131220.png"
+      "logo_url": "/data/logos/131220.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 83,
+      "trigger_count": 6,
+      "theme": "전기차"
     },
     {
       "code": "213500",
@@ -431,7 +666,12 @@
       "name": "한솔제지",
       "market": "KOSPI",
       "close_price": 8350,
-      "logo_url": "/data/logos/213500.png"
+      "logo_url": "/data/logos/213500.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 79,
+      "trigger_count": 5,
+      "theme": "AI플랫폼"
     },
     {
       "code": "214320",
@@ -440,7 +680,12 @@
       "name": "이노션",
       "market": "KOSPI",
       "close_price": 19300,
-      "logo_url": "/data/logos/214320.png"
+      "logo_url": "/data/logos/214320.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 74,
+      "trigger_count": 6,
+      "theme": "2차전지"
     },
     {
       "code": "271560",
@@ -449,7 +694,12 @@
       "name": "오리온",
       "market": "KOSPI",
       "close_price": 126500,
-      "logo_url": "/data/logos/271560.png"
+      "logo_url": "/data/logos/271560.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 75,
+      "trigger_count": 6,
+      "theme": "전기차"
     }
   ]
 }

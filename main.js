@@ -55,25 +55,6 @@ const cacheState = {
   themes: []
 };
 
-async function loadStaticCache() {
-  if (cacheState.loaded) return cacheState;
-  const [ac, amap, top, recent, themes] = await Promise.all([
-    fetch('/data/ui_autocomplete.json').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch('/data/ui_analysis_map.json').then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
-    fetch('/data/ui_top_stocks.json').then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
-    fetch('/data/ui_recent_analysis.json').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch('/data/ui_theme_ranking.json').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
-  ]);
-
-  cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
-  cacheState.analysisMap = amap.map || {};
-  cacheState.top = Array.isArray(top.top) ? top.top : [];
-  cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
-  cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
-  cacheState.loaded = true;
-  return cacheState;
-}
-
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
 }
@@ -82,23 +63,37 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
 }
 
-function hashCode(text) {
-  let hash = 0;
-  for (let i = 0; i < text.length; i += 1) {
-    hash = (hash << 5) - hash + text.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function seededRange(seed, min, max) {
-  const x = Math.sin(seed) * 10000;
-  const n = x - Math.floor(x);
-  return min + n * (max - min);
-}
-
 function formatNumber(value) {
   return Number(value).toLocaleString("ko-KR");
+}
+
+function getSignalEmoji(signal, fallback = "") {
+  if (fallback) return fallback;
+  if (signal === "상승 가능") return "📈";
+  if (signal === "중립") return "➖";
+  return "⚠️";
+}
+
+function probBar(p) {
+  const v = clamp(Number(p || 0), 0, 100);
+  const full = Math.round(v / 10);
+  return `${"█".repeat(full)}${"░".repeat(10 - full)} ${v}%`;
+}
+
+function getLogoUrl(code, name = "", explicit = "") {
+  if (explicit) return explicit;
+  if (/^\d{6}$/.test(String(code || ""))) return `/data/logos/${code}.png`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || code || "stock")}&background=0B1F3A&color=ffffff&rounded=true&size=128`;
+}
+
+function decisionClass(signal) {
+  if (signal === "상승 가능") return "buy";
+  if (signal === "주의") return "sell";
+  return "hold";
+}
+
+function renderList(el, items) {
+  el.innerHTML = (items || []).map((x) => `<li>${x}</li>`).join("");
 }
 
 function setSearchLoading(active) {
@@ -108,8 +103,7 @@ function setSearchLoading(active) {
 }
 
 function showResultPanel() {
-  if (!els.resultPanel) return;
-  els.resultPanel.classList.remove("hidden");
+  if (els.resultPanel) els.resultPanel.classList.remove("hidden");
 }
 
 function initEmptyResultState() {
@@ -136,61 +130,76 @@ async function apiGet(path) {
   return res.json();
 }
 
-function decisionClass(signal) {
-  if (signal === "상승 가능") return "buy";
-  if (signal === "주의") return "sell";
-  return "hold";
+async function loadStaticCache() {
+  if (cacheState.loaded) return cacheState;
+
+  const [ac, amap, top, recent, themes] = await Promise.all([
+    fetch("/data/ui_autocomplete.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_analysis_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
+    fetch("/data/ui_top_stocks.json").then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
+    fetch("/data/ui_recent_analysis.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
+  ]);
+
+  cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
+  cacheState.analysisMap = amap.map || {};
+  cacheState.top = Array.isArray(top.top) ? top.top : [];
+  cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
+  cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
+  cacheState.loaded = true;
+  return cacheState;
 }
 
-function getLogoUrl(code, name = "", explicit = "") {
-  if (explicit) return explicit;
-  if (/^\d{6}$/.test(String(code || ""))) {
-    return `/data/logos/${code}.png`;
-  }
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || code || "stock")}&background=0B1F3A&color=ffffff&rounded=true&size=128`;
+function renderSignalCards(data) {
+  const flags = Array.isArray(data.signal_flags) && data.signal_flags.length
+    ? data.signal_flags
+    : [
+        { label: "뉴스 증가", desc: "모멘텀 상회", active: true },
+        { label: "외국인 매수", desc: "수급 상회", active: true },
+        { label: "기관 매수", desc: "기관 수급 상회", active: false },
+        { label: "기술적 돌파", desc: "차트 신호", active: true },
+        { label: "테마 모멘텀", desc: "테마 점수", active: true },
+        { label: "거래량 급증", desc: "유동성 신호", active: false }
+      ];
+
+  const activeCount = flags.filter((f) => f.active).length;
+  const signalEmoji = getSignalEmoji(data.signal, data.signal_emoji || "");
+
+  els.signalSummary.innerHTML = `<span class="signal-strong">Signal ${activeCount}개 충족</span> · ${signalEmoji} ${data.signal}`;
+  els.signalVisual.innerHTML = flags
+    .slice(0, 6)
+    .map(
+      (s) => `
+      <div class="signal-item ${s.active ? "active" : "inactive"}">
+        <div class="signal-icon">${s.active ? "✓" : "·"}</div>
+        <div>
+          <strong>${s.label}</strong>
+          <small>${s.desc || "AI 시그널"}</small>
+        </div>
+        <div class="signal-right">
+          <span class="signal-state ${s.active ? "on" : "off"}">${s.active ? "충족" : "미충족"}</span>
+          <div class="signal-meter"><span style="width:${s.active ? 100 : 20}%"></span></div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
 }
 
-function renderList(el, items) {
-  el.innerHTML = (items || []).map((x) => `<li>${x}</li>`).join("");
-}
-
-function getSignalEmoji(signal, fallback = "") {
-  if (fallback) return fallback;
-  if (signal === "상승 가능") return "📈";
-  if (signal === "중립") return "➖";
-  return "⚠️";
-}
-
-function probBar(p) {
-  const v = clamp(Number(p || 0), 0, 100);
-  const full = Math.round(v / 10);
-  return `${"█".repeat(full)}${"░".repeat(10 - full)} ${v}%`;
-}
-
-function makeDerivedMetrics(code, favorScore) {
-  const seed = hashCode(`${code}:${favorScore}`);
-  const prob1m = clamp(Math.round(35 + favorScore * 0.5 + seededRange(seed + 1, -5, 6)), 35, 92);
-  const prob3m = clamp(prob1m + Math.round(seededRange(seed + 2, 3, 10)), 40, 95);
-  const prob1y = clamp(prob3m + Math.round(seededRange(seed + 3, 4, 10)), 45, 97);
-  const support = Math.round(seededRange(seed + 4, 8000, 180000));
-  const resistance = Math.round(support * seededRange(seed + 5, 1.05, 1.19));
-  const highDiff = -Math.round(seededRange(seed + 6, 5, 26));
-  const confidence = clamp(Math.round(45 + favorScore * 0.5), 45, 95);
-  return { prob1m, prob3m, prob1y, support, resistance, highDiff, confidence };
-}
-
-function renderDecisionFromApi(data, stockMeta = {}) {
+function renderDecisionFromData(data, stockMeta = {}) {
   const code = data.code;
   const name = stockMeta.name || code;
   const market = stockMeta.market || "KOSPI/KOSDAQ";
-  const favor = Number(data.favor_score || 0);
   const price = Number(data.close_price ?? stockMeta.close_price ?? 0) || null;
-  const d = makeDerivedMetrics(code, favor);
+  const favor = Number(data.favor_score || 0);
   const signalEmoji = getSignalEmoji(data.signal, data.signal_emoji || "");
-  const prob1 = Number(data.prob_1m || d.prob1m);
-  const prob3 = Number(data.prob_3m || d.prob3m);
-  const probY = Number(data.prob_1y || d.prob1y);
+
+  const p1 = Number(data.prob_1m || 60);
+  const p3 = Number(data.prob_3m || 70);
+  const py = Number(data.prob_1y || 78);
+  const tomorrowProb = Number(data.tomorrow_prob || clamp(Math.round(p1 + 5), 40, 90));
   const triggerCount = Number(data.trigger_count || 4);
+  const confidence = Number(data.confidence || clamp(Math.round(45 + favor * 0.5), 45, 95));
 
   els.companyLogo.src = getLogoUrl(code, name, data.logo_url || stockMeta.logo_url || "");
   els.companyLogo.alt = `${name} 로고`;
@@ -204,62 +213,59 @@ function renderDecisionFromApi(data, stockMeta = {}) {
   els.aiDecision.textContent = `${signalEmoji} ${data.signal}`;
   els.aiDecision.className = `decision ${decisionClass(data.signal)}`;
   els.decisionGuide.textContent = data.cache_hit ? "DB 캐시 결과" : "AI 신규 분석 결과";
-  els.aiConfidence.textContent = `${Number(data.confidence || d.confidence)}%`;
+  els.aiConfidence.textContent = `${confidence}%`;
   els.catalystScore.textContent = `100점 만점에 ${favor}점`;
   els.decisionDesc.textContent = data.summary || "분석 요약 없음";
 
-  const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [];
-  const detailedBuy = buyReasons.length ? buyReasons : [
-    `🔥 지금 사는 이유 1: 수급/심리/모멘텀 결합 점수 ${favor}점으로 상단 구간`,
-    `✅ 지금 사는 이유 2: 단기 파동보다 중기 추세가 강한 구조로 추정`,
-    `🚀 지금 사는 이유 3: 동종 섹터 대비 상대강도 우위`
+  const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [
+    `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,
+    `✅ 수급/모멘텀 결합 신호가 강화`,
+    `🚀 내일 상승 확률 ${tomorrowProb}% 기대`
   ];
-  renderList(els.buyReasons, detailedBuy.slice(0, 3));
+  renderList(els.buyReasons, buyReasons.slice(0, 3));
 
-  const riskList = Array.isArray(data.risk_points) ? data.risk_points : [
-    `⚠️ 주의사항 1: 단기 급등 구간에서 변동성 확대 가능`,
-    `⚠️ 주의사항 2: 금리/환율/지수 급변 시 동반 조정 위험`,
-    `⚠️ 주의사항 3: 거래대금 약화 시 추세 훼손 가능`
+  const riskPoints = Array.isArray(data.risk_points) ? data.risk_points : [
+    `⚠️ 단기 급등 구간 변동성 확대 가능성`,
+    `⚠️ 매크로 변수(금리/환율/지수) 리스크`,
+    `⚠️ 거래대금 둔화 시 추세 약화 가능성`
   ];
-  renderList(els.riskPoints, riskList.slice(0, 3));
+  renderList(els.riskPoints, riskPoints.slice(0, 3));
 
-  els.prob1m.textContent = `📈 ${probBar(prob1)}`;
-  els.prob3m.textContent = `📊 ${probBar(prob3)}`;
-  els.prob1y.textContent = `🏆 ${probBar(probY)}`;
+  els.prob1m.textContent = `📈 ${probBar(p1)}`;
+  els.prob3m.textContent = `📊 ${probBar(p3)}`;
+  els.prob1y.textContent = `🏆 ${probBar(py)}`;
 
-  const tomorrowProb = Number(data.tomorrow_prob || clamp(Math.round(prob1 + 4), 40, 89));
   els.flowTable.innerHTML = `
     <div class="flow-row">
       <div class="flow-row-top"><span>내일 상승 확률</span><span>${tomorrowProb}%</span></div>
       <div class="flow-values"><strong class="foreign">${probBar(tomorrowProb)}</strong></div>
     </div>
     <div class="flow-row">
-      <div class="flow-row-top"><span>투자 신호</span><span>${signalEmoji} ${data.signal}</span></div>
+      <div class="flow-row-top"><span>실시간 AI 투자 신호</span><span>${signalEmoji} ${data.signal}</span></div>
       <div class="flow-values"><strong class="inst">Signal ${triggerCount}개 충족</strong></div>
     </div>
   `;
 
-  els.techHighDiff.textContent = `${d.highDiff}%`;
-  els.techSupport.textContent = formatNumber(d.support);
-  els.techResistance.textContent = formatNumber(d.resistance);
+  els.techHighDiff.textContent = `${-Math.round(clamp(100 - p1, 4, 30))}%`;
+  els.techSupport.textContent = formatNumber(Math.round((price || 50000) * 0.92));
+  els.techResistance.textContent = formatNumber(Math.round((price || 50000) * 1.12));
 
   els.valuationBadge.textContent = favor >= 80 ? "고평가" : favor >= 60 ? "적정" : "저평가";
   els.valuationDesc.textContent = data.future_outlook || "전망 데이터 없음";
 
   els.scoreBreakdown.innerHTML = [
     ["AI 분석 점수", favor],
-    ["신호", `${signalEmoji} ${data.signal || "-"}`],
-    ["Signal 조건", `${triggerCount}개 충족`]
+    ["투자 신호", `${signalEmoji} ${data.signal}`],
+    ["Signal 충족", `${triggerCount}개`]
   ].map(([k, v]) => `<div><span>${k}</span><strong>${v}</strong></div>`).join("");
 
-  els.signalSummary.innerHTML = `<span class="signal-strong">Signal ${triggerCount}개 충족</span> · ${signalEmoji} ${data.signal}`;
-  els.signalVisual.innerHTML = `<div class="signal-item active"><div class="signal-icon">✓</div><div><strong>AI 실시간 투자 신호</strong><small>${data.analysis_source || "cache"}</small></div><div class="signal-right"><span class="signal-state on">활성</span><div class="signal-meter"><span style="width:${clamp(favor, 10, 100)}%"></span></div></div></div>`;
+  renderSignalCards(data);
 
   els.newsList.innerHTML = `<li><span>요약: ${data.summary || "-"}</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
   els.clickedRationale.innerHTML = `
     <p class="rationale-title"><strong>${name} 판단 근거</strong></p>
     <ul class="rationale-list">
-      <li>AI 점수 ${favor}점 · ${signalEmoji} ${data.signal}</li>
+      <li>AI 분석 점수(100점 만점) ${favor}점 · ${signalEmoji} ${data.signal}</li>
       <li>내일 상승 확률 ${tomorrowProb}%</li>
       <li>Signal ${triggerCount}개 충족</li>
       <li>미래 전망: ${data.future_outlook || "-"}</li>
@@ -271,9 +277,7 @@ async function resolveStockByQuery(query) {
   const q = String(query || "").trim();
   if (!q) return null;
 
-  if (/^\d{6}$/.test(q)) {
-    return { code: q, name: q, market: "KOSPI/KOSDAQ" };
-  }
+  if (/^\d{6}$/.test(q)) return { code: q, name: q, market: "KOSPI/KOSDAQ" };
 
   let items = [];
   try {
@@ -281,10 +285,10 @@ async function resolveStockByQuery(query) {
     items = Array.isArray(ac?.items) ? ac.items : [];
   } catch {
     const cache = await loadStaticCache();
-    items = cache.autocomplete.filter((x) => normalize(x.name).includes(normalize(q)) || String(x.code || "").includes(q)).slice(0, AUTO_COMPLETE_LIMIT);
+    items = cache.autocomplete.filter((x) => normalize(x.name).includes(normalize(q)) || String(x.code || "").includes(q));
   }
-  if (!items.length) return null;
 
+  if (!items.length) return null;
   const exact = items.find((x) => normalize(x.name) === normalize(q));
   const pick = exact || items[0];
   return {
@@ -317,9 +321,10 @@ async function searchAndRender(query) {
       data = cache.analysisMap[stock.code];
       if (!data) throw new Error("analysis_cache_miss");
     }
+
     showResultPanel();
     updateResultUrl(stock.code);
-    renderDecisionFromApi(data, stock);
+    renderDecisionFromData(data, stock);
   } catch {
     showResultPanel();
     els.decisionDesc.textContent = "분석 API 연결에 실패했습니다. 백엔드 상태를 확인해주세요.";
@@ -346,9 +351,10 @@ async function renderAutocomplete(keyword) {
       const cache = await loadStaticCache();
       items = cache.autocomplete.filter((x) => normalize(x.name).includes(q) || String(x.code || "").includes(q));
     }
-    if (currentSeq !== autoCompleteSeq) return;
 
+    if (currentSeq !== autoCompleteSeq) return;
     items = items.slice(0, AUTO_COMPLETE_LIMIT);
+
     if (!items.length) {
       els.autoList.classList.remove("active");
       els.autoList.innerHTML = "";
@@ -365,8 +371,41 @@ async function renderAutocomplete(keyword) {
   }
 }
 
-function initQuickTags() {
-  els.quickTags.innerHTML = QUICK_TAGS.map((q) => `<button type="button" data-q="${q}">${q}</button>`).join("");
+function renderRankCard(a, idx, mode) {
+  const signalEmoji = getSignalEmoji(a.signal, a.signal_emoji || "");
+  const logo = getLogoUrl(a.code, a.name || a.code, a.logo_url || "");
+
+  if (mode === "today") {
+    return `
+      <div class="rank-item clickable" data-code="${a.code}">
+        <div class="rank-top">
+          <div class="rank-row">
+            <div class="rank-logo"><img src="${logo}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+            <span class="rank-name">${idx + 1}위 ${a.name || a.code}</span>
+          </div>
+          <strong>${a.favor_score}점</strong>
+        </div>
+        <div class="rank-meta"><span class="emph-catalyst">AI 분석 점수(100점 만점) ${a.favor_score}점</span> · ${signalEmoji} ${a.signal || "중립"}</div>
+      </div>
+    `;
+  }
+
+  if (mode === "tomorrow") {
+    return `
+      <div class="rank-item clickable" data-code="${a.code}">
+        <div class="rank-top">
+          <div class="rank-row">
+            <div class="rank-logo"><img src="${logo}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
+            <span class="rank-name">${idx + 1}. ${a.name || a.code}</span>
+          </div>
+          <strong>${a.tomorrow_prob || 0}%</strong>
+        </div>
+        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrow_prob || 0}%</span> · ${signalEmoji} ${a.signal || "중립"}</div>
+      </div>
+    `;
+  }
+
+  return "";
 }
 
 async function initHomeWidgets() {
@@ -374,45 +413,12 @@ async function initHomeWidgets() {
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
 
   try {
-    let items = [];
-    let themes = [];
-    try {
-      const top = await apiGet("/api/top-stocks?limit=10");
-      items = Array.isArray(top?.top) ? top.top : [];
-      const cache = await loadStaticCache();
-      themes = cache.themes.slice(0, 5);
-    } catch {
-      const cache = await loadStaticCache();
-      items = cache.top.slice(0, 10);
-      themes = cache.themes.slice(0, 5);
-    }
+    const cache = await loadStaticCache();
+    const items = cache.top.slice(0, 10);
+    const themes = cache.themes.slice(0, 5);
 
-    const top5 = items.slice(0, 5);
-    els.todaySurgeList.innerHTML = top5.map((a, idx) => `
-      <div class="rank-item clickable" data-code="${a.code}">
-        <div class="rank-top">
-          <div class="rank-row">
-            <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
-            <span class="rank-name">${idx + 1}위 ${a.name || a.code}</span>
-          </div>
-          <strong>${a.favor_score}점</strong>
-        </div>
-        <div class="rank-meta">AI 분석 점수(100점 만점) ${a.favor_score}점 · ${getSignalEmoji(a.signal, a.signal_emoji || "")} ${a.signal || "중립"}</div>
-      </div>
-    `).join("");
-
-    els.tomorrowTop10.innerHTML = items.map((a, idx) => `
-      <div class="rank-item clickable" data-code="${a.code}">
-        <div class="rank-top">
-          <div class="rank-row">
-            <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
-            <span class="rank-name">${idx + 1}. ${a.name || a.code}</span>
-          </div>
-          <strong>${a.tomorrow_prob || 0}%</strong>
-        </div>
-        <div class="rank-meta">내일 상승 확률 ${a.tomorrow_prob || 0}% · ${getSignalEmoji(a.signal, a.signal_emoji || "")} ${a.signal || "중립"}</div>
-      </div>
-    `).join("");
+    els.todaySurgeList.innerHTML = items.slice(0, 5).map((a, idx) => renderRankCard(a, idx, "today")).join("");
+    els.tomorrowTop10.innerHTML = items.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
 
     els.signalFeed.innerHTML = items.slice(0, 6).map((a) => `
       <div class="feed-item clickable" data-code="${a.code}">
@@ -420,11 +426,11 @@ async function initHomeWidgets() {
           <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
           <strong>${a.name || a.code}</strong>
         </div>
-        <div class="rank-meta">Signal ${a.trigger_count || 0}개 충족 · ${getSignalEmoji(a.signal, a.signal_emoji || "")} ${a.signal || "중립"}</div>
+        <div class="rank-meta"><span class="signal-strong">Signal ${a.trigger_count || 0}개 충족</span> · ${getSignalEmoji(a.signal, a.signal_emoji || "")} ${a.signal || "중립"}</div>
       </div>
     `).join("");
 
-    els.popularList.innerHTML = items.slice(0, 10).map((a, i) => `
+    els.popularList.innerHTML = items.map((a, i) => `
       <div class="feed-item clickable" data-code="${a.code}">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
@@ -449,16 +455,17 @@ async function initHomeWidgets() {
   }
 }
 
+function initQuickTags() {
+  els.quickTags.innerHTML = QUICK_TAGS.map((q) => `<button type="button" data-q="${q}">${q}</button>`).join("");
+}
+
 function initRankingClicks() {
   const onClick = (e) => {
     const item = e.target.closest(".rank-item.clickable, .feed-item.clickable");
     if (!item) return;
     const code = item.dataset.code;
     if (!code) return;
-
-    document
-      .querySelectorAll(".rank-item.clickable.active, .feed-item.clickable.active")
-      .forEach((el) => el.classList.remove("active"));
+    document.querySelectorAll(".rank-item.clickable.active, .feed-item.clickable.active").forEach((el) => el.classList.remove("active"));
     item.classList.add("active");
     searchAndRender(code);
   };
@@ -473,8 +480,7 @@ function initEvents() {
   if (els.manualToggle && els.manualPanel) {
     els.manualToggle.addEventListener("click", (e) => {
       e.stopPropagation();
-      const willOpen = els.manualPanel.hasAttribute("hidden");
-      if (willOpen) els.manualPanel.removeAttribute("hidden");
+      if (els.manualPanel.hasAttribute("hidden")) els.manualPanel.removeAttribute("hidden");
       else els.manualPanel.setAttribute("hidden", "");
     });
   }
@@ -494,17 +500,15 @@ function initEvents() {
   let timer = null;
   els.searchInput.addEventListener("input", () => {
     clearTimeout(timer);
-    timer = setTimeout(() => {
-      renderAutocomplete(els.searchInput.value);
-    }, 180);
+    timer = setTimeout(() => renderAutocomplete(els.searchInput.value), 180);
   });
 
   els.autoList.addEventListener("click", (e) => {
     const li = e.target.closest("li");
     if (!li) return;
-    const key = li.dataset.key;
-    els.searchInput.value = key;
-    searchAndRender(key);
+    const code = li.dataset.key;
+    els.searchInput.value = code;
+    searchAndRender(code);
     els.autoList.classList.remove("active");
   });
 
@@ -517,16 +521,9 @@ function initEvents() {
   });
 
   document.addEventListener("click", (e) => {
-    if (
-      els.manualPanel &&
-      els.manualToggle &&
-      !els.manualPanel.hasAttribute("hidden") &&
-      !els.manualPanel.contains(e.target) &&
-      e.target !== els.manualToggle
-    ) {
+    if (els.manualPanel && els.manualToggle && !els.manualPanel.hasAttribute("hidden") && !els.manualPanel.contains(e.target) && e.target !== els.manualToggle) {
       els.manualPanel.setAttribute("hidden", "");
     }
-
     if (!els.autoList.contains(e.target) && e.target !== els.searchInput) {
       els.autoList.classList.remove("active");
     }

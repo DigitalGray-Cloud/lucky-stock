@@ -95,10 +95,55 @@ function buildAnalysis(stock) {
   const confidence = clamp(Math.round(45 + favor * 0.5), 45, 95);
   const theme = detectTheme(stock, favor);
 
+  const signalFlags = [
+    {
+      key: 'news_spike',
+      label: '뉴스 증가',
+      desc: '최근 뉴스/모멘텀 점수 기준선 상회',
+      active: news >= 62
+    },
+    {
+      key: 'foreign_buy',
+      label: '외국인 매수',
+      desc: '외국인 수급 추정 점수 상단 구간',
+      active: flow >= 58
+    },
+    {
+      key: 'institution_buy',
+      label: '기관 매수',
+      desc: '기관 수급 추정 점수 상단 구간',
+      active: earnings >= 60
+    },
+    {
+      key: 'tech_breakout',
+      label: '기술적 돌파',
+      desc: '가격/심리 결합 시그널 강세',
+      active: sentiment >= 60
+    },
+    {
+      key: 'theme_momentum',
+      label: '테마 모멘텀',
+      desc: `${theme} 테마 평균 점수 우위`,
+      active: industry >= 63
+    },
+    {
+      key: 'volume_spike',
+      label: '거래량 급증',
+      desc: '유동성/심리 결합 지표 활성',
+      active: favor >= 64
+    }
+  ];
+
   const bullPoints = [
-    `${stock.market} 내 수급 개선 가능성`,
-    `${stock.name} 업황 모멘텀 반영`,
-    `AI 점수 ${favor}점 기반 상대 강도 유지`
+    `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,
+    `✅ ${stock.name} 수급/모멘텀이 동시 개선 구간`,
+    `🚀 내일 상승 확률 ${tomorrowProb}% · ${signalEmoji} ${signal}`
+  ];
+
+  const riskPoints = [
+    `⚠️ 단기 급등 후 되돌림 변동성 가능성`,
+    `⚠️ 거시 변수(금리/환율/지수) 급변 시 동반 조정 리스크`,
+    `⚠️ 거래대금 둔화 시 추세 약화 가능성`
   ];
 
   const future = favor >= 70
@@ -128,7 +173,9 @@ function buildAnalysis(stock) {
     prob_1y: prob1y,
     confidence,
     theme,
+    signal_flags: signalFlags,
     bull_points: JSON.stringify(bullPoints),
+    risk_points: JSON.stringify(riskPoints),
     future_outlook: future,
     risk,
     foreign_flow: flowText
@@ -242,6 +289,8 @@ const analysisMap = Object.fromEntries(
         confidence: a.confidence,
         theme: a.theme,
         bull_points: JSON.parse(a.bull_points),
+        risk_points: JSON.parse(a.risk_points || "[]"),
+        signal_flags: a.signal_flags || [],
         future_outlook: a.future_outlook,
         risk: a.risk,
         foreign_flow: a.foreign_flow,

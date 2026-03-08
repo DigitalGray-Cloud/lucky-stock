@@ -40,7 +40,9 @@ const els = {
   newsList: document.getElementById("news-list"),
   clickedRationale: document.getElementById("clicked-rationale"),
   signalSummary: document.getElementById("signal-summary"),
-  signalVisual: document.getElementById("signal-visual")
+  signalVisual: document.getElementById("signal-visual"),
+  shareStatus: document.getElementById("share-status"),
+  shareCopyBtn: document.getElementById("share-copy-btn")
 };
 
 let autoCompleteSeq = 0;
@@ -75,10 +77,101 @@ function getSignalEmoji(signal, fallback = "") {
   return "⚠️";
 }
 
+function buildFiveQaSummaryFromData(data, stockMeta = {}) {
+  const name = stockMeta.name || data.name || data.code || "해당 종목";
+  const code = data.code || stockMeta.code || "-";
+  const market = stockMeta.market || data.market || "KOSPI/KOSDAQ";
+  const favor = Number(data.favor_score || 0);
+  const signal = data.signal || (favor >= 75 ? "상승 가능" : favor >= 55 ? "중립" : "주의");
+  const tomorrowProb = Number(data.tomorrow_prob || 0);
+  const valuation = favor >= 80 ? "밸류 부담이 꽤 있는 편" : favor >= 60 ? "적정~중립 구간" : "할인 인식 구간";
+  const flowHint = data.foreign_flow || "외국인/기관 수급 방향은 추가 확인이 필요";
+  const futureHint = data.future_outlook || "실적 가시성 확인 전까지는 보수적 점검이 필요";
+  const riskHint = data.risk || "시장 변동성 확대 시 단기 낙폭이 커질 수 있음";
+
+  return [
+    "🏢 이 회사 뭐 하는 곳인가",
+    `${name}(${code})은 ${market}에서 거래되는 종목으로, 주가의 핵심은 업황과 실적 체력의 결합입니다.`,
+    "겉으로는 테마주처럼 보일 수 있어도 결국 이익이 늘어나는 구조인지가 장기 방향을 결정합니다.",
+    "시장에서는 단순 뉴스보다 수급과 실적 추정치 변화에 더 크게 반응하는 구간이 자주 나타납니다.",
+    "이 종목은 무엇을 파는 회사인지보다, 어떤 조건에서 이익 레버리지가 붙는지 확인하셔야 합니다.",
+    "핵심은 스토리 자체보다 숫자로 증명되는 사업 체력입니다.",
+    "",
+    "📈 왜 오를 수 있나",
+    `현재 신호는 ${signal}, AI 점수는 ${favor}점으로 완전 약세보다는 반등 논리가 살아 있는 자리입니다.`,
+    tomorrowProb ? `내일 상승 확률 추정치가 ${tomorrowProb}%로 제시되어 단기 모멘텀 기대가 유지됩니다.` : "단기 확률 수치는 제한적이지만 모멘텀 자체는 유효합니다.",
+    `수급 측면에서는 ${flowHint}라는 해석이 가능해 거래대금이 동반되면 탄력이 커질 수 있습니다.`,
+    `전망 측면에서는 ${futureHint} 흐름이 확인될 경우 밸류 재평가 여지가 생깁니다.`,
+    "즉 오를 이유는 분명하지만, 시장이 이를 즉시 가격에 반영하는지는 별도로 확인하셔야 합니다.",
+    "",
+    "⚠️ 뭐가 위험한가",
+    "좋은 회사여도 기대가 앞서가면 실적 발표 시점에 차익 매물이 강하게 나올 수 있습니다.",
+    "업황 회복이 늦어지면 현재 상승 논리의 약한 고리가 먼저 흔들릴 가능성이 높습니다.",
+    `${riskHint} 포인트는 특히 지수 조정장에서 체감 리스크가 커질 수 있습니다.`,
+    "테마 과열 구간에서는 회사 펀더멘털과 무관하게 변동성만 커져 손익이 왜곡되기 쉽습니다.",
+    "결국 리스크는 회사가 나빠서가 아니라 기대치와 현실의 간격에서 발생하는 경우가 많습니다.",
+    "",
+    "💰 지금 가격이 싼가 비싼가",
+    `현재 점수 체계로 보면 절대 저평가 단정보다 ${valuation}으로 해석하는 편이 현실적입니다.`,
+    "많이 오른 것처럼 보여도 이익 추정 상향이 계속되면 비싸 보이는 가격이 정당화될 수 있습니다.",
+    "반대로 싸 보이는 자리라도 할인 이유가 구조적이면 반등이 지연될 수 있습니다.",
+    "그래서 숫자는 단순 레벨보다 시장 기대가 이미 얼마나 선반영됐는지가 중요합니다.",
+    "지금 자리는 싸다/비싸다 이분법보다 부담을 관리하며 접근할 자리인지가 핵심입니다.",
+    "",
+    "🤔 그래서 지금 사도 되나",
+    "지금은 한 번에 비중을 싣기보다 분할 접근으로 리스크를 관리하는 구간입니다.",
+    "단기라면 추격매수보다 눌림에서 거래량 재유입을 확인하고 대응하는 전략이 유리합니다.",
+    "중기라면 실적 확인 이벤트를 통과하면서 비중을 단계적으로 늘리는 방식이 더 안정적입니다.",
+    "신호가 살아 있어도 변동성은 열려 있으니 손절·비중 규칙을 먼저 정하고 접근하셔야 합니다.",
+    "좋은 회사라고 아무 가격에 사는 자리는 아닙니다. 지금 자리는 확신보다 리스크 관리가 먼저입니다."
+  ].join("\n");
+}
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderSummaryHtml(summary) {
+  const headingSet = new Set([
+    "이 회사 뭐 하는 곳인가",
+    "왜 오를 수 있나",
+    "뭐가 위험한가",
+    "지금 가격이 싼가 비싼가",
+    "그래서 지금 사도 되나"
+  ]);
+  const lines = String(summary || "").split("\n");
+  return lines
+    .map((line) => {
+      const t = line.trim();
+      if (!t) return '<div class="summary-gap"></div>';
+      const noEmoji = t.replace(/^[🏢📈⚠️💰🤔]\s*/, "").trim();
+      if (/^[🏢📈⚠️💰🤔]\s/.test(t) || headingSet.has(noEmoji)) {
+        return `<div class="summary-heading">${escapeHtml(t)}</div>`;
+      }
+      return `<div class="summary-line">${escapeHtml(t)}</div>`;
+    })
+    .join("");
+}
+
 function probBar(p) {
   const v = clamp(Number(p || 0), 0, 100);
   const full = Math.round(v / 10);
   return `${"█".repeat(full)}${"░".repeat(10 - full)} ${v}%`;
+}
+
+function probGaugeHtml(p, tone = "blue") {
+  const v = clamp(Number(p || 0), 0, 100);
+  return `
+    <span class="prob-gauge ${tone}">
+      <span class="prob-gauge-value">${v}%</span>
+      <span class="prob-gauge-track"><span style="width:${v}%"></span></span>
+    </span>
+  `;
 }
 
 function getLogoUrl(code, name = "", explicit = "") {
@@ -95,6 +188,67 @@ function decisionClass(signal) {
 
 function renderList(el, items) {
   el.innerHTML = (items || []).map((x) => `<li>${x}</li>`).join("");
+}
+
+function getShareUrl() {
+  return window.location.href;
+}
+
+function setShareStatus(text) {
+  if (!els.shareStatus) return;
+  els.shareStatus.textContent = text;
+  clearTimeout(setShareStatus._t);
+  setShareStatus._t = setTimeout(() => {
+    if (els.shareStatus) els.shareStatus.textContent = "";
+  }, 1800);
+}
+
+async function copyUrlToClipboard() {
+  const url = getShareUrl();
+  try {
+    await navigator.clipboard.writeText(url);
+    setShareStatus("URL 복사 완료");
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = url;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    setShareStatus("URL 복사 완료");
+  }
+}
+
+function openShareWindow(url) {
+  window.open(url, "_blank", "noopener,noreferrer,width=640,height=720");
+}
+
+function handleShare(platform) {
+  const url = encodeURIComponent(getShareUrl());
+  const text = encodeURIComponent("LuckyStock AI 종목 분석");
+
+  if (platform === "twitter") {
+    openShareWindow(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
+    return;
+  }
+  if (platform === "telegram") {
+    openShareWindow(`https://t.me/share/url?url=${url}&text=${text}`);
+    return;
+  }
+  if (platform === "kakao") {
+    openShareWindow(`https://story.kakao.com/share?url=${url}`);
+    return;
+  }
+  if (platform === "instagram") {
+    copyUrlToClipboard();
+    openShareWindow("https://www.instagram.com/");
+    return;
+  }
+  if (platform === "copy") {
+    copyUrlToClipboard();
+  }
 }
 
 function setSearchLoading(active) {
@@ -223,7 +377,10 @@ function renderDecisionFromData(data, stockMeta = {}) {
   els.decisionGuide.textContent = data.cache_hit ? "DB 캐시 결과" : "AI 신규 분석 결과";
   els.aiConfidence.textContent = `${confidence}%`;
   els.catalystScore.textContent = `100점 만점에 ${favor}점`;
-  els.decisionDesc.textContent = data.summary || "분석 요약 없음";
+  const summaryText = (typeof data.summary === "string" && data.summary.includes("🏢 이 회사 뭐 하는 곳인가"))
+    ? data.summary
+    : buildFiveQaSummaryFromData(data, stockMeta);
+  els.decisionDesc.innerHTML = renderSummaryHtml(summaryText || "분석 요약 없음");
 
   const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [
     `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,
@@ -239,14 +396,14 @@ function renderDecisionFromData(data, stockMeta = {}) {
   ];
   renderList(els.riskPoints, riskPoints.slice(0, 3));
 
-  els.prob1m.textContent = `📈 ${probBar(p1)}`;
-  els.prob3m.textContent = `📊 ${probBar(p3)}`;
-  els.prob1y.textContent = `🏆 ${probBar(py)}`;
+  els.prob1m.innerHTML = probGaugeHtml(p1, "blue");
+  els.prob3m.innerHTML = probGaugeHtml(p3, "teal");
+  els.prob1y.innerHTML = probGaugeHtml(py, "gold");
 
   els.flowTable.innerHTML = `
     <div class="flow-row">
       <div class="flow-row-top"><span>내일 상승 확률</span><span>${tomorrowProb}%</span></div>
-      <div class="flow-values"><strong class="foreign">${probBar(tomorrowProb)}</strong></div>
+      <div class="flow-values">${probGaugeHtml(tomorrowProb, "blue")}</div>
     </div>
     <div class="flow-row">
       <div class="flow-row-top"><span>실시간 AI 투자 신호</span><span>${signalEmoji} ${data.signal}</span></div>
@@ -273,7 +430,7 @@ function renderDecisionFromData(data, stockMeta = {}) {
   if (Array.isArray(newsItems) && newsItems.length) {
     els.newsList.innerHTML = newsItems.slice(0, 5).map((n) => `<li><span><a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a></span><span class="rank-meta">${(n.date || "").slice(0, 16)}</span></li>`).join("");
   } else {
-    els.newsList.innerHTML = `<li><span>요약: ${data.summary || "-"}</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
+    els.newsList.innerHTML = `<li><span>관련 최신 뉴스가 아직 수집되지 않았습니다.</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
   }
   els.clickedRationale.innerHTML = `
     <p class="rationale-title"><strong>${name} 판단 근거</strong></p>
@@ -541,6 +698,16 @@ function initEvents() {
     if (!els.autoList.contains(e.target) && e.target !== els.searchInput) {
       els.autoList.classList.remove("active");
     }
+  });
+
+  if (els.shareCopyBtn) {
+    els.shareCopyBtn.addEventListener("click", () => handleShare("copy"));
+  }
+
+  document.querySelectorAll("[data-share]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      handleShare(btn.dataset.share);
+    });
   });
 }
 

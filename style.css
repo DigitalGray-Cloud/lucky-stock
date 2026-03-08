@@ -683,7 +683,12 @@ body {
 .decision-grid span,
 .prob-grid span { color: var(--muted); font-size: 0.75rem; }
 .decision-grid strong,
-.prob-grid strong { display: block; margin-top: 6px; font-size: 1.02rem; }
+.prob-grid strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
 
 .decision-grid span {
   font-weight: 900;
@@ -694,6 +699,32 @@ body {
 .desc {
   margin: 12px 0 0;
   color: #1f2937;
+  border-top: 2px solid #dbe7fb;
+  padding-top: 10px;
+}
+
+.summary-heading {
+  margin-top: 12px;
+  font-weight: 900;
+  font-size: 1.14rem;
+  letter-spacing: -0.01em;
+  color: #05255f;
+  border: 1.5px solid #8fb2f2;
+  border-left: 8px solid #1d5fd4;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #dce9ff 0%, #eff5ff 55%, #f8fbff 100%);
+  padding: 9px 12px;
+  box-shadow: 0 2px 10px rgba(17, 70, 167, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.86);
+}
+
+.summary-line {
+  margin-top: 6px;
+  line-height: 1.62;
+  padding-left: 2px;
+}
+
+.summary-gap {
+  height: 8px;
 }
 
 .decision-guide {
@@ -785,6 +816,43 @@ body {
 .flow-values strong { font-size: 0.9rem; }
 .flow-values .foreign { color: #0f4bc1; }
 .flow-values .inst { color: #0f9f6e; }
+
+.prob-gauge {
+  display: inline-grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.prob-gauge-value {
+  font-weight: 900;
+  font-size: 0.98rem;
+  color: #0b357f;
+}
+
+.prob-gauge-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #e3ebfb;
+  overflow: hidden;
+  position: relative;
+}
+
+.prob-gauge-track > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f6fe4 0%, #7aa5ff 100%);
+}
+
+.prob-gauge.teal .prob-gauge-track > span {
+  background: linear-gradient(90deg, #0fa3a5 0%, #59d2c6 100%);
+}
+
+.prob-gauge.gold .prob-gauge-track > span {
+  background: linear-gradient(90deg, #c28a12 0%, #e8c261 100%);
+}
 
 .valuation {
   margin: 0;

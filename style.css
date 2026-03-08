@@ -388,6 +388,81 @@ body {
   font-weight: 700;
 }
 
+.share-row {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.share-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #c7d8f1;
+  background: #f4f8ff;
+  color: #0b357f;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.share-label svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  border: 1px solid #c8d4e8;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 10px 14px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.share-btn:hover {
+  border-color: #1146a7;
+  box-shadow: 0 6px 14px rgba(17, 70, 167, 0.15);
+  transform: translateY(-1px);
+}
+
+.share-btn svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+
+.share-btn[data-share="twitter"] { color: #111111; }
+.share-btn[data-share="instagram"] { color: #c13584; }
+.share-btn[data-share="kakao"] { color: #7a5800; background: #ffeb3b; border-color: #f2d633; }
+.share-btn[data-share="telegram"] { color: #229ed9; }
+
+.share-btn.copy {
+  background: linear-gradient(180deg, #0f4bc1, #1146a7);
+  border-color: #1146a7;
+  color: #ffffff;
+}
+
+.share-status {
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  color: #0f9f6e;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
 .chip {
   font-size: 0.75rem;
   border: 1px solid #dce6f4;
@@ -1022,6 +1097,21 @@ body {
 
   .result-flow-banner p {
     font-size: 0.9rem;
+  }
+
+  .share-row {
+    gap: 8px;
+  }
+
+  .share-btn {
+    min-height: 42px;
+    padding: 9px 12px;
+    font-size: 0.86rem;
+  }
+
+  .share-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .signal-item {

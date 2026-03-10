@@ -1254,3 +1254,33 @@ body {
 .stock-page-link:hover {
   background: #dde8ff;
 }
+
+.stock-head-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.stock-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stock-page-link-top {
+  margin-top: 0;
+  padding: 0.6rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0f4bc1, #1146a7);
+  border-color: #1146a7;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(17, 70, 167, 0.2);
+  white-space: nowrap;
+}
+
+.stock-page-link-top:hover {
+  background: linear-gradient(180deg, #0d43ac, #0f3f96);
+  color: #ffffff;
+}

@@ -20,6 +20,7 @@ const els = {
   companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
   companyCode: document.getElementById("company-code"),
+  stockPageLinkTop: document.getElementById("stock-page-link-top"),
   aiDecision: document.getElementById("ai-decision"),
   decisionGuide: document.getElementById("decision-guide"),
   aiConfidence: document.getElementById("ai-confidence"),
@@ -309,6 +310,7 @@ function initEmptyResultState() {
   els.resultPanel.classList.add("hidden");
   els.companyName.textContent = "-";
   els.companyCode.textContent = "-";
+  if (els.stockPageLinkTop) els.stockPageLinkTop.href = "/";
   els.aiDecision.textContent = "-";
   els.aiConfidence.textContent = "-";
   els.catalystScore.textContent = "-";
@@ -498,6 +500,10 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
 
   els.companyName.textContent = name;
   els.companyCode.textContent = `${code} · ${market}${price ? ` · ${formatNumber(price)}원` : ""}`;
+  if (els.stockPageLinkTop) {
+    els.stockPageLinkTop.href = `/stock/${code}`;
+    els.stockPageLinkTop.textContent = `📄 ${name} 전용 분석 페이지`;
+  }
 
   els.aiDecision.textContent = `${signalEmoji} ${data.signal}`;
   els.aiDecision.className = `decision ${decisionClass(data.signal)}`;

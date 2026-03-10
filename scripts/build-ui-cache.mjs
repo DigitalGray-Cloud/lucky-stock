@@ -526,8 +526,11 @@ function buildHeadlineImpactNarrative(stock, item, theme) {
 function buildPositiveNarrative(stock, newsContext, theme) {
   return newsContext.top
     .slice(0, 3)
-    .map((item) => `${summarizeDate(item.date)} '${item.title}' 뉴스는 ${buildHeadlineImpactNarrative(stock, item, theme)}`)
-    .join(' ');
+    .flatMap((item) => [
+      `${summarizeDate(item.date)} '${item.title}'`,
+      `-> 이 뉴스는 ${buildHeadlineImpactNarrative(stock, item, theme)}`,
+      ''
+    ]);
 }
 
 function buildWhyNewsMatters(stock, newsContext, theme) {
@@ -568,8 +571,8 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
   const valuation = favor >= 80 ? "기대가 꽤 반영된 구간" : favor >= 60 ? "적정~중립 구간" : "아직 기대가 덜 붙은 구간";
   const topNews = newsContext.top;
   const recentNewsLines = topNews.length
-    ? topNews.map((item) => `${summarizeDate(item.date)} '${item.title}'`).join(", ")
-    : "";
+    ? topNews.map((item) => `${summarizeDate(item.date)} '${item.title}'`)
+    : [];
 
   const whyMatters = buildWhyNewsMatters(stock, newsContext, theme);
   const nextEvent = buildNextEvent(stock, newsContext);
@@ -580,8 +583,11 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
   if (newsContext.grade === 'A') {
     section2.push(
       `지금 ${stock.name}이 오를 수 있는 가장 현실적인 이유는 최근 기업 고유 뉴스가 단순한 주가 자극이 아니라, 시장이 크게 반응할 만한 사업 확장 스토리로 읽히기 때문입니다.`,
-      `최근 핵심 뉴스는 ${recentNewsLines} 입니다.`,
-      positiveNarrative,
+      `최근 핵심 뉴스는`,
+      ...recentNewsLines,
+      `입니다.`,
+      "",
+      ...positiveNarrative,
       whyMatters,
       `${signal} 신호와 내일 상승확률 ${tomorrowProb}%는 이런 뉴스 해석이 단기 수급 명분까지 만들 수 있다는 점을 보여줍니다.`,
       nextEvent,
@@ -590,19 +596,28 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
   } else if (newsContext.grade === 'B' && newsContext.tone !== 'negative') {
     section2.push(
       `최근 ${stock.name} 관련 뉴스는 아예 비어 있지는 않지만, 지금 당장 주가를 강하게 재평가할 결정타라고 보기엔 아직 한 단계 부족합니다.`,
-      `확인된 핵심 뉴스는 ${recentNewsLines} 정도로 압축할 수 있습니다.`,
-      positiveNarrative,
+      `확인된 핵심 뉴스는`,
+      ...recentNewsLines,
+      `정도로 압축할 수 있습니다.`,
+      "",
+      ...positiveNarrative,
       whyMatters,
       `다만 현재 신호는 ${signal}, AI 점수는 ${favor}점이라 완전 약세보다는 뉴스 한두 건이 더 붙을 때 반응이 나올 수 있는 중간 구간에 가깝습니다.`,
       nextEvent,
       breakCondition
     );
   } else {
+    section2.push(`솔직히 말하면 지금 ${stock.name}에 대해 주가를 강하게 밀어 올릴 만한 신규 핵심 호재는 뚜렷하지 않습니다.`);
+    if (newsContext.top.length) {
+      section2.push(
+        `오히려 최근 수집된 기사에는`,
+        ...recentNewsLines,
+        `처럼 논란성·검증성·제한적 재료가 섞여 있어, 이를 곧바로 강한 호재로 해석하긴 어렵습니다.`
+      );
+    } else {
+      section2.push(`최근 수집된 기사들 중 상당수는 시황성·주가 해설성 내용이거나, 기업가치를 바로 바꾼다고 보기 어려운 수준이었습니다.`);
+    }
     section2.push(
-      `솔직히 말하면 지금 ${stock.name}에 대해 주가를 강하게 밀어 올릴 만한 신규 핵심 호재는 뚜렷하지 않습니다.`,
-      newsContext.top.length
-        ? `오히려 최근 수집된 기사에는 ${recentNewsLines}처럼 논란성·검증성·제한적 재료가 섞여 있어, 이를 곧바로 강한 호재로 해석하긴 어렵습니다.`
-        : `최근 수집된 기사들 중 상당수는 시황성·주가 해설성 내용이거나, 기업가치를 바로 바꾼다고 보기 어려운 수준이었습니다.`,
       `그래서 현재 ${signal} 신호와 AI 점수 ${favor}점은 뉴스 폭발보다는 기존 기대와 수급이 버티는지 보는 구간으로 해석하는 편이 맞습니다.`,
       nextEvent,
       `당장 뚜렷한 새 호재가 안 보이는 만큼, 지금은 무리하게 의미를 부여하기보다 다음 실적·공시·계약 뉴스가 나올 때까지 기다리는 접근이 더 자연스럽습니다.`,

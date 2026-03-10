@@ -139,7 +139,19 @@ function escapeHtml(text) {
     .replace(/'/g, "&#39;");
 }
 
-function renderSummaryHtml(summary) {
+function findNewsLinkForSummaryLine(code, line) {
+  const text = String(line || "").trim();
+  if (!code || !text) return "";
+  const items = Array.isArray(cacheState.newsMap?.[code]) ? cacheState.newsMap[code] : [];
+  const titleOnly = text.replace(/^\d{4}-\d{2}-\d{2}\s+/, "").replace(/^['"]|['"]$/g, "");
+  const hit = items.find((item) => {
+    const itemTitle = String(item?.title || "").trim();
+    return itemTitle && (text.includes(itemTitle) || titleOnly.includes(itemTitle) || itemTitle.includes(titleOnly));
+  });
+  return String(hit?.link || "");
+}
+
+function renderSummaryHtml(summary, code = "") {
   const headingSet = new Set([
     "이 회사 뭐 하는 곳인가",
     "왜 오를 수 있나",
@@ -155,6 +167,18 @@ function renderSummaryHtml(summary) {
       const noEmoji = t.replace(/^[🏢📈⚠️💰🤔]\s*/, "").trim();
       if (/^[🏢📈⚠️💰🤔]\s/.test(t) || headingSet.has(noEmoji)) {
         return `<div class="summary-heading">${escapeHtml(t)}</div>`;
+      }
+      if (/^\d{4}-\d{2}-\d{2}\s+['"].+['"]/.test(t)) {
+        const href = findNewsLinkForSummaryLine(code, t);
+        const text = escapeHtml(t);
+        if (href) {
+          return `<div class="summary-news-title"><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></div>`;
+        }
+        return `<div class="summary-news-title">${text}</div>`;
+      }
+      if (t.startsWith("-> ")) {
+        const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        return `<div class="summary-news-explain">${boldHtml}</div>`;
       }
       const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       return `<div class="summary-line">${boldHtml}</div>`;
@@ -483,7 +507,7 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
   const summaryText = (typeof data.summary === "string" && data.summary.includes("🏢 이 회사 뭐 하는 곳인가"))
     ? data.summary
     : buildFiveQaSummaryFromData(data, stockMeta);
-  els.decisionDesc.innerHTML = renderSummaryHtml(summaryText || "분석 요약 없음");
+  els.decisionDesc.innerHTML = renderSummaryHtml(summaryText || "분석 요약 없음", code);
 
   const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [
     `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,

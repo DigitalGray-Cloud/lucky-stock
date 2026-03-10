@@ -18,6 +18,7 @@
     "db:status": "node scripts/db-status.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "better-sqlite3": "^12.6.2",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",

@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-03-09T13:55:46.065Z",
+  "items": [
+    {
+      "theme": "로봇",
+      "avg_score": 82,
+      "count": 20
+    },
+    {
+      "theme": "AI플랫폼",
+      "avg_score": 79,
+      "count": 101
+    },
+    {
+      "theme": "AI반도체",
+      "avg_score": 78,
+      "count": 27
+    },
+    {
+      "theme": "식품",
+      "avg_score": 75,
+      "count": 13
+    },
+    {
+      "theme": "2차전지",
+      "avg_score": 75,
+      "count": 9
+    },
+    {
+      "theme": "유통",
+      "avg_score": 71,
+      "count": 14
+    },
+    {
+      "theme": "제약/바이오",
+      "avg_score": 70,
+      "count": 189
+    },
+    {
+      "theme": "금융",
+      "avg_score": 70,
+      "count": 67
+    },
+    {
+      "theme": "철강/소재",
+      "avg_score": 70,
+      "count": 41
+    },
+    {
+      "theme": "해운/물류",
+      "avg_score": 70,
+      "count": 4
+    }
+  ]
+}

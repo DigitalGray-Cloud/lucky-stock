@@ -1,0 +1,5 @@
+
+> luckystock-backend@2.0.0 batch:market-sync
+> node scripts/market-sync.mjs
+
+[market-sync] skipped: out of market hours (KST)

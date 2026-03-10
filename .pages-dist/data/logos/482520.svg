@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0B1F3A"/>
+      <stop offset="100%" stop-color="#144D8B"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#g)"/>
+  <text x="128" y="122" text-anchor="middle" fill="#ffffff" font-size="34" font-family="Arial, sans-serif" font-weight="700">482520</text>
+  <text x="128" y="164" text-anchor="middle" fill="#D7E8FF" font-size="20" font-family="Arial, sans-serif">교보16호스팩</text>
+</svg>

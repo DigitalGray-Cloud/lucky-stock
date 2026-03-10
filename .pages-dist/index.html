@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuckyStock AI | AI 한국 주식 투자 판단 엔진</title>
+  <meta name="description" content="한국 주식 투자 판단 엔진 LuckyStock AI. 종목 검색 3초 내 AI BUY/HOLD/SELL 결론, AI 분석 점수, 수급, 위험, 전망 제공." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="author" content="LuckyStock AI" />
+  <meta name="theme-color" content="#1146a7" />
+  <link rel="canonical" href="https://luckystock.pages.dev/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LuckyStock AI" />
+  <meta property="og:title" content="LuckyStock AI | AI 한국 주식 투자 판단 엔진" />
+  <meta property="og:description" content="종목 검색 3초 내 AI 투자 판단, 점수, 수급, 리스크, 상승 확률 제공." />
+  <meta property="og:url" content="https://luckystock.pages.dev/" />
+  <meta property="og:image" content="https://luckystock.pages.dev/favicon.png" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LuckyStock AI | AI 한국 주식 투자 판단 엔진" />
+  <meta name="twitter:description" content="한국 주식 투자 판단 엔진. AI 점수/신호/확률/리스크를 빠르게 확인하세요." />
+  <meta name="twitter:image" content="https://luckystock.pages.dev/favicon.png" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2579165029846981" crossorigin="anonymous"></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7Z766ZWFG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-R7Z766ZWFG');
+  </script>
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vsiiv6kbxt");
+  </script>
+  <link rel="stylesheet" href="/style.css?v=20260308d" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LuckyStock AI",
+    "url": "https://luckystock.pages.dev/",
+    "inLanguage": "ko",
+    "description": "한국 주식 종목 분석과 투자 판단 보조 정보를 제공하는 서비스",
+    "publisher": {
+      "@type": "Organization",
+      "name": "LuckyStock AI",
+      "url": "https://luckystock.pages.dev/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://luckystock.pages.dev/favicon.png"
+      }
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "LuckyStock AI는 투자 권유 서비스인가요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "아니요. LuckyStock AI는 투자 판단 보조 도구이며 최종 투자 책임은 사용자에게 있습니다."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "데이터는 어디에서 수집되나요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "KRX, 네이버금융, Google News 기반 데이터를 배치로 가공해 제공합니다."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-badge" aria-hidden="true">
+        <img src="/favicon.png" alt="LuckyStock AI 로고" />
+      </div>
+      <div>
+        <p class="brand-title">LuckyStock AI</p>
+        <p class="brand-sub">AI 한국 주식 투자 판단 엔진</p>
+      </div>
+    </div>
+    <div class="top-right-tools">
+      <p class="build-note">KOSPI · KOSDAQ · v2.1.0</p>
+      <button id="manual-toggle" class="manual-btn" type="button">사용 매뉴얼</button>
+      <div id="manual-panel" class="manual-panel" hidden>
+        <h4>LuckyStock AI 사용법</h4>
+        <ol>
+          <li>종목명/코드를 검색하면 3초 내 AI 결론을 확인합니다.</li>
+          <li>결론(BUY/HOLD/SELL)과 Signal 충족 개수, 뉴스 근거를 함께 확인합니다.</li>
+          <li>Top5/Top10/Signal/인기 종목을 클릭하면 해당 종목 분석으로 이동합니다.</li>
+        </ol>
+        <p><strong>투자 책임 고지:</strong> 본 서비스는 투자 보조 도구이며 최종 투자 판단과 책임은 본인에게 있습니다.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <h1>AI가 말해주는 지금 사야 할 한국 주식</h1>
+      <p>분석 사이트가 아니라 결론 엔진입니다. 검색하면 3초 내 투자 판단을 제공합니다.</p>
+      <div class="search-row">
+        <input id="stock-search" type="text" placeholder="종목명 또는 종목코드 입력 (예: 삼성전자, 005930)" autocomplete="off" />
+        <button id="search-btn" type="button">지금 판단</button>
+      </div>
+      <ul id="autocomplete-list" class="autocomplete-list"></ul>
+      <div id="quick-tags" class="quick-tags"></div>
+    </section>
+
+    <section class="ad-card" aria-label="광고 영역">
+      <div class="ad-label">광고</div>
+      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000101" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <p class="ad-note">광고는 콘텐츠와 명확히 구분되어 표시됩니다.</p>
+    </section>
+
+    <section class="grid-two">
+      <article class="card">
+        <div class="section-head emph">
+          <h2 id="today-headline">오늘 AI 발견 급등주</h2>
+          <span class="chip">Top 5</span>
+        </div>
+        <div id="today-surge-list" class="rank-list"></div>
+      </article>
+
+      <article class="card">
+        <div class="section-head emph">
+          <h2 id="tomorrow-headline">AI 급등 가능성 추천 TOP10 (내일 2026-03-09)</h2>
+          <span class="chip">예측</span>
+        </div>
+        <div id="tomorrow-top10" class="rank-list compact"></div>
+      </article>
+    </section>
+
+    <section class="grid-three">
+      <article class="card">
+        <h3><span class="mini-badge signal">Signal</span>실시간 AI 투자 신호</h3>
+        <div id="signal-feed" class="mini-feed"></div>
+      </article>
+      <article class="card">
+        <h3><span class="mini-badge popular">Popular</span>인기 검색 TOP 10</h3>
+        <div id="popular-list" class="mini-feed"></div>
+      </article>
+      <article class="card">
+        <h3><span class="mini-badge theme">Theme</span>테마 급등 탐지</h3>
+        <div id="theme-feed" class="mini-feed"></div>
+      </article>
+    </section>
+
+    <section id="result-panel" class="result-panel hidden">
+      <div class="result-flow-banner">
+        <div class="result-banner-head">
+          <div class="result-mark" aria-hidden="true">
+            <img src="https://cdn.simpleicons.org/chartdotjs/1d4ed8" alt="검색 결과 아이콘" />
+          </div>
+          <h2>검색 결과</h2>
+          <div id="search-loading" class="search-loading" hidden><span class="spinner"></span>검색 중...</div>
+        </div>
+        <p>검색 → 결론 → 이유 → 점수 → 위험 → 수급 → 전망</p>
+        <p class="signal-legend-line">AI 투자 신호: 🔥 강한 상승 · 📈 상승 가능 · ➖ 중립 · ⚠️ 주의 · 🔻 리스크</p>
+        <div class="share-row" aria-label="공유 버튼">
+          <div class="share-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16a3 3 0 0 0-2.39 1.2l-6.54-3.27a3.08 3.08 0 0 0 0-1.86l6.54-3.27A3 3 0 1 0 15 7a2.9 2.9 0 0 0 .07.63L8.54 10.9a3 3 0 1 0 0 2.2l6.53 3.27A3 3 0 1 0 18 16z"/></svg>
+            <span>공유</span>
+          </div>
+          <button type="button" class="share-btn" data-share="twitter" aria-label="X 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.77 7.74L23 22h-6.1l-4.78-6.26L6.64 22H3.5l7.24-8.28L1 2h6.24l4.32 5.7L18.9 2zm-1.07 18h1.69L6.32 3.9H4.5L17.83 20z"/></svg>
+            <span>X</span>
+          </button>
+          <button type="button" class="share-btn" data-share="instagram" aria-label="인스타 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm11.5 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+            <span>인스타</span>
+          </button>
+          <button type="button" class="share-btn" data-share="kakao" aria-label="카톡 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.48 3 2 6.59 2 11c0 2.86 1.9 5.36 4.77 6.75L6 22l4.52-3.02c.49.06.98.1 1.48.1 5.52 0 10-3.59 10-8.08S17.52 3 12 3z"/></svg>
+            <span>카톡</span>
+          </button>
+          <button type="button" class="share-btn" data-share="telegram" aria-label="텔레그램 공유">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 3.8 11c-1.2.48-1.2 1.14-.22 1.44l4.56 1.42 1.74 5.5c.22.68.4.94.82.94.32 0 .46-.14.64-.32l2.2-2.14 4.58 3.38c.84.46 1.44.22 1.66-.78L23 6.1c.32-1.2-.46-1.74-1.4-1.9zM9.7 13.55l9.6-6.06c.48-.3.92-.14.56.18l-7.9 7.12-.3 3.44-1.96-4.68z"/></svg>
+            <span>텔레그램</span>
+          </button>
+          <button type="button" class="share-btn copy" id="share-copy-btn" aria-label="URL 복사">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h10a2 2 0 0 1 2 2v10h-2V5H8V3zm-3 4h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm0 2v10h10V9H5z"/></svg>
+            <span>URL 복사</span>
+          </button>
+          <span id="share-status" class="share-status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <article class="card decision-card">
+          <div class="stock-head">
+            <div class="stock-logo"><img id="company-logo-img" alt="기업 로고" /></div>
+            <div>
+              <p class="stock-name"><span id="company-name">삼성전자</span></p>
+              <p id="company-code" class="stock-code">005930 · KOSPI</p>
+            </div>
+          </div>
+          <div class="decision-grid">
+            <div><span>AI Decision</span><strong id="ai-decision" class="decision buy">BUY</strong></div>
+            <div><span>AI Confidence</span><strong id="ai-confidence">78%</strong></div>
+            <div><span>AI 분석 점수 (100점 만점)</span><strong id="catalyst-score">100점 만점에 82점</strong></div>
+          </div>
+          <p id="decision-guide" class="decision-guide">HOLD: 신호 대기 구간 (분할매수/관망)</p>
+          <div class="decision-legend">
+            <span class="legend buy">BUY = 매수(상승 확률/수급 우세)</span>
+            <span class="legend hold">HOLD = 보유·관망(추가 신호 대기)</span>
+            <span class="legend sell">SELL = 매도(리스크/과열 구간)</span>
+          </div>
+          <p id="decision-desc" class="desc">반도체 업황 회복과 외국인 매수 증가로 상승 가능성</p>
+        </article>
+
+        <article class="card">
+          <h3>지금 사는 이유</h3>
+          <ul id="buy-reasons" class="bullet"></ul>
+        </article>
+
+        <article class="card">
+          <h3>주의 사항</h3>
+          <ul id="risk-points" class="bullet"></ul>
+        </article>
+
+        <article class="card">
+          <h3>상승 확률</h3>
+          <div class="prob-grid">
+            <div><span>1개월</span><strong id="prob-1m">62%</strong></div>
+            <div><span>3개월</span><strong id="prob-3m">71%</strong></div>
+            <div><span>1년</span><strong id="prob-1y">79%</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>외국인 및 기관 수급 (최근 5일)</h3>
+          <div id="flow-table" class="flow-table"></div>
+        </article>
+
+        <article class="card">
+          <h3>기술적 분석</h3>
+          <div class="prob-grid">
+            <div><span>52주 최고 대비</span><strong id="tech-high-diff">-18%</strong></div>
+            <div><span>지지선</span><strong id="tech-support">68,000</strong></div>
+            <div><span>저항선</span><strong id="tech-resistance">75,000</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>밸류에이션 평가</h3>
+          <p id="valuation-badge" class="valuation">적정</p>
+          <p id="valuation-desc" class="muted">동종 업계 대비 상대 밸류에이션 기준</p>
+        </article>
+
+        <article class="card">
+          <h3>AI 분석 점수 구성</h3>
+          <div id="score-breakdown" class="score-breakdown"></div>
+        </article>
+
+        <article class="card full signal-card">
+          <h3>AI 시그널 판정</h3>
+          <p id="signal-summary" class="signal-summary">Signal 0개 충족</p>
+          <div id="signal-visual" class="signal-visual"></div>
+        </article>
+
+        <article class="card full">
+          <h3>최신 뉴스 근거</h3>
+          <ul id="news-list" class="news-list"></ul>
+        </article>
+
+        <article class="card full">
+          <h3>클릭 종목 판단 근거 요약</h3>
+          <div id="clicked-rationale" class="clicked-rationale">급등주/내일 Top10에서 종목을 클릭하면 이 영역에 판단 근거가 표시됩니다.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="ad-card" aria-label="광고 영역">
+      <div class="ad-label">광고</div>
+      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000102" data-ad-format="rectangle" data-full-width-responsive="true"></ins>
+      <p class="ad-note">광고 클릭 유도 문구 없이 정보 콘텐츠를 우선 제공합니다.</p>
+    </section>
+
+    <section class="content-quality card">
+      <h2>서비스 운영 원칙</h2>
+      <ul class="bullet">
+        <li>중복 페이지/중복 콘텐츠를 만들지 않고, 한 페이지에 핵심 정보를 집중 제공합니다.</li>
+        <li>광고보다 콘텐츠가 먼저 보이도록 구성하며 광고와 본문을 명확히 구분합니다.</li>
+        <li>투자 판단 보조 도구이며 최종 투자 책임은 사용자에게 있습니다.</li>
+      </ul>
+    </section>
+
+    <section class="content-quality card">
+      <h2>데이터 및 콘텐츠 품질</h2>
+      <ul class="bullet">
+        <li>가격/랭킹/신호/뉴스 데이터는 배치 작업으로 주기 갱신됩니다.</li>
+        <li>AI 분석 결과는 점수 및 신호 기준과 함께 설명 텍스트를 제공합니다.</li>
+        <li>최신성 확인 시 캐시 시점과 뉴스 근거를 함께 검토하세요.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <strong>LuckyStock AI</strong>
+      <p>데이터 출처: KRX/네이버금융/Google News 기반 가공 데이터</p>
+    </div>
+    <div class="footer-links">
+      <a href="/about">서비스 소개</a>
+      <a href="/privacy">개인정보 처리방침</a>
+      <a href="/contact">문의</a>
+    </div>
+  </footer>
+
+  <script defer src="/main.js?v=20260308d"></script>
+</body>
+</html>

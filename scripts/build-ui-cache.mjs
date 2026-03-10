@@ -137,6 +137,129 @@ function detectTheme(stock) {
   return '기타';
 }
 
+const COMPANY_INTRO_OVERRIDES = {
+  '005930': [
+    '삼성전자는 반도체, 스마트폰, 가전, 디스플레이 등 국내 대표 IT 제조 사업을 영위하는 기업입니다.',
+    '국내 대형 수출주 가운데 하나로, 실적은 메모리 업황과 IT 수요 변화에 큰 영향을 받습니다.'
+  ],
+  '000660': [
+    'SK하이닉스는 D램과 낸드플래시를 중심으로 하는 글로벌 메모리 반도체 기업입니다.',
+    '실적과 주가 방향은 서버, AI, 모바일 수요와 메모리 업황 사이클의 영향을 크게 받습니다.'
+  ],
+  '035420': [
+    'NAVER는 검색, 커머스, 콘텐츠, 클라우드 등 인터넷 플랫폼 사업을 영위하는 기업입니다.',
+    '광고와 커머스 성장, 비용 통제가 실적 해석의 핵심 축입니다.'
+  ],
+  '020560': [
+    '아시아나항공은 국내외 여객 및 화물 노선을 운영하는 국내 대형 항공사 중 하나입니다.',
+    '항공 수요, 운임, 유가, 환율과 같은 변수들이 실적과 주가 흐름에 직접 영향을 줍니다.'
+  ],
+  '000250': [
+    '삼천당제약은 의약품 개발·생산·판매와 바이오 파이프라인 사업을 함께 보는 제약·바이오 기업입니다.',
+    '주가 해석에서는 개별 품목과 파이프라인이 실제 매출과 이익으로 이어지는지가 핵심입니다.'
+  ]
+};
+
+const THEME_INTRO_MAP = {
+  '항공': [
+    '국내외 여객 및 화물 운송을 운영하는 항공 관련 기업입니다.',
+    '운임, 유가, 환율, 여행 수요 변화가 실적과 주가에 직접 연결되는 업종입니다.'
+  ],
+  '제약/바이오': [
+    '의약품 개발·생산·판매와 바이오 파이프라인을 주요 사업으로 보는 기업입니다.',
+    '개별 품목, 허가, 기술이전, 매출 인식 여부가 기업가치 해석에서 중요합니다.'
+  ],
+  'AI반도체': [
+    '반도체와 관련 부품·소재·장비 또는 IT 제조를 핵심 사업으로 보는 기업입니다.',
+    '메모리 업황, 설비투자, 고객사 수요 변화가 실적 해석에 중요한 변수입니다.'
+  ],
+  'AI플랫폼': [
+    '플랫폼, 소프트웨어, 인터넷 서비스, 콘텐츠 등 디지털 서비스 사업을 영위하는 기업입니다.',
+    '트래픽, 광고, 구독, 커머스 등 핵심 지표가 실적과 밸류에이션에 영향을 줍니다.'
+  ],
+  '2차전지': [
+    '배터리 소재, 셀, 장비, 부품 등 2차전지 밸류체인에 속한 기업입니다.',
+    '전방 수요와 원재료 가격, 증설 속도가 실적 방향에 큰 영향을 줍니다.'
+  ],
+  '전기차': [
+    '전기차와 관련 부품·충전·자율주행 밸류체인에서 사업을 영위하는 기업입니다.',
+    '완성차 수요와 전동화 투자 흐름이 핵심 변수로 작용합니다.'
+  ],
+  '자동차': [
+    '완성차 또는 자동차 부품 사업을 영위하는 기업입니다.',
+    '판매량, 환율, 원가, 신차 효과가 실적과 주가를 좌우하는 편입니다.'
+  ],
+  '로봇': [
+    '산업용·서비스용 로봇 또는 자동화 장비 사업을 영위하는 기업입니다.',
+    '고객사 투자 사이클과 신규 수주 흐름이 실적 해석의 핵심입니다.'
+  ],
+  '반도체장비': [
+    '반도체 공정 장비·소재 공급을 핵심으로 하는 기업입니다.',
+    '고객사 설비투자와 수주 인식 속도가 실적에 큰 영향을 줍니다.'
+  ],
+  '철강/소재': [
+    '철강, 비철, 소재 생산과 가공을 주요 사업으로 보는 기업입니다.',
+    '제품 스프레드와 업황, 원재료 가격이 수익성에 직접 연결됩니다.'
+  ],
+  '화학': [
+    '석유화학, 정밀화학, 소재 사업을 영위하는 기업입니다.',
+    '제품 가격, 원재료 비용, 업황 사이클이 실적에 큰 영향을 줍니다.'
+  ],
+  '에너지': [
+    '발전, 가스, 정유, 에너지 설비 등 에너지 관련 사업을 영위하는 기업입니다.',
+    '국제 에너지 가격과 정책 변수에 민감한 편입니다.'
+  ],
+  '금융': [
+    '은행, 증권, 보험, 카드 등 금융 서비스를 제공하는 기업입니다.',
+    '금리, 건전성, 대손비용, 자본정책이 기업가치 해석의 핵심입니다.'
+  ],
+  '유통': [
+    '오프라인·온라인 유통과 소비재 판매를 주요 사업으로 하는 기업입니다.',
+    '소비 경기와 점포/채널 경쟁력이 실적에 직접 반영됩니다.'
+  ],
+  '식품': [
+    '식품, 음료, 외식 또는 원재료 가공 사업을 영위하는 기업입니다.',
+    '원가 부담과 브랜드 판매력이 수익성에 중요하게 작용합니다.'
+  ],
+  '게임/엔터': [
+    '게임, 음악, 영상, 콘텐츠 등 IP 기반 사업을 영위하는 기업입니다.',
+    '신작 흥행과 팬덤 확장, 콘텐츠 성과가 실적 변동의 핵심입니다.'
+  ],
+  '건설': [
+    '건설, 주택, 플랜트, 엔지니어링 사업을 영위하는 기업입니다.',
+    '수주, 원가율, 부동산 경기와 프로젝트 진행 속도가 실적에 중요합니다.'
+  ],
+  '해운/물류': [
+    '해운, 물류, 운송 서비스를 주요 사업으로 하는 기업입니다.',
+    '운임과 물동량, 글로벌 경기 흐름이 실적에 직접 연결됩니다.'
+  ],
+  '통신': [
+    '무선·유선 통신과 네트워크 기반 서비스를 제공하는 기업입니다.',
+    '가입자 지표와 투자비, 요금 정책이 수익성에 영향을 줍니다.'
+  ],
+  '기타': [
+    '국내 증시에서 자체 사업 포트폴리오를 바탕으로 영업하는 상장사입니다.',
+    '주가 해석에서는 개별 사업부 실적과 기업 고유 이슈를 함께 보는 편이 맞습니다.'
+  ]
+};
+
+function buildCompanyIntro(stock, theme) {
+  const override = COMPANY_INTRO_OVERRIDES[stock.code];
+  if (override) {
+    return [
+      '🏢 이 회사 뭐 하는 곳인가',
+      ...override
+    ].join('\n');
+  }
+
+  const intro = THEME_INTRO_MAP[theme] || THEME_INTRO_MAP['기타'];
+  return [
+    '🏢 이 회사 뭐 하는 곳인가',
+    `${stock.name}(${stock.code})은 ${stock.market || '국내 증시'} 상장사로, ${intro[0]}`,
+    intro[1]
+  ].join('\n');
+}
+
 function normalizeNewsTitle(title = '') {
   return String(title)
     .replace(/\s+/g, ' ')
@@ -381,10 +504,7 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
   }
 
   return [
-    "🏢 이 회사 뭐 하는 곳인가",
-    `${stock.name}(${stock.code})은 ${stock.market || "국내 증시"}에서 ${theme} 축으로 분류되는 종목입니다.`,
-    `이 종목은 업종 일반론보다 회사 고유 뉴스가 실제 매출·이익·허가 일정으로 이어지는지가 주가를 좌우하는 경우가 많습니다.`,
-    `결국 ${stock.name}을 볼 때는 막연한 기대보다, 최근 뉴스가 실제 사업 가치와 얼마나 연결되는지 순서대로 확인하는 접근이 중요합니다.`,
+    buildCompanyIntro(stock, theme),
     "",
     "📈 왜 오를 수 있나",
     ...section2,
@@ -448,6 +568,9 @@ function buildAnalysis(stock) {
   const theme = detectTheme(stock);
   const newsItems = newsMap[stock.code] || [];
   const newsContext = buildNewsContext(stock, newsItems);
+  const newsGradeWeight = newsContext.grade === 'A' ? 14 : newsContext.grade === 'B' ? 5 : -18;
+  const negativeTonePenalty = newsContext.tone === 'negative' ? -10 : newsContext.tone === 'mixed' ? -4 : 0;
+  const rankScore = favor + newsGradeWeight + negativeTonePenalty;
 
   const signalFlags = [
     {
@@ -532,6 +655,7 @@ function buildAnalysis(stock) {
     summary,
     summary_source: `news_grade_${newsContext.grade}`,
     favor_score: favor,
+    rank_score: rankScore,
     signal,
     signal_emoji: signalEmoji,
     trigger_count: triggerCount,
@@ -614,12 +738,12 @@ const txAnalysis = db.transaction((rows) => {
 
 txAnalysis(analyses);
 
-const ordered = [...analyses].sort((a, b) => b.favor_score - a.favor_score || String(a.code).localeCompare(String(b.code)));
+const ordered = [...analyses].sort((a, b) => b.rank_score - a.rank_score || b.favor_score - a.favor_score || String(a.code).localeCompare(String(b.code)));
 
 db.prepare('DELETE FROM stock_ranking').run();
 const insertRank = db.prepare('INSERT INTO stock_ranking (code, favor_score, rank, updated_at) VALUES (?,?,?,?)');
 const txRank = db.transaction((rows) => {
-  rows.forEach((row, i) => insertRank.run(row.code, row.favor_score, i + 1, now));
+  rows.forEach((row, i) => insertRank.run(row.code, row.rank_score, i + 1, now));
 });
 txRank(ordered);
 
@@ -631,6 +755,7 @@ const top = ordered.slice(0, 50).map((a, i) => {
   return {
     code: a.code,
     favor_score: a.favor_score,
+    rank_score: a.rank_score,
     rank: i + 1,
     name: s.name || a.code,
     market: s.market || '-',
@@ -651,6 +776,7 @@ const recent = ordered.slice(0, 100).map((a) => {
     name: s.name || a.code,
     summary: a.summary,
     favor_score: a.favor_score,
+    rank_score: a.rank_score,
     signal: a.signal,
     signal_emoji: a.signal_emoji,
     close_price: s.close_price ?? null,
@@ -673,6 +799,7 @@ const analysisMap = Object.fromEntries(
         code: a.code,
         summary: a.summary,
         favor_score: a.favor_score,
+        rank_score: a.rank_score,
         signal: a.signal,
         signal_emoji: a.signal_emoji,
         trigger_count: a.trigger_count,

@@ -502,7 +502,7 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
   els.companyCode.textContent = `${code} · ${market}${price ? ` · ${formatNumber(price)}원` : ""}`;
   if (els.stockPageLinkTop) {
     els.stockPageLinkTop.href = `/stock/${code}`;
-    els.stockPageLinkTop.textContent = `📄 ${name} 전용 분석 페이지`;
+    els.stockPageLinkTop.textContent = `📄 ${name} 전용 분석 페이지 →`;
   }
 
   els.aiDecision.textContent = `${signalEmoji} ${data.signal}`;
@@ -720,19 +720,72 @@ function renderRankCard(a, idx, mode) {
   return "";
 }
 
+function uniqueByCode(items = []) {
+  const seen = new Set();
+  return (items || []).filter((item) => {
+    const code = String(item?.code || "");
+    if (!code || seen.has(code)) return false;
+    seen.add(code);
+    return true;
+  });
+}
+
+function getTodaySurgeItems(cache) {
+  return uniqueByCode(
+    [...cache.top]
+      .sort((a, b) =>
+        Number(b.rank_score || 0) - Number(a.rank_score || 0) ||
+        Number(b.favor_score || 0) - Number(a.favor_score || 0) ||
+        Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0)
+      )
+  ).slice(0, 5);
+}
+
+function getTomorrowTopItems(cache) {
+  const pool = cache.recent.length ? cache.recent : cache.top;
+  return uniqueByCode(
+    [...pool]
+      .sort((a, b) =>
+        Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0) ||
+        Number(b.prob_1m || 0) - Number(a.prob_1m || 0) ||
+        Number(b.favor_score || 0) - Number(a.favor_score || 0)
+      )
+  ).slice(0, 10);
+}
+
+function getSignalFeedItems(cache) {
+  const signalWeight = (item) => {
+    if (item.signal === "상승 가능") return 3;
+    if (item.signal === "중립") return 2;
+    return 1;
+  };
+  const pool = cache.recent.length ? cache.recent : cache.top;
+  return uniqueByCode(
+    [...pool]
+      .sort((a, b) =>
+        Number(b.trigger_count || 0) - Number(a.trigger_count || 0) ||
+        signalWeight(b) - signalWeight(a) ||
+        Number(b.confidence || 0) - Number(a.confidence || 0) ||
+        Number(b.favor_score || 0) - Number(a.favor_score || 0)
+      )
+  ).slice(0, 6);
+}
+
 async function initHomeWidgets() {
   if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
 
   try {
     const cache = await loadStaticCache();
-    const items = cache.top.slice(0, 10);
+    const todayItems = getTodaySurgeItems(cache);
+    const tomorrowItems = getTomorrowTopItems(cache);
+    const signalItems = getSignalFeedItems(cache);
     const themes = cache.themes.slice(0, 5);
 
-    els.todaySurgeList.innerHTML = items.slice(0, 5).map((a, idx) => renderRankCard(a, idx, "today")).join("");
-    els.tomorrowTop10.innerHTML = items.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
+    els.todaySurgeList.innerHTML = todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
+    els.tomorrowTop10.innerHTML = tomorrowItems.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
 
-    els.signalFeed.innerHTML = items.slice(0, 6).map((a) => `
+    els.signalFeed.innerHTML = signalItems.map((a) => `
       <div class="feed-item clickable" data-code="${a.code}">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>

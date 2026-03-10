@@ -1265,10 +1265,16 @@ body {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.stock-name {
+  margin-right: auto;
 }
 
 .stock-page-link-top {
   margin-top: 0;
+  margin-left: auto;
   padding: 0.6rem 1rem;
   font-size: 0.92rem;
   font-weight: 800;

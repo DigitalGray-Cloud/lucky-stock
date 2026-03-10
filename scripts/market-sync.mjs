@@ -27,12 +27,12 @@ function isMarketOpenKst() {
   return hm >= 900 && hm <= 1530;
 }
 
-function runNode(scriptPath) {
+function runNode(scriptPath, args = []) {
   return new Promise((resolve, reject) => {
-    const p = spawn("node", [scriptPath], { stdio: "inherit" });
+    const p = spawn("node", [scriptPath, ...args], { stdio: "inherit" });
     p.on("exit", (code) => {
       if (code === 0) resolve();
-      else reject(new Error(`${scriptPath} exit=${code}`));
+      else reject(new Error(`${scriptPath} ${args.join(" ")} exit=${code}`));
     });
   });
 }
@@ -46,14 +46,17 @@ async function main() {
   console.log("[market-sync] step1: prices sync");
   await runNode("scripts/build-stock-master.mjs");
 
-  console.log("[market-sync] step2: latest news cache build");
-  await runNode("scripts/build-news-cache.mjs");
+  console.log("[market-sync] step2: latest top-stock news cache build");
+  await runNode("scripts/build-news-cache.mjs", ["--mode=top", "--limit=120"]);
 
   console.log("[market-sync] step3: naver finance popular build");
   await runNode("scripts/build-naver-popular.mjs");
 
   console.log("[market-sync] step4: analysis/ranking cache build");
   await runNode("scripts/build-ui-cache.mjs");
+
+  console.log("[market-sync] step5: stock pages regenerate");
+  await runNode("scripts/generate-stock-pages.mjs");
 
   console.log("[market-sync] done");
 }

@@ -12,7 +12,10 @@
     "batch:logos": "node scripts/build-stock-logos.mjs",
     "batch:cache": "node scripts/build-ui-cache.mjs",
     "batch:news": "node scripts/build-news-cache.mjs",
+    "batch:news:top": "node scripts/build-news-cache.mjs --mode=top --limit=120",
     "batch:market-sync": "node scripts/market-sync.mjs",
+    "batch:market-sync:intraday": "node scripts/market-sync.mjs",
+    "batch:full-refresh": "node scripts/daily-full-refresh.mjs",
     "batch:daily": "node scripts/run-daily-analysis.mjs",
     "batch:ranking": "node scripts/run-ranking-batch.mjs",
     "db:status": "node scripts/db-status.mjs"

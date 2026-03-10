@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-03-10T12:45:43.402Z",
+  "source": "https://finance.naver.com/sise/",
+  "items": [
+    {
+      "rank": 1,
+      "code": "005930",
+      "name": "삼성전자",
+      "price_text": "187,900",
+      "direction": "상승"
+    },
+    {
+      "rank": 2,
+      "code": "000660",
+      "name": "SK하이닉스",
+      "price_text": "938,000",
+      "direction": "상승"
+    },
+    {
+      "rank": 3,
+      "code": "005380",
+      "name": "현대차",
+      "price_text": "525,000",
+      "direction": "상승"
+    },
+    {
+      "rank": 4,
+      "code": "034020",
+      "name": "두산에너빌리티",
+      "price_text": "102,500",
+      "direction": "상승"
+    },
+    {
+      "rank": 5,
+      "code": "272210",
+      "name": "한화시스템",
+      "price_text": "156,200",
+      "direction": "하락"
+    },
+    {
+      "rank": 6,
+      "code": "086520",
+      "name": "에코프로",
+      "price_text": "164,500",
+      "direction": "상승"
+    },
+    {
+      "rank": 7,
+      "code": "032820",
+      "name": "우리기술",
+      "price_text": "20,650",
+      "direction": "상승"
+    },
+    {
+      "rank": 8,
+      "code": "042700",
+      "name": "한미반도체",
+      "price_text": "324,000",
+      "direction": "상승"
+    },
+    {
+      "rank": 9,
+      "code": "079550",
+      "name": "LIG넥스원",
+      "price_text": "759,000",
+      "direction": "하락"
+    },
+    {
+      "rank": 10,
+      "code": "006400",
+      "name": "삼성SDI",
+      "price_text": "403,500",
+      "direction": "상승"
+    }
+  ]
+}

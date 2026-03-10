@@ -47,6 +47,7 @@ const els = {
 
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
+let currentSelectionContext = { source: "search" };
 
 const cacheState = {
   loaded: false,
@@ -55,7 +56,9 @@ const cacheState = {
   top: [],
   recent: [],
   themes: [],
-  newsMap: {}
+  newsMap: {},
+  naverPopular: [],
+  naverPopularMap: {}
 };
 
 function normalize(text) {
@@ -153,7 +156,8 @@ function renderSummaryHtml(summary) {
       if (/^[🏢📈⚠️💰🤔]\s/.test(t) || headingSet.has(noEmoji)) {
         return `<div class="summary-heading">${escapeHtml(t)}</div>`;
       }
-      return `<div class="summary-line">${escapeHtml(t)}</div>`;
+      const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      return `<div class="summary-line">${boldHtml}</div>`;
     })
     .join("");
 }
@@ -187,7 +191,17 @@ function decisionClass(signal) {
 }
 
 function renderList(el, items) {
-  el.innerHTML = (items || []).map((x) => `<li>${x}</li>`).join("");
+  el.innerHTML = (items || []).map((item) => {
+    if (item && typeof item === "object" && item.type === "news") {
+      const text = escapeHtml(item.text || item.title || "");
+      const href = String(item.link || "").trim();
+      if (href) {
+        return `<li><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+      }
+      return `<li>${text}</li>`;
+    }
+    return `<li>${escapeHtml(String(item || ""))}</li>`;
+  }).join("");
 }
 
 function getShareUrl() {
@@ -291,13 +305,14 @@ async function apiGet(path) {
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
 
-  const [ac, amap, top, recent, themes, news] = await Promise.all([
+  const [ac, amap, top, recent, themes, news, naverPopular] = await Promise.all([
     fetch("/data/ui_autocomplete.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_analysis_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
     fetch("/data/ui_top_stocks.json").then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
     fetch("/data/ui_recent_analysis.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_news_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} }))
+    fetch("/data/ui_news_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
+    fetch("/data/ui_naver_popular.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
   ]);
 
   cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
@@ -306,8 +321,98 @@ async function loadStaticCache() {
   cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
   cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
   cacheState.newsMap = news.map || {};
+  cacheState.naverPopular = Array.isArray(naverPopular.items) ? naverPopular.items : [];
+  cacheState.naverPopularMap = Object.fromEntries(cacheState.naverPopular.map((item) => [item.code, item]));
   cacheState.loaded = true;
   return cacheState;
+}
+
+function buildNaverPopularReason(popularItem, data, stockMeta = {}, newsItems = []) {
+  if (!popularItem) return "";
+
+  const lines = [];
+  const rankText = popularItem.rank ? `네이버 금융 인기종목 ${popularItem.rank}위` : "네이버 금융 인기종목";
+  const direction = String(popularItem.direction || "변동");
+  const theme = data.theme || stockMeta.theme || "";
+  const titles = Array.isArray(newsItems) ? newsItems.slice(0, 2).map((item) => item.title).filter(Boolean) : [];
+
+  lines.push(`<p class="rationale-title"><strong>네이버 금융 인기종목 이유 추정</strong></p>`);
+  lines.push(`<ul class="rationale-list">`);
+  lines.push(`<li>${rankText}에 오른 만큼 오늘 실제 사용자 관심이 많이 몰린 종목으로 볼 수 있습니다.</li>`);
+
+  if (direction === "상승") {
+    lines.push(`<li>당일 주가가 강하게 움직인 종목은 네이버 금융에서 조회가 급증하면서 인기종목 상위로 올라오는 경우가 많습니다.</li>`);
+  } else if (direction === "하락") {
+    lines.push(`<li>하락 또는 악재 해석이 붙은 종목도 투자자들이 확인하려 몰리면서 인기종목으로 빠르게 올라올 수 있습니다.</li>`);
+  } else {
+    lines.push(`<li>주가 방향보다 뉴스·이슈·향후 흐름을 확인하려는 수요가 몰렸을 가능성이 큽니다.</li>`);
+  }
+
+  if (titles.length) {
+    lines.push(`<li>최근 기사 기준으로는 '${escapeHtml(titles[0])}'${titles[1] ? `, '${escapeHtml(titles[1])}'` : ""} 같은 이슈를 확인하려는 수요가 붙었을 가능성이 있습니다.</li>`);
+  } else if (theme) {
+    lines.push(`<li>${escapeHtml(theme)} 관련 종목군 흐름을 확인하려는 과정에서 관심이 집중됐을 가능성이 있습니다.</li>`);
+  } else {
+    lines.push(`<li>대표 종목이거나 시장에서 언급량이 늘면서 자연스럽게 조회가 몰렸을 가능성이 있습니다.</li>`);
+  }
+
+  lines.push(`</ul>`);
+  return lines.join("");
+}
+
+function buildRankingReason(context, data, stockMeta = {}) {
+  const name = stockMeta.name || data.name || data.code || "해당 종목";
+  const signalEmoji = getSignalEmoji(data.signal, data.signal_emoji || "");
+  const favor = Number(data.favor_score || 0);
+  const tomorrowProb = Number(data.tomorrow_prob || 0);
+  const triggerCount = Number(data.trigger_count || 0);
+  const p1 = Number(data.prob_1m || 0);
+  const p3 = Number(data.prob_3m || 0);
+  const rankScore = Number(data.rank_score || favor);
+
+  const lines = [];
+
+  if (context.source === "today") {
+    lines.push(`<p class="rationale-title"><strong>오늘 AI 발견 급등주 선정 이유</strong></p>`);
+    lines.push(`<ul class="rationale-list">`);
+    lines.push(`<li>${name}은 현재 상위 랭크 점수 ${rankScore}점으로 오늘 AI 발견 급등주 상단에 오른 종목입니다.</li>`);
+    lines.push(`<li>AI 분석 점수(100점 만점) ${favor}점과 ${signalEmoji} ${data.signal} 신호가 같이 높게 잡혀, 오늘 바로 눈에 띄는 강세 후보로 분류됐습니다.</li>`);
+    lines.push(`<li>단기 급등주 카드에서는 내일 확률보다 현재 점수, 신호, 모멘텀 조합을 더 강하게 반영합니다.</li>`);
+    lines.push(`</ul>`);
+    return lines.join("");
+  }
+
+  if (context.source === "tomorrow") {
+    lines.push(`<p class="rationale-title"><strong>AI 급등 가능성 추천 TOP10 선정 이유</strong></p>`);
+    lines.push(`<ul class="rationale-list">`);
+    lines.push(`<li>${name}은 내일 상승 확률 ${tomorrowProb}%로 계산돼, 내일 기준 상위 예측 후보군에 포함된 종목입니다.</li>`);
+    lines.push(`<li>이 리스트는 당장 오늘 강세보다, 다음 거래일에 반응이 이어질 가능성을 더 중점적으로 봅니다.</li>`);
+    lines.push(`<li>즉 지금 클릭 의미는 "오늘 왜 뜨는가"보다 "내일도 힘이 이어질 수 있는가"를 확인하는 데 있습니다.</li>`);
+    lines.push(`</ul>`);
+    return lines.join("");
+  }
+
+  if (context.source === "signal") {
+    lines.push(`<p class="rationale-title"><strong>실시간 AI 투자 신호 선정 이유</strong></p>`);
+    lines.push(`<ul class="rationale-list">`);
+    lines.push(`<li>${name}은 현재 Signal ${triggerCount}개 충족 상태라 실시간 AI 투자 신호 영역에 노출된 종목입니다.</li>`);
+    lines.push(`<li>이 카드는 종합 점수보다도 뉴스, 수급, 기술, 거래량 같은 세부 신호가 몇 개 동시에 살아 있는지를 보여주는 용도입니다.</li>`);
+    lines.push(`<li>즉 이 영역에 뜬다는 건 "한 가지 이유"보다 여러 신호가 동시에 맞물리고 있다는 뜻에 가깝습니다.</li>`);
+    lines.push(`</ul>`);
+    return lines.join("");
+  }
+
+  if (context.source === "ranked") {
+    lines.push(`<p class="rationale-title"><strong>상위 랭킹 선정 이유</strong></p>`);
+    lines.push(`<ul class="rationale-list">`);
+    lines.push(`<li>${name}은 현재 종합 랭크 점수 ${rankScore}점으로 상위 후보군에 포함된 종목입니다.</li>`);
+    lines.push(`<li>AI 분석 점수(100점 만점) ${favor}점, 1개월 ${p1}%, 3개월 ${p3}% 확률, ${signalEmoji} ${data.signal} 신호를 함께 반영한 결과입니다.</li>`);
+    lines.push(`<li>상세에서는 왜 점수가 나왔는지, 그 근거가 실제 투자 판단으로 이어질 만한지까지 같이 보는 게 맞습니다.</li>`);
+    lines.push(`</ul>`);
+    return lines.join("");
+  }
+
+  return "";
 }
 
 function renderSignalCards(data) {
@@ -346,7 +451,7 @@ function renderSignalCards(data) {
     .join("");
 }
 
-function renderDecisionFromData(data, stockMeta = {}) {
+function renderDecisionFromData(data, stockMeta = {}, context = {}) {
   const code = data.code;
   const name = stockMeta.name || code;
   const market = stockMeta.market || "KOSPI/KOSDAQ";
@@ -430,7 +535,13 @@ function renderDecisionFromData(data, stockMeta = {}) {
   } else {
     els.newsList.innerHTML = `<li><span>관련 최신 뉴스가 아직 수집되지 않았습니다.</span><span class="rank-meta">${(data.updated_at || "").slice(0, 10)}</span></li>`;
   }
+  const naverPopularItem = context.source === "naver_popular" ? cacheState.naverPopularMap[code] : null;
+  const naverPopularHtml = buildNaverPopularReason(naverPopularItem, data, stockMeta, newsItems);
+  const rankingReasonHtml = buildRankingReason(context, data, stockMeta);
+
   els.clickedRationale.innerHTML = `
+    ${naverPopularHtml}
+    ${rankingReasonHtml}
     <p class="rationale-title"><strong>${name} 판단 근거</strong></p>
     <ul class="rationale-list">
       <li>AI 분석 점수(100점 만점) ${favor}점 · ${signalEmoji} ${data.signal}</li>
@@ -469,7 +580,7 @@ async function resolveStockByQuery(query) {
   };
 }
 
-async function searchAndRender(query) {
+async function searchAndRender(query, context = { source: "search" }) {
   const q = String(query || "").trim();
   if (!q) return;
 
@@ -493,7 +604,8 @@ async function searchAndRender(query) {
 
     showResultPanel();
     updateResultUrl(stock.code);
-    renderDecisionFromData(data, stock);
+    currentSelectionContext = context || { source: "search" };
+    renderDecisionFromData(data, stock, currentSelectionContext);
     scrollToResult();
   } catch {
     showResultPanel();
@@ -600,13 +712,14 @@ async function initHomeWidgets() {
       </div>
     `).join("");
 
-    els.popularList.innerHTML = items.map((a, i) => `
+    const popularItems = cache.naverPopular.slice(0, 10);
+    els.popularList.innerHTML = popularItems.map((a) => `
       <div class="feed-item clickable" data-code="${a.code}">
         <div class="rank-row">
           <div class="rank-logo"><img src="${getLogoUrl(a.code, a.name || a.code, a.logo_url || "")}" alt="${a.name || a.code} 로고" onerror="this.src='/data/logos/${a.code}.svg'"></div>
-          <strong>${i + 1}. ${a.name || a.code}</strong>
+          <strong>${a.rank || "-"}. ${a.name || a.code}</strong>
         </div>
-        <div class="rank-meta">${a.code} · ${getSignalEmoji(a.signal, a.signal_emoji || "")} ${a.signal || "중립"}${a.close_price ? ` · ${formatNumber(a.close_price)}원` : ""}</div>
+        <div class="rank-meta">${a.code} · 네이버 금융 인기종목${a.price_text ? ` · ${a.price_text}` : ""}${a.direction ? ` · ${a.direction}` : ""}</div>
       </div>
     `).join("");
 
@@ -620,7 +733,7 @@ async function initHomeWidgets() {
     els.todaySurgeList.innerHTML = `<div class="rank-item">랭킹 API 연결 실패</div>`;
     els.tomorrowTop10.innerHTML = `<div class="rank-item">랭킹 API 연결 실패</div>`;
     els.signalFeed.innerHTML = `<div class="feed-item">신호 API 연결 실패</div>`;
-    els.popularList.innerHTML = `<div class="feed-item">인기 API 연결 실패</div>`;
+    els.popularList.innerHTML = `<div class="feed-item">네이버 금융 인기종목 연결 실패</div>`;
     els.themeFeed.innerHTML = `<div class="feed-item">테마 API 연결 실패</div>`;
   }
 }
@@ -637,7 +750,12 @@ function initRankingClicks() {
     if (!code) return;
     document.querySelectorAll(".rank-item.clickable.active, .feed-item.clickable.active").forEach((el) => el.classList.remove("active"));
     item.classList.add("active");
-    searchAndRender(code);
+    let source = "ranked";
+    if (item.closest("#today-surge-list")) source = "today";
+    else if (item.closest("#tomorrow-top10")) source = "tomorrow";
+    else if (item.closest("#signal-feed")) source = "signal";
+    else if (item.closest("#popular-list")) source = "naver_popular";
+    searchAndRender(code, { source });
   };
 
   els.todaySurgeList.addEventListener("click", onClick);
@@ -656,13 +774,13 @@ function initEvents() {
   }
 
   els.searchBtn.addEventListener("click", () => {
-    searchAndRender(els.searchInput.value);
+    searchAndRender(els.searchInput.value, { source: "search" });
     els.autoList.classList.remove("active");
   });
 
   els.searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      searchAndRender(els.searchInput.value);
+      searchAndRender(els.searchInput.value, { source: "search" });
       els.autoList.classList.remove("active");
     }
   });
@@ -678,7 +796,7 @@ function initEvents() {
     if (!li) return;
     const code = li.dataset.key;
     els.searchInput.value = code;
-    searchAndRender(code);
+    searchAndRender(code, { source: "autocomplete" });
     els.autoList.classList.remove("active");
   });
 
@@ -687,7 +805,7 @@ function initEvents() {
     if (!btn) return;
     const q = btn.dataset.q;
     els.searchInput.value = q;
-    searchAndRender(q);
+    searchAndRender(q, { source: "quick_tag" });
   });
 
   document.addEventListener("click", (e) => {
@@ -717,7 +835,7 @@ function initFromUrl() {
   const code = (pathMatch && pathMatch[1]) || url.searchParams.get("code");
   if (!code) return;
   suppressUrlUpdate = true;
-  searchAndRender(code).finally(() => {
+  searchAndRender(code, { source: "url" }).finally(() => {
     suppressUrlUpdate = false;
   });
 }

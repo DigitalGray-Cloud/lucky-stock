@@ -36,7 +36,7 @@ while true; do
   START=$(date +%s)
   echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] batch begin" >> "$LOG_FILE"
 
-  if /usr/bin/npm run batch:market-sync >> "$LOG_FILE" 2>&1; then
+  if /usr/bin/npm run batch:market-sync:intraday >> "$LOG_FILE" 2>&1; then
     END=$(date +%s)
     echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] batch ok elapsed=$((END - START))s" >> "$LOG_FILE"
   else

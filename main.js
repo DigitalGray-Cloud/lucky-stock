@@ -191,7 +191,17 @@ function decisionClass(signal) {
 }
 
 function renderList(el, items) {
-  el.innerHTML = (items || []).map((x) => `<li>${x}</li>`).join("");
+  el.innerHTML = (items || []).map((item) => {
+    if (item && typeof item === "object" && item.type === "news") {
+      const text = escapeHtml(item.text || item.title || "");
+      const href = String(item.link || "").trim();
+      if (href) {
+        return `<li><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+      }
+      return `<li>${text}</li>`;
+    }
+    return `<li>${escapeHtml(String(item || ""))}</li>`;
+  }).join("");
 }
 
 function getShareUrl() {

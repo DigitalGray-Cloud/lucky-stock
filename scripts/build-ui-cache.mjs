@@ -420,20 +420,124 @@ function buildNewsContext(stock, newsItems = []) {
   return { grade, tone, all: deduped, top, tags };
 }
 
-function buildWhyNewsMatters(newsContext) {
-  if (newsContext.tags.includes('실적')) {
-    return '이 뉴스가 중요한 이유는 기대가 아니라 실제 매출과 이익으로 연결되는지 판단할 수 있기 때문입니다.';
+function includesAny(text, keywords = []) {
+  return keywords.some((keyword) => text.includes(keyword));
+}
+
+function extractHeadlineSignals(title = '', theme = '') {
+  const t = normalizeNewsTitle(title).toLowerCase();
+  const signals = new Set();
+
+  if (includesAny(t, ['세마글루타이드', '위고비', 'ozempic', 'wegovy', '리벨서스', 'glp-1', '비만', '당뇨'])) {
+    signals.add('obesity_drug');
   }
-  if (newsContext.tags.includes('허가') || newsContext.tags.includes('임상')) {
-    return '이 뉴스가 중요한 이유는 일정 지연 여부가 기업가치에 직접 영향을 주는 파이프라인 단계이기 때문입니다.';
+  if (includesAny(t, ['경구용', '먹는', 'oral'])) signals.add('oral_formulation');
+  if (includesAny(t, ['독점', 'exclusive', '판권', '라이선스', 'license'])) signals.add('exclusive_license');
+  if (includesAny(t, ['기술이전', '로열티', '마일스톤'])) signals.add('tech_transfer');
+  if (includesAny(t, ['계약', '파트너십', '공급', '수주', 'po', '구매주문'])) signals.add('commercial_contract');
+  if (includesAny(t, ['허가', '승인', '임상', '3상', '2상', '1상'])) signals.add('regulatory_step');
+  if (includesAny(t, ['매출', '영업이익', '흑자', '실적', '턴어라운드'])) signals.add('earnings_turn');
+  if (includesAny(t, ['출시', '출하', '양산', '초도', '상용화'])) signals.add('commercial_launch');
+  if (includesAny(t, ['hbm', 'ai 반도체', '엔비디아', 'nvidia', '고대역폭메모리'])) signals.add('ai_memory');
+  if (includesAny(t, ['데이터센터', '서버', '클라우드'])) signals.add('datacenter_demand');
+  if (includesAny(t, ['방산', '미사일', '포탄', '탄약', '천궁', 'k2', 'fa-50', '폴란드', '중동'])) signals.add('defense_export');
+  if (includesAny(t, ['선박', 'lng', 'lpg', '수주잔고', '조선', '선가'])) signals.add('shipbuilding_cycle');
+  if (includesAny(t, ['항공', '여객', '노선', '화물', '운임'])) signals.add('air_travel');
+  if (includesAny(t, ['면세', '호텔', '관광', '여행'])) signals.add('travel_recovery');
+  if (includesAny(t, ['전기차', '배터리', '리튬', '양극재', '음극재', '전해질'])) signals.add('battery_chain');
+  if (includesAny(t, ['원전', '원자로', 'smr', '원자력'])) signals.add('nuclear');
+  if (includesAny(t, ['수주', '수출']) && theme === '건설') signals.add('plant_order');
+
+  return [...signals];
+}
+
+function describeSignalImpact(signal, stock) {
+  if (signal === 'obesity_drug') {
+    return '비만·당뇨 치료제는 전 세계에서 가장 큰 제약 시장 중 하나라서, 관련 계약이나 개발 진전만으로도 회사의 장기 매출 상상치를 크게 끌어올릴 수 있습니다.';
   }
-  if (newsContext.tags.includes('계약') || newsContext.tags.includes('공급') || newsContext.tags.includes('주문')) {
-    return '이 뉴스가 중요한 이유는 단순 기대감이 아니라 매출 인식 가능성이 있는 계약·주문 흐름으로 읽힐 수 있기 때문입니다.';
+  if (signal === 'oral_formulation') {
+    return '주사제가 아니라 먹는 형태라는 점은 복용 편의성 때문에 시장 저변을 더 넓힐 수 있다는 기대를 만들고, 그래서 같은 약물 계열 안에서도 더 높은 관심을 받기 쉽습니다.';
   }
-  if (newsContext.tags.includes('기술이전') || newsContext.tags.includes('로열티')) {
-    return '이 뉴스가 중요한 이유는 단발성 이슈가 아니라 장기 수익 구조 변화로 이어질 수 있기 때문입니다.';
+  if (signal === 'exclusive_license') {
+    return '독점 판권이나 라이선스는 단순 판매 계약보다 강합니다. 특정 지역에서 먼저 시장을 가져갈 수 있다는 뜻으로 읽히기 때문에 수익성 기대를 키우는 재료가 됩니다.';
   }
-  return '핵심은 뉴스 제목 자체보다, 그 뉴스가 실제 매출·이익·허가 일정으로 이어지는지 확인하는 것입니다.';
+  if (signal === 'tech_transfer') {
+    return '기술이전과 로열티는 일회성 뉴스보다 무게가 큽니다. 성공하면 계약금, 마일스톤, 장기 로열티까지 이어질 수 있어 사업 구조 자체를 바꿀 수 있기 때문입니다.';
+  }
+  if (signal === 'commercial_contract') {
+    return '계약·공급·수주 뉴스는 기대감만이 아니라 실제 매출 인식 가능성을 열어준다는 점에서 중요합니다. 후속 출하와 매출 확인만 붙으면 주가 해석이 더 강해질 수 있습니다.';
+  }
+  if (signal === 'regulatory_step') {
+    return '허가나 임상 단계 진전은 파이프라인의 성공 확률이 한 단계 올라갔다는 신호로 받아들여지기 때문에, 바이오·헬스케어 종목에서는 주가 재평가 명분이 되기 쉽습니다.';
+  }
+  if (signal === 'earnings_turn') {
+    return '실적과 흑자 전환 뉴스는 스토리주가 아니라 숫자로 검증되는 구간에 들어섰다는 뜻이라서, 시장이 밸류에이션을 다시 붙이는 계기가 될 수 있습니다.';
+  }
+  if (signal === 'commercial_launch') {
+    return '출시·출하·양산은 기대 단계가 실제 판매 단계로 넘어간다는 뜻입니다. 시장은 이 시점부터 말보다 숫자를 보기 시작하므로 재평가 강도가 커질 수 있습니다.';
+  }
+  if (signal === 'ai_memory') {
+    return 'HBM과 AI 메모리 키워드는 지금 글로벌 반도체 업황에서 가장 강한 프리미엄이 붙는 영역입니다. 고객사 공급이 확인되면 단순 업황 회복이 아니라 구조적 성장으로 해석됩니다.';
+  }
+  if (signal === 'datacenter_demand') {
+    return '데이터센터와 서버 수요는 단기 이벤트보다 길게 가는 투자 사이클을 만들 수 있어, 관련 종목에는 멀티플 확장 논리까지 붙기 쉽습니다.';
+  }
+  if (signal === 'defense_export') {
+    return '방산 수출은 계약 규모 자체도 크지만, 한 번 레퍼런스가 생기면 추가 국가로 확장될 가능성이 있어 단발성보다 장기 수주 잔고 관점에서 평가받습니다.';
+  }
+  if (signal === 'shipbuilding_cycle') {
+    return '조선은 수주가 곧 몇 년치 매출 가시성으로 연결됩니다. 특히 LNG선 같은 고부가 선종이면 선가와 수익성까지 함께 좋아질 수 있다는 점이 중요합니다.';
+  }
+  if (signal === 'air_travel') {
+    return '항공 뉴스는 단순 여객 회복을 넘어서 운임과 탑승률, 화물 단가 개선으로 이어질 수 있어 실적 민감도가 큽니다.';
+  }
+  if (signal === 'travel_recovery') {
+    return '여행·면세·호텔 관련 뉴스는 소비 회복과 외국인 유입 확대를 의미할 수 있어, 업황 바닥 통과 기대를 키우는 재료가 됩니다.';
+  }
+  if (signal === 'battery_chain') {
+    return '배터리 밸류체인은 전기차 침투율과 증설 속도에 따라 실적 레버리지가 크게 달라집니다. 공급 계약이나 신사업 진전은 업황 반등 기대를 키울 수 있습니다.';
+  }
+  if (signal === 'nuclear') {
+    return '원전과 SMR 키워드는 정책과 대형 프로젝트가 맞물리는 영역이라 수주 공백을 메울 장기 성장 동력으로 해석될 수 있습니다.';
+  }
+  if (signal === 'plant_order') {
+    return '플랜트·엔지니어링 수주는 매출 규모뿐 아니라 몇 년치 일감과 수익성 가시성을 동시에 보여준다는 점에서 건설주에는 강한 재료입니다.';
+  }
+  return `${stock.name} 관련 이슈가 실제 사업가치로 이어지는지 판단하는 데 중요한 뉴스입니다.`;
+}
+
+function buildHeadlineImpactNarrative(stock, item, theme) {
+  const signals = extractHeadlineSignals(item.title, theme);
+  if (!signals.length) {
+    const tag = item.tag || '';
+    if (tag === '실적') return '이 뉴스는 기대보다 숫자가 실제로 찍히는지 확인하는 재료라서, 시장이 밸류에이션을 다시 붙일 때 핵심 근거가 됩니다.';
+    if (tag === '허가') return '이 뉴스는 허가와 일정 진전이 기업가치에 직접 연결되는 단계라서, 다음 주가 레벨을 결정하는 체크포인트가 될 수 있습니다.';
+    if (tag === '계약' || tag === '공급' || tag === '주문') return '이 뉴스는 단순 기대감보다 실제 매출 인식 가능성이 있는 재료로 읽히기 때문에, 후속 공시가 붙으면 반응이 커질 수 있습니다.';
+    if (tag === '기술이전' || tag === '로열티') return '이 뉴스는 단발성 기사보다 장기 수익 구조 변화로 이어질 수 있다는 점에서 의미가 큽니다.';
+    return `${stock.name}에 대한 시장 기대가 실제 사업가치로 연결되는지 판단하는 재료입니다.`;
+  }
+
+  return signals
+    .slice(0, 2)
+    .map((signal) => describeSignalImpact(signal, stock))
+    .join(' ');
+}
+
+function buildPositiveNarrative(stock, newsContext, theme) {
+  return newsContext.top
+    .slice(0, 3)
+    .map((item) => `${summarizeDate(item.date)} '${item.title}' 뉴스는 ${buildHeadlineImpactNarrative(stock, item, theme)}`)
+    .join(' ');
+}
+
+function buildWhyNewsMatters(stock, newsContext, theme) {
+  const top = newsContext.top[0];
+  if (!top) {
+    return `지금 핵심은 기사 수가 아니라, ${stock.name}의 다음 기업 고유 공시나 실적이 실제로 나오는지입니다.`;
+  }
+
+  const narrative = buildHeadlineImpactNarrative(stock, top, theme);
+  return `이 뉴스가 중요한 이유는 ${narrative}`;
 }
 
 function buildNextEvent(stock, newsContext) {
@@ -461,23 +565,25 @@ function buildBreakCondition(stock, newsContext) {
 
 function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
   const { signal, favor, theme, tomorrowProb } = ctx;
-  const valuation = favor >= 80 ? "밸류 부담이 있는 편" : favor >= 60 ? "적정~중립 구간" : "저평가 시도 구간";
+  const valuation = favor >= 80 ? "기대가 꽤 반영된 구간" : favor >= 60 ? "적정~중립 구간" : "아직 기대가 덜 붙은 구간";
   const topNews = newsContext.top;
   const recentNewsLines = topNews.length
     ? topNews.map((item) => `${summarizeDate(item.date)} '${item.title}'`).join(", ")
     : "";
 
-  const whyMatters = buildWhyNewsMatters(newsContext);
+  const whyMatters = buildWhyNewsMatters(stock, newsContext, theme);
   const nextEvent = buildNextEvent(stock, newsContext);
   const breakCondition = buildBreakCondition(stock, newsContext);
+  const positiveNarrative = buildPositiveNarrative(stock, newsContext, theme);
 
   const section2 = [];
   if (newsContext.grade === 'A') {
     section2.push(
-      `지금 ${stock.name}이 오를 수 있는 가장 현실적인 이유는 최근 기업 고유 뉴스가 단순 주가 해설이 아니라 실제 사업가치와 연결되는 성격이기 때문입니다.`,
+      `지금 ${stock.name}이 오를 수 있는 가장 현실적인 이유는 최근 기업 고유 뉴스가 단순한 주가 자극이 아니라, 시장이 크게 반응할 만한 사업 확장 스토리로 읽히기 때문입니다.`,
       `최근 핵심 뉴스는 ${recentNewsLines} 입니다.`,
+      positiveNarrative,
       whyMatters,
-      `${signal} 신호와 내일 상승확률 ${tomorrowProb}%는 이런 뉴스 흐름이 단기 수급 명분까지 만들 수 있다는 점을 보여줍니다.`,
+      `${signal} 신호와 내일 상승확률 ${tomorrowProb}%는 이런 뉴스 해석이 단기 수급 명분까지 만들 수 있다는 점을 보여줍니다.`,
       nextEvent,
       breakCondition
     );
@@ -485,6 +591,7 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
     section2.push(
       `최근 ${stock.name} 관련 뉴스는 아예 비어 있지는 않지만, 지금 당장 주가를 강하게 재평가할 결정타라고 보기엔 아직 한 단계 부족합니다.`,
       `확인된 핵심 뉴스는 ${recentNewsLines} 정도로 압축할 수 있습니다.`,
+      positiveNarrative,
       whyMatters,
       `다만 현재 신호는 ${signal}, AI 점수는 ${favor}점이라 완전 약세보다는 뉴스 한두 건이 더 붙을 때 반응이 나올 수 있는 중간 구간에 가깝습니다.`,
       nextEvent,
@@ -512,7 +619,7 @@ function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
     "⚠️ 뭐가 위험한가",
     `가장 큰 리스크는 최근 뉴스가 시장 기대를 키웠더라도, 후속 공시나 숫자로 이어지지 않으면 주가가 빠르게 원위치될 수 있다는 점입니다.`,
     `특히 ${stock.name}처럼 뉴스 민감도가 높은 종목은 같은 재료라도 거래대금이 약해지면 반응이 둔해지고 변동성만 커질 수 있습니다.`,
-    `즉 좋은 기사 제목이 붙었다는 사실보다, 그 재료가 실제 기업가치 변화로 이어지는지 확인되지 않으면 해석이 쉽게 뒤집힐 수 있습니다.`,
+    `즉 좋은 기사 제목이 붙었다는 사실보다, 그 키워드가 실제 매출·이익·허가·수주로 이어지는지 확인되지 않으면 해석이 쉽게 뒤집힐 수 있습니다.`,
     "",
     "💰 지금 가격이 싼가 비싼가",
     `현재 가격은 절대 저평가 단정보다 ${valuation}으로 보는 편이 현실적입니다.`,
@@ -612,7 +719,14 @@ function buildAnalysis(stock) {
   ];
 
   const bullPoints = newsContext.top.length
-    ? newsContext.top.map((item) => `📰 ${summarizeDate(item.date)} ${item.title}`).slice(0, 3)
+    ? newsContext.top.slice(0, 3).map((item) => ({
+        type: 'news',
+        icon: '📰',
+        text: `${summarizeDate(item.date)} ${item.title}`,
+        title: item.title,
+        link: item.link || '',
+        date: summarizeDate(item.date)
+      }))
     : [
         `📰 최근 기업 고유 뉴스 강도는 ${newsContext.grade} 등급으로 분류됩니다.`,
         `⏳ 지금 당장 강한 신규 호재보다 다음 실적·공시 대기 구간입니다.`,

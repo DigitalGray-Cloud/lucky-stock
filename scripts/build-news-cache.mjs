@@ -7,6 +7,7 @@ const ROOT = path.resolve('/home/user/luckstock');
 const DATA_DIR = path.join(ROOT, 'data');
 const DB_PATH = path.join(DATA_DIR, 'stocks.db');
 const OUT_PATH = path.join(DATA_DIR, 'ui_news_map.json');
+const TOP_STOCKS_PATH = path.join(DATA_DIR, 'ui_top_stocks.json');
 
 function decodeHtml(text = '') {
   return String(text)
@@ -94,13 +95,39 @@ function loadTargets() {
   }
 }
 
+function parseArgs(argv = process.argv.slice(2)) {
+  const opts = { mode: 'all', limit: 100 };
+  for (const arg of argv) {
+    if (arg.startsWith('--mode=')) opts.mode = String(arg.split('=')[1] || 'all');
+    if (arg.startsWith('--limit=')) opts.limit = Number(arg.split('=')[1] || 100) || 100;
+  }
+  return opts;
+}
+
+function loadTopCodes(limit = 100) {
+  if (!fs.existsSync(TOP_STOCKS_PATH)) return [];
+  const json = JSON.parse(fs.readFileSync(TOP_STOCKS_PATH, 'utf-8'));
+  return (json.top || [])
+    .slice(0, limit)
+    .map((item) => String(item.code || ''))
+    .filter(Boolean);
+}
+
 async function main() {
-  const targets = loadTargets();
-  const map = {};
+  const opts = parseArgs();
+  const allTargets = loadTargets();
+  const topCodes = opts.mode === 'top' ? new Set(loadTopCodes(opts.limit)) : null;
+  const targets = opts.mode === 'top'
+    ? allTargets.filter((target) => topCodes.has(target.code))
+    : allTargets;
+  const existing = fs.existsSync(OUT_PATH)
+    ? (JSON.parse(fs.readFileSync(OUT_PATH, 'utf-8')).map || {})
+    : {};
+  const map = opts.mode === 'top' ? { ...existing } : {};
 
   if (!targets.length) {
     fs.writeFileSync(OUT_PATH, JSON.stringify({ generated_at: new Date().toISOString(), map }, null, 2));
-    console.log('[news] no targets; wrote empty map');
+    console.log(`[news] no targets for mode=${opts.mode}; wrote empty map`);
     return;
   }
 
@@ -128,7 +155,7 @@ async function main() {
     JSON.stringify({ generated_at: new Date().toISOString(), size: Object.keys(map).length, map }, null, 2)
   );
 
-  console.log(`[news] done targets=${targets.length}, mapped=${Object.keys(map).length}`);
+  console.log(`[news] done mode=${opts.mode} targets=${targets.length}, mapped=${Object.keys(map).length}`);
 }
 
 main().catch((err) => {

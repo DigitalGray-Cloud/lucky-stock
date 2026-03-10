@@ -704,17 +704,20 @@ body {
 }
 
 .summary-heading {
-  margin-top: 12px;
+  margin-top: 18px;
   font-weight: 900;
-  font-size: 1.14rem;
+  font-size: 1.22rem;
   letter-spacing: -0.01em;
-  color: #05255f;
+  color: #04204f;
   border: 1.5px solid #8fb2f2;
-  border-left: 8px solid #1d5fd4;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #dce9ff 0%, #eff5ff 55%, #f8fbff 100%);
-  padding: 9px 12px;
-  box-shadow: 0 2px 10px rgba(17, 70, 167, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.86);
+  border-left: 6px solid #1d5fd4;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #d0e2ff 0%, #edf4ff 55%, #f6faff 100%);
+  padding: 11px 14px;
+  box-shadow: 0 3px 12px rgba(17, 70, 167, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .summary-line {

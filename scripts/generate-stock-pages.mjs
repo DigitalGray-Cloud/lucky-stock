@@ -44,6 +44,20 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function renderReasonList(items = []) {
+  return (items || []).map((item) => {
+    if (item && typeof item === "object" && item.type === "news") {
+      const text = escapeHtml(item.text || item.title || "");
+      const href = String(item.link || "").trim();
+      if (href) {
+        return `<li><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+      }
+      return `<li>${text}</li>`;
+    }
+    return `<li>${escapeHtml(String(item || ""))}</li>`;
+  }).join("");
+}
+
 function renderSummaryHtml(summary) {
   const headingSet = new Set([
     "이 회사 뭐 하는 곳인가",
@@ -207,7 +221,7 @@ function buildStockPage(code, data) {
       <div style="margin-bottom:1.5rem;">
         <h2 style="font-size:1rem;margin-bottom:0.75rem;">✅ 매수 근거</h2>
         <ul style="margin:0;padding-left:1.2rem;line-height:1.8;">
-          ${bull.map(p => `<li>${escapeHtml(p)}</li>`).join("")}
+          ${renderReasonList(bull)}
         </ul>
       </div>` : ""}
 

@@ -5,6 +5,7 @@ import path from 'node:path';
 const ROOT = path.resolve('/home/user/luckstock');
 const DB_PATH = path.join(ROOT, 'data', 'stocks.db');
 const OUT_DIR = path.join(ROOT, 'data');
+const NEWS_MAP_PATH = path.join(OUT_DIR, 'ui_news_map.json');
 
 const db = new Database(DB_PATH);
 
@@ -27,6 +28,28 @@ CREATE TABLE IF NOT EXISTS stock_ranking (
   updated_at TEXT NOT NULL
 );
 `);
+
+// stock_master 누락 컬럼 추가 (build-stock-master.mjs와 동기화)
+const masterCols = db.prepare('PRAGMA table_info(stock_master)').all().map((c) => c.name);
+if (!masterCols.includes('prev_price'))   db.exec(`ALTER TABLE stock_master ADD COLUMN prev_price INTEGER`);
+if (!masterCols.includes('change_rate'))  db.exec(`ALTER TABLE stock_master ADD COLUMN change_rate REAL`);
+if (!masterCols.includes('volume'))       db.exec(`ALTER TABLE stock_master ADD COLUMN volume INTEGER`);
+if (!masterCols.includes('high_price'))   db.exec(`ALTER TABLE stock_master ADD COLUMN high_price INTEGER`);
+if (!masterCols.includes('low_price'))    db.exec(`ALTER TABLE stock_master ADD COLUMN low_price INTEGER`);
+
+// stock_analysis 누락 컬럼 추가 (하위 호환)
+const analysisCols = db.prepare('PRAGMA table_info(stock_analysis)').all().map((c) => c.name);
+if (!analysisCols.includes('signal_emoji'))   db.exec(`ALTER TABLE stock_analysis ADD COLUMN signal_emoji TEXT`);
+if (!analysisCols.includes('trigger_count'))  db.exec(`ALTER TABLE stock_analysis ADD COLUMN trigger_count INTEGER`);
+if (!analysisCols.includes('tomorrow_prob'))  db.exec(`ALTER TABLE stock_analysis ADD COLUMN tomorrow_prob INTEGER`);
+if (!analysisCols.includes('prob_1m'))        db.exec(`ALTER TABLE stock_analysis ADD COLUMN prob_1m INTEGER`);
+if (!analysisCols.includes('prob_3m'))        db.exec(`ALTER TABLE stock_analysis ADD COLUMN prob_3m INTEGER`);
+if (!analysisCols.includes('prob_1y'))        db.exec(`ALTER TABLE stock_analysis ADD COLUMN prob_1y INTEGER`);
+if (!analysisCols.includes('confidence'))     db.exec(`ALTER TABLE stock_analysis ADD COLUMN confidence INTEGER`);
+if (!analysisCols.includes('theme'))          db.exec(`ALTER TABLE stock_analysis ADD COLUMN theme TEXT`);
+if (!analysisCols.includes('risk_points'))    db.exec(`ALTER TABLE stock_analysis ADD COLUMN risk_points TEXT`);
+if (!analysisCols.includes('signal_flags'))   db.exec(`ALTER TABLE stock_analysis ADD COLUMN signal_flags TEXT`);
+if (!analysisCols.includes('summary_source')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN summary_source TEXT DEFAULT 'template'`);
 
 function hashCode(text) {
   let hash = 0;
@@ -59,66 +82,331 @@ function getSignalEmoji(signal) {
   return '⚠️';
 }
 
-const THEME_POOL = ['AI플랫폼', '전기차', 'AI반도체', '2차전지', '제약/바이오'];
+// 종목명 키워드 → 섹터 매핑 (우선순위 순)
+const THEME_RULES = [
+  // 2차전지
+  { theme: '2차전지',    keywords: ['에코프로', '배터리', '리튬', '전지', '양극재', '음극재', '전해질', '엘앤에프', 'posco홀딩스'] },
+  // AI반도체
+  { theme: 'AI반도체',   keywords: ['반도체', 'semicon', 'hynix', '하이닉스', '에스케이하이', 'db하이텍', '리노공업', '원익', '테스나', '하나마이크론', '두산테스나', '피에스케이', '삼성전자', '삼성sdi', '삼성전기', 'sk실트론'] },
+  // AI/플랫폼
+  { theme: 'AI플랫폼',   keywords: ['네이버', 'kakao', '카카오', '크래프톤', '넥슨', '엔씨', '펄어비스', '위메이드', '소프트', '아이티', 'ai', 'it', '솔루션', '시스템'] },
+  // 로봇
+  { theme: '로봇',       keywords: ['로봇', 'robot', '로보', '두산로보', '레인보우'] },
+  // 제약/바이오
+  { theme: '제약/바이오', keywords: ['제약', 'pharma', '바이오', 'bio', '헬스', '메디', '셀', '팜', '치료', '의약', '신약', '항암', '진단', '의료기기', '테라퓨틱', '생명과학'] },
+  // 전기차
+  { theme: '전기차',     keywords: ['전기차', '충전', 'ev충', '자율주행'] },
+  // 자동차/부품
+  { theme: '자동차',     keywords: ['자동차', '모비스', '만도', '현대위아', '에이치엘만도', '자동차부품', '차량'] },
+  // 항공
+  { theme: '항공',       keywords: ['항공', '에어', '아시아나', '제주에어', '진에어', '티웨이', '에어부산'] },
+  // 해운/물류
+  { theme: '해운/물류',  keywords: ['해운', '물류', '택배', '팬오션', 'hlmm', '에이치엠엠', '대한해운', '흥아해운', '장금상선'] },
+  // 철강/소재
+  { theme: '철강/소재',  keywords: ['철강', '포스코', '제철', '스틸', '현대제철', '동국제강', '세아', '고려아연', '풍산'] },
+  // 화학
+  { theme: '화학',       keywords: ['화학', '케미칼', '케미', '폴리', '수지', '롯데케미칼', 'sk케미칼', '금호석유', '효성화학'] },
+  // 에너지
+  { theme: '에너지',     keywords: ['에너지', '가스', '발전', '석유', '한국전력', '한전', '가스공사', 's-oil', '오일'] },
+  // 건설/부동산
+  { theme: '건설',       keywords: ['건설', '건축', '개발', '주택', '엔지니어링', '현대건설', '대림', 'gs건설', '포스코이앤씨', '디엘이앤씨'] },
+  // 금융
+  { theme: '금융',       keywords: ['은행', '증권', '보험', '금융', '캐피탈', '저축은행', '카드', '투자', '자산운용', '신한', '하나금융', 'kb금융', '우리금융', '기업은행', '미래에셋'] },
+  // 유통/소매
+  { theme: '유통',       keywords: ['이마트', '롯데', '백화점', '마트', '홈쇼핑', '편의점', 'gs리테일', '이랜드', 'cj대한통운', '쿠팡'] },
+  // 식품/음료
+  { theme: '식품',       keywords: ['식품', '음료', '제과', '주류', '빙과', '냉동', 'cj제일제당', '오리온', '농심', '빙그레', '롯데칠성', '하이트진로', '오비맥주', '삼양식품'] },
+  // 통신
+  { theme: '통신',       keywords: ['통신', '텔레콤', 'skt', 'kt', '엘지유플', 'lg유플'] },
+  // 게임/엔터
+  { theme: '게임/엔터',  keywords: ['게임', '엔터', '콘텐츠', '미디어', '엔터테인', '하이브', 'sm엔터', 'jyp', '와이지', '영화', '드라마'] },
+  // 여행/관광
+  { theme: '여행/관광',  keywords: ['여행', '관광', '호텔', '리조트', '면세'] },
+  // 반도체 장비/소재
+  { theme: '반도체장비', keywords: ['장비', '노광', '식각', '증착', '세정', 'aps홀딩스', '피에스케이', '주성엔지', '원익ips', '테스', '유진테크'] },
+];
 
-function detectTheme(stock, favor) {
-  const byName = String(stock.name || '').toLowerCase();
-  if (byName.includes('제약') || byName.includes('pharma') || byName.includes('바이오') || byName.includes('bio') || byName.includes('헬스')) return '제약/바이오';
-  if (byName.includes('로보') || byName.includes('robot')) return '로봇';
-  if (byName.includes('네이버') || byName.includes('kakao') || byName.includes('카카오')) return 'AI플랫폼';
-  if (byName.includes('자동차') || byName.includes('모비스') || byName.includes('기아') || byName.includes('현대')) return '전기차';
-  if (byName.includes('반도체') || byName.includes('semicon') || byName.includes('hynix')) return 'AI반도체';
-  if (byName.includes('에코프로') || byName.includes('배터리') || byName.includes('리튬') || byName.includes('전지')) return '2차전지';
-
-  const idx = hashCode(`${stock.code}:${stock.name}:${favor}`) % THEME_POOL.length;
-  return THEME_POOL[idx];
+function detectTheme(stock) {
+  const n = String(stock.name || '').toLowerCase();
+  for (const rule of THEME_RULES) {
+    if (rule.keywords.some((k) => n.includes(k.toLowerCase()))) {
+      return rule.theme;
+    }
+  }
+  // 매칭 실패 시 무작위 배정 대신 '기타' 반환
+  return '기타';
 }
 
-function buildFiveQaSummary(stock, ctx) {
-  const signal = ctx.signal;
-  const favor = Number(ctx.favor || 0);
-  const theme = ctx.theme || "핵심 업종";
-  const tomorrowProb = Number(ctx.tomorrowProb || 0);
+function normalizeNewsTitle(title = '') {
+  return String(title)
+    .replace(/\s+/g, ' ')
+    .replace(/\[[^\]]+\]/g, '')
+    .trim();
+}
+
+function parseNewsDate(dateText = '') {
+  const t = Date.parse(String(dateText || ''));
+  return Number.isFinite(t) ? t : null;
+}
+
+function daysAgoFrom(dateText = '') {
+  const ts = parseNewsDate(dateText);
+  if (!ts) return 9999;
+  return Math.max(0, Math.floor((Date.now() - ts) / 86400000));
+}
+
+function isLowSignalMarketWrap(title = '') {
+  const t = normalizeNewsTitle(title).toLowerCase();
+  return [
+    '주가',
+    '장중',
+    '마감',
+    '상승',
+    '하락',
+    '급등',
+    '강세',
+    '약세',
+    '거래량',
+    '수급',
+    '시황',
+    '특징주'
+  ].some((x) => t.includes(x));
+}
+
+function classifyHeadline(title = '') {
+  const t = normalizeNewsTitle(title).toLowerCase();
+  const strong = [
+    ['계약', 4, '계약'],
+    ['파트너십', 4, '파트너십'],
+    ['공급', 4, '공급'],
+    ['수주', 4, '수주'],
+    ['승인', 4, '허가'],
+    ['허가', 4, '허가'],
+    ['임상', 4, '임상'],
+    ['매출', 3, '실적'],
+    ['영업이익', 3, '실적'],
+    ['흑자', 3, '실적'],
+    ['실적', 3, '실적'],
+    ['출시', 3, '출시'],
+    ['수출', 3, '수출'],
+    ['기술이전', 4, '기술이전'],
+    ['로열티', 4, '로열티'],
+    ['po', 3, '주문'],
+    ['구매주문', 3, '주문'],
+    ['mou', 2, '제휴'],
+    ['투자유치', 3, '투자'],
+    ['증설', 3, '증설'],
+    ['신제품', 2, '신제품'],
+  ];
+
+  let score = 0;
+  let tag = '일반';
+  let sentiment = 0;
+  for (const [keyword, weight, type] of strong) {
+    if (t.includes(keyword)) {
+      score += weight;
+      tag = type;
+      sentiment += 1;
+    }
+  }
+
+  const negativeKeywords = [
+    '관리종목',
+    '상장적격성',
+    '실질심사',
+    '우려',
+    '논란',
+    '해명',
+    '정정',
+    '불성실',
+    '과징금',
+    '조사',
+    '소송',
+    '하한가',
+    '적자',
+    '부진',
+    '실패',
+    '취소',
+    '연기',
+    '지연',
+    '해지',
+    '뻥튀기',
+    '없던 숫자',
+    '급락'
+  ];
+  for (const keyword of negativeKeywords) {
+    if (t.includes(keyword)) {
+      score -= 3;
+      sentiment -= 2;
+    }
+  }
+
+  if (isLowSignalMarketWrap(t)) score -= 3;
+  if (t.includes('루머') || t.includes('설')) score -= 2;
+
+  return { score, tag, sentiment };
+}
+
+function dedupeNewsItems(items = []) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items || []) {
+    const title = normalizeNewsTitle(item.title || '');
+    const key = title.toLowerCase();
+    if (!title || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ ...item, title });
+  }
+  return out;
+}
+
+function summarizeDate(dateText = '') {
+  const ts = parseNewsDate(dateText);
+  if (!ts) return '날짜 확인 필요';
+  return new Date(ts).toISOString().slice(0, 10);
+}
+
+function buildNewsContext(stock, newsItems = []) {
+  const deduped = dedupeNewsItems(newsItems)
+    .map((item) => {
+      const cls = classifyHeadline(item.title);
+      const daysAgo = daysAgoFrom(item.date);
+      const recencyBonus = daysAgo <= 7 ? 3 : daysAgo <= 21 ? 2 : daysAgo <= 45 ? 1 : 0;
+      return {
+        ...item,
+        tag: cls.tag,
+        sentiment: cls.sentiment,
+        headline_score: cls.score,
+        relevance: cls.score + recencyBonus,
+        daysAgo,
+      };
+    })
+    .sort((a, b) => b.relevance - a.relevance || a.daysAgo - b.daysAgo);
+
+  const relevant = deduped.filter((item) => item.relevance > 0);
+  const top = relevant.slice(0, 3);
+  const positiveCount = top.filter((item) => item.sentiment > 0).length;
+  const negativeCount = top.filter((item) => item.sentiment < 0).length;
+
+  let grade = 'C';
+  if (positiveCount >= 2 && negativeCount === 0 && top.length >= 2 && top[0].relevance >= 6) grade = 'A';
+  else if (positiveCount >= 1 && negativeCount <= 1 && top.length >= 1 && top[0].relevance >= 3) grade = 'B';
+
+  const tags = Array.from(new Set(top.map((item) => item.tag).filter(Boolean)));
+  const tone = negativeCount > positiveCount ? 'negative' : negativeCount > 0 ? 'mixed' : positiveCount > 0 ? 'positive' : 'neutral';
+  return { grade, tone, all: deduped, top, tags };
+}
+
+function buildWhyNewsMatters(newsContext) {
+  if (newsContext.tags.includes('실적')) {
+    return '이 뉴스가 중요한 이유는 기대가 아니라 실제 매출과 이익으로 연결되는지 판단할 수 있기 때문입니다.';
+  }
+  if (newsContext.tags.includes('허가') || newsContext.tags.includes('임상')) {
+    return '이 뉴스가 중요한 이유는 일정 지연 여부가 기업가치에 직접 영향을 주는 파이프라인 단계이기 때문입니다.';
+  }
+  if (newsContext.tags.includes('계약') || newsContext.tags.includes('공급') || newsContext.tags.includes('주문')) {
+    return '이 뉴스가 중요한 이유는 단순 기대감이 아니라 매출 인식 가능성이 있는 계약·주문 흐름으로 읽힐 수 있기 때문입니다.';
+  }
+  if (newsContext.tags.includes('기술이전') || newsContext.tags.includes('로열티')) {
+    return '이 뉴스가 중요한 이유는 단발성 이슈가 아니라 장기 수익 구조 변화로 이어질 수 있기 때문입니다.';
+  }
+  return '핵심은 뉴스 제목 자체보다, 그 뉴스가 실제 매출·이익·허가 일정으로 이어지는지 확인하는 것입니다.';
+}
+
+function buildNextEvent(stock, newsContext) {
+  if (newsContext.tags.includes('실적')) {
+    return `시장에서는 다음 분기 실적에서 ${stock.name}의 최근 뉴스가 일회성이 아니라는 점이 다시 확인되는지를 볼 가능성이 높습니다.`;
+  }
+  if (newsContext.tags.includes('허가') || newsContext.tags.includes('임상')) {
+    return `다음 체크포인트는 ${stock.name} 관련 허가·임상 진행 상황이 추가 공시나 후속 뉴스로 구체화되는지입니다.`;
+  }
+  if (newsContext.tags.includes('계약') || newsContext.tags.includes('공급') || newsContext.tags.includes('주문')) {
+    return `다음 체크포인트는 계약·주문이 실제 매출 인식과 출하로 이어지는지, 그리고 후속 공시가 붙는지입니다.`;
+  }
+  return `지금은 ${stock.name}에 대해 시장이 강하게 붙을 다음 기업 고유 뉴스가 나오는지 지켜보는 구간에 가깝습니다.`;
+}
+
+function buildBreakCondition(stock, newsContext) {
+  if (newsContext.grade === 'A') {
+    return `반대로 기대가 꺾이는 조건은 최근 뉴스의 후속 공시가 없거나, 이미 나온 재료가 실제 숫자로 이어지지 않는 경우입니다.`;
+  }
+  if (newsContext.grade === 'B') {
+    return `지금 단계에서 기대가 꺾이는 조건은 추가 확인 뉴스 없이 시간만 지나거나, 기존 뉴스가 기업가치와 직접 연결되지 않는 것으로 드러나는 경우입니다.`;
+  }
+  return `지금은 신규 호재 공백이 길어질수록 ${stock.name}에 대한 관심이 약해질 수 있고, 결국 실적이나 공시 같은 더 단단한 근거가 나올 때까지 기다려야 합니다.`;
+}
+
+function buildNewsAwareFiveQaSummary(stock, ctx, newsContext) {
+  const { signal, favor, theme, tomorrowProb } = ctx;
   const valuation = favor >= 80 ? "밸류 부담이 있는 편" : favor >= 60 ? "적정~중립 구간" : "저평가 시도 구간";
-  const flowTone = favor >= 70
-    ? "외국인/기관 수급이 완만하게 개선되는 흐름"
-    : "수급 방향성이 아직 뚜렷하지 않은 흐름";
+  const topNews = newsContext.top;
+  const recentNewsLines = topNews.length
+    ? topNews.map((item) => `${summarizeDate(item.date)} '${item.title}'`).join(", ")
+    : "";
+
+  const whyMatters = buildWhyNewsMatters(newsContext);
+  const nextEvent = buildNextEvent(stock, newsContext);
+  const breakCondition = buildBreakCondition(stock, newsContext);
+
+  const section2 = [];
+  if (newsContext.grade === 'A') {
+    section2.push(
+      `지금 ${stock.name}이 오를 수 있는 가장 현실적인 이유는 최근 기업 고유 뉴스가 단순 주가 해설이 아니라 실제 사업가치와 연결되는 성격이기 때문입니다.`,
+      `최근 핵심 뉴스는 ${recentNewsLines} 입니다.`,
+      whyMatters,
+      `${signal} 신호와 내일 상승확률 ${tomorrowProb}%는 이런 뉴스 흐름이 단기 수급 명분까지 만들 수 있다는 점을 보여줍니다.`,
+      nextEvent,
+      breakCondition
+    );
+  } else if (newsContext.grade === 'B' && newsContext.tone !== 'negative') {
+    section2.push(
+      `최근 ${stock.name} 관련 뉴스는 아예 비어 있지는 않지만, 지금 당장 주가를 강하게 재평가할 결정타라고 보기엔 아직 한 단계 부족합니다.`,
+      `확인된 핵심 뉴스는 ${recentNewsLines} 정도로 압축할 수 있습니다.`,
+      whyMatters,
+      `다만 현재 신호는 ${signal}, AI 점수는 ${favor}점이라 완전 약세보다는 뉴스 한두 건이 더 붙을 때 반응이 나올 수 있는 중간 구간에 가깝습니다.`,
+      nextEvent,
+      breakCondition
+    );
+  } else {
+    section2.push(
+      `솔직히 말하면 지금 ${stock.name}에 대해 주가를 강하게 밀어 올릴 만한 신규 핵심 호재는 뚜렷하지 않습니다.`,
+      newsContext.top.length
+        ? `오히려 최근 수집된 기사에는 ${recentNewsLines}처럼 논란성·검증성·제한적 재료가 섞여 있어, 이를 곧바로 강한 호재로 해석하긴 어렵습니다.`
+        : `최근 수집된 기사들 중 상당수는 시황성·주가 해설성 내용이거나, 기업가치를 바로 바꾼다고 보기 어려운 수준이었습니다.`,
+      `그래서 현재 ${signal} 신호와 AI 점수 ${favor}점은 뉴스 폭발보다는 기존 기대와 수급이 버티는지 보는 구간으로 해석하는 편이 맞습니다.`,
+      nextEvent,
+      `당장 뚜렷한 새 호재가 안 보이는 만큼, 지금은 무리하게 의미를 부여하기보다 다음 실적·공시·계약 뉴스가 나올 때까지 기다리는 접근이 더 자연스럽습니다.`,
+      breakCondition
+    );
+  }
 
   return [
     "🏢 이 회사 뭐 하는 곳인가",
     `${stock.name}(${stock.code})은 ${stock.market || "국내 증시"}에서 ${theme} 축으로 분류되는 종목입니다.`,
-    "이 종목의 핵심은 단순 제품 설명보다, 주력 사업이 실적과 수급을 동시에 끌어올릴 수 있는지입니다.",
-    "돈을 버는 구조는 매출 성장보다 이익률 방어와 레버리지 구간에서의 실적 탄력에 더 크게 좌우됩니다.",
-    "시장에서는 테마 이름보다 실제 숫자 변화와 기관·외국인 자금 유입 여부를 더 강하게 반영합니다.",
-    "결국 좋은 회사인지보다, 지금 구간에서 실적으로 증명 가능한 사업 체력인지가 주가를 움직입니다.",
+    `이 종목은 업종 일반론보다 회사 고유 뉴스가 실제 매출·이익·허가 일정으로 이어지는지가 주가를 좌우하는 경우가 많습니다.`,
+    `결국 ${stock.name}을 볼 때는 막연한 기대보다, 최근 뉴스가 실제 사업 가치와 얼마나 연결되는지 순서대로 확인하는 접근이 중요합니다.`,
     "",
     "📈 왜 오를 수 있나",
-    `첫째, 현재 AI 신호는 ${signal}이고 점수는 ${favor}점이라 완전 약세보다는 반등 논리가 살아 있습니다.`,
-    `둘째, 단기 확률 지표가 ${tomorrowProb}%로 제시되어 모멘텀 트레이딩 자금이 붙을 명분이 있습니다.`,
-    `셋째, ${flowTone}으로 해석되는 구간이라 수급이 한쪽으로 정리되면 주가 탄력이 빨라질 수 있습니다.`,
-    "넷째, 업황 기대와 실적 턴어라운드 스토리가 맞물리면 밸류에이션 재평가가 빠르게 진행되기도 합니다.",
-    "즉 상승 여지는 분명하지만, 기대가 실적 확인으로 이어지는지가 핵심 확인 포인트입니다.",
+    ...section2,
     "",
     "⚠️ 뭐가 위험한가",
-    "겉으로 좋아 보여도 가장 큰 리스크는 기대치가 먼저 높아지고 실제 숫자가 따라오지 못하는 경우입니다.",
-    "업황 회복이 늦어지면 좋은 스토리도 고평가 논리로 전환되며 차익 매물이 강하게 나올 수 있습니다.",
-    "단기 급등 이후에는 펀더멘털과 무관하게 매매 피로도가 쌓여 변동성이 커지기 쉽습니다.",
-    "거래대금이 둔화되면 같은 호재에도 반응이 약해지고, 지수 조정 때 낙폭이 확대될 수 있습니다.",
-    "좋은 회사와 좋은 매수 타이밍은 다를 수 있다는 점이 이 구간의 핵심 리스크입니다.",
+    `가장 큰 리스크는 최근 뉴스가 시장 기대를 키웠더라도, 후속 공시나 숫자로 이어지지 않으면 주가가 빠르게 원위치될 수 있다는 점입니다.`,
+    `특히 ${stock.name}처럼 뉴스 민감도가 높은 종목은 같은 재료라도 거래대금이 약해지면 반응이 둔해지고 변동성만 커질 수 있습니다.`,
+    `즉 좋은 기사 제목이 붙었다는 사실보다, 그 재료가 실제 기업가치 변화로 이어지는지 확인되지 않으면 해석이 쉽게 뒤집힐 수 있습니다.`,
     "",
     "💰 지금 가격이 싼가 비싼가",
-    `현재 구간은 절대 저점 단정보다 ${valuation}으로 해석하는 편이 현실적입니다.`,
-    "많이 오른 자리라도 이익 추정치가 계속 상향되면 비싸 보이는 가격이 정당화될 수 있습니다.",
-    "반대로 싸 보이는 자리라도 시장이 할인하는 구조적 이유가 남아 있으면 반등은 지연될 수 있습니다.",
-    "그래서 가격 판단은 단순 PER/PBR 숫자보다, 다음 2~3분기 이익 가시성이 개선되는지로 봐야 합니다.",
-    "싸다/비싸다 이분법보다 현재 가격이 감당 가능한 리스크인지가 더 중요합니다.",
+    `현재 가격은 절대 저평가 단정보다 ${valuation}으로 보는 편이 현실적입니다.`,
+    `이미 알려진 뉴스가 어느 정도 반영됐을 가능성도 있고, 반대로 그 뉴스가 실제 숫자로 이어지면 지금 가격도 나중엔 비싸지 않았다고 평가될 수 있습니다.`,
+    `그래서 지금은 싸다/비싸다보다, 최근 뉴스가 다음 분기 실적이나 공시로 검증될 수 있는 자리인지가 더 중요합니다.`,
     "",
     "🤔 그래서 지금 사도 되나",
-    "지금은 한 번에 크게 들어가기보다 분할매수로 평균 단가를 관리하는 접근이 유효합니다.",
-    "단기 관점이라면 추격매수보다 눌림 구간에서 거래량 재유입을 확인하고 대응하는 편이 낫습니다.",
-    "중기 관점이라면 실적 이벤트를 통과하면서 비중을 단계적으로 늘리는 전략이 더 안정적입니다.",
-    "신호가 살아 있어도 시장 변동성은 항상 열려 있으니 손절 기준과 비중 한도를 먼저 정하셔야 합니다.",
-    "지금 자리는 포기할 자리가 아니라, 확신을 숫자로 확인하며 틀리지 않게 접근할 자리입니다."
+    newsContext.grade === 'A'
+      ? `최근 핵심 뉴스의 강도는 나쁘지 않지만, 그래도 추격보다 후속 확인을 보면서 분할 접근하는 쪽이 더 맞습니다.`
+      : newsContext.grade === 'B'
+        ? `지금은 강한 확신 매수보다, 다음 기업 고유 뉴스가 붙는지 확인하면서 대응하는 편이 더 자연스럽습니다.`
+        : `지금은 섣불리 확신을 실을 자리가 아니라, 다음 기업 고유 호재가 실제로 나오는지 기다리는 구간에 가깝습니다.`,
+    `단기라면 뉴스 공백 구간 추격매수보다 눌림과 거래대금 확인이 우선이고, 중기라면 다음 실적·공시를 확인한 뒤 비중을 나누는 접근이 더 안정적입니다.`,
+    `정리하면 ${stock.name}은 ${newsContext.grade === 'A' ? '최근 뉴스 강도가 실제로 확인되는 편' : newsContext.grade === 'B' ? '관심은 둘 수 있지만 결정적 근거가 더 필요한 편' : '지금 당장 새 호재보다 검증이 먼저인 편'}입니다.`
   ].join("\n");
 }
 
@@ -127,11 +415,26 @@ function buildAnalysis(stock) {
   const price = Number(stock.close_price || 0);
   const priceFactor = price > 0 ? clamp(Math.round(Math.log10(price) * 12), 10, 30) : 12;
 
+  // 실제 시장 데이터로 점수 보정
+  const changeRate = Number(stock.change_rate || 0);       // 실제 등락률
+  const volume     = Number(stock.volume || 0);             // 실제 거래량
+  const prevPrice  = Number(stock.prev_price || price);
+  const highPrice  = Number(stock.high_price || price);
+  const lowPrice   = Number(stock.low_price  || price);
+
+  // 등락률 기반 모멘텀 보정 (-15~+15점)
+  const momentumBonus = clamp(Math.round(changeRate * 1.5), -15, 15);
+  // 거래량 기반 수급 보정: 거래량 있으면 +0~+10점
+  const volumeBonus = volume > 0 ? clamp(Math.round(Math.log10(volume + 1) * 1.5), 0, 10) : 0;
+  // 변동폭(고저 차이) 기반 변동성 (좁을수록 안정적, +0~+5점)
+  const rangeRatio = price > 0 ? (highPrice - lowPrice) / price : 0;
+  const stabilityBonus = clamp(Math.round((0.1 - rangeRatio) * 50), -5, 5);
+
   const news = Math.round(seededRange(seed + 1, 45, 88));
   const earnings = Math.round(seededRange(seed + 2, 42, 92));
-  const flow = Math.round(seededRange(seed + 3, 38, 90));
+  const flow = clamp(Math.round(seededRange(seed + 3, 38, 90) + volumeBonus), 35, 95);
   const industry = Math.round(seededRange(seed + 4, 44, 91));
-  const sentiment = clamp(Math.round(seededRange(seed + 5, 40, 86) + priceFactor / 4), 35, 95);
+  const sentiment = clamp(Math.round(seededRange(seed + 5, 40, 86) + priceFactor / 4 + momentumBonus + stabilityBonus), 35, 95);
 
   const favor = Math.round(news * 0.2 + earnings * 0.25 + flow * 0.2 + industry * 0.2 + sentiment * 0.15);
   const signal = getSignal(favor);
@@ -142,7 +445,9 @@ function buildAnalysis(stock) {
   const prob3m = clamp(Math.round(prob1m + seededRange(seed + 9, 4, 11)), 42, 94);
   const prob1y = clamp(Math.round(prob3m + seededRange(seed + 10, 4, 10)), 48, 96);
   const confidence = clamp(Math.round(45 + favor * 0.5), 45, 95);
-  const theme = detectTheme(stock, favor);
+  const theme = detectTheme(stock);
+  const newsItems = newsMap[stock.code] || [];
+  const newsContext = buildNewsContext(stock, newsItems);
 
   const signalFlags = [
     {
@@ -183,40 +488,49 @@ function buildAnalysis(stock) {
     }
   ];
 
-  const bullPoints = [
-    `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,
-    `✅ ${stock.name} 수급/모멘텀이 동시 개선 구간`,
-    `🚀 내일 상승 확률 ${tomorrowProb}% · ${signalEmoji} ${signal}`
-  ];
+  const bullPoints = newsContext.top.length
+    ? newsContext.top.map((item) => `📰 ${summarizeDate(item.date)} ${item.title}`).slice(0, 3)
+    : [
+        `📰 최근 기업 고유 뉴스 강도는 ${newsContext.grade} 등급으로 분류됩니다.`,
+        `⏳ 지금 당장 강한 신규 호재보다 다음 실적·공시 대기 구간입니다.`,
+        `🚀 내일 상승 확률 ${tomorrowProb}% · ${signalEmoji} ${signal}`
+      ];
 
   const riskPoints = [
-    `⚠️ 단기 급등 후 되돌림 변동성 가능성`,
-    `⚠️ 거시 변수(금리/환율/지수) 급변 시 동반 조정 리스크`,
-    `⚠️ 거래대금 둔화 시 추세 약화 가능성`
+    `⚠️ 최근 뉴스가 후속 공시·실적으로 이어지지 않으면 기대가 빠르게 꺾일 수 있습니다.`,
+    `⚠️ 기사 제목 대비 실제 기업가치 변화가 약하면 되돌림이 커질 수 있습니다.`,
+    `⚠️ 거래대금 둔화 시 뉴스 효과가 약해질 수 있습니다.`
   ];
 
-  const future = favor >= 70
-    ? '중기적으로 실적/수급 동반 시 우상향 가능성이 높습니다.'
-    : favor >= 55
-      ? '단기 변동성 구간으로 이벤트 확인 후 접근이 유효합니다.'
-      : '리스크 구간으로 방어적 포지션 유지가 권장됩니다.';
+  const future = newsContext.grade === 'A'
+    ? '최근 핵심 뉴스가 후속 공시와 실적으로 이어지면 중기 재평가 가능성이 있습니다.'
+    : newsContext.grade === 'B'
+      ? '추가 기업 고유 뉴스가 붙는지 확인한 뒤 접근하는 편이 유효합니다.'
+      : '지금은 뉴스 공백 구간에 가까워 다음 실적·공시 전까지 보수적 해석이 맞습니다.';
 
-  const risk = favor >= 70
-    ? '단기 과열 시 조정 가능성 및 대외 변수 변동성 유의'
-    : '거시 변수(금리/환율)와 거래대금 약화 리스크 점검 필요';
+  const risk = newsContext.grade === 'A'
+    ? '최근 뉴스 기대가 실제 숫자로 이어지지 않으면 조정 압력이 커질 수 있습니다.'
+    : newsContext.grade === 'B'
+      ? '재료의 질이 아직 완전히 검증되지 않아 추가 확인이 필요합니다.'
+      : '신규 핵심 호재 부재 구간으로 관심 약화와 거래대금 둔화 리스크가 있습니다.';
 
-  const flowText = favor >= 70
-    ? '외국인/기관 수급이 완만한 개선 흐름으로 추정됩니다.'
-    : '수급 방향성이 약해 추세 확인이 필요합니다.';
+  const flowText = newsContext.grade === 'A'
+    ? '최근 뉴스가 유지되면 수급 재유입 명분이 생길 수 있습니다.'
+    : newsContext.grade === 'B'
+      ? '뉴스는 있으나 아직 수급을 강하게 한쪽으로 모을 정도의 명확성은 제한적입니다.'
+      : '현재는 뉴스보다 수급 버팀 여부를 먼저 봐야 하는 구간입니다.';
+
+  const summary = buildNewsAwareFiveQaSummary(stock, {
+    signal,
+    favor,
+    theme,
+    tomorrowProb
+  }, newsContext);
 
   return {
     code: stock.code,
-    summary: buildFiveQaSummary(stock, {
-      signal,
-      favor,
-      theme,
-      tomorrowProb
-    }),
+    summary,
+    summary_source: `news_grade_${newsContext.grade}`,
     favor_score: favor,
     signal,
     signal_emoji: signalEmoji,
@@ -236,22 +550,37 @@ function buildAnalysis(stock) {
   };
 }
 
+const newsMap = fs.existsSync(NEWS_MAP_PATH)
+  ? (JSON.parse(fs.readFileSync(NEWS_MAP_PATH, 'utf8')).map || {})
+  : {};
+
 const stocks = db
-  .prepare("SELECT code, name, market, close_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
+  .prepare("SELECT code, name, market, close_price, prev_price, change_rate, volume, high_price, low_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
   .all();
 
 const now = new Date().toISOString();
 const upsertAnalysis = db.prepare(`
-INSERT INTO stock_analysis (code, summary, favor_score, signal, bull_points, future_outlook, risk, foreign_flow, updated_at)
-VALUES (@code,@summary,@favor_score,@signal,@bull_points,@future_outlook,@risk,@foreign_flow,@updated_at)
+INSERT INTO stock_analysis (code, summary, favor_score, signal, signal_emoji, trigger_count, tomorrow_prob, prob_1m, prob_3m, prob_1y, confidence, theme, bull_points, risk_points, signal_flags, future_outlook, risk, foreign_flow, summary_source, updated_at)
+VALUES (@code,@summary,@favor_score,@signal,@signal_emoji,@trigger_count,@tomorrow_prob,@prob_1m,@prob_3m,@prob_1y,@confidence,@theme,@bull_points,@risk_points,@signal_flags,@future_outlook,@risk,@foreign_flow,@summary_source,@updated_at)
 ON CONFLICT(code) DO UPDATE SET
   summary=excluded.summary,
   favor_score=excluded.favor_score,
   signal=excluded.signal,
+  signal_emoji=excluded.signal_emoji,
+  trigger_count=excluded.trigger_count,
+  tomorrow_prob=excluded.tomorrow_prob,
+  prob_1m=excluded.prob_1m,
+  prob_3m=excluded.prob_3m,
+  prob_1y=excluded.prob_1y,
+  confidence=excluded.confidence,
+  theme=excluded.theme,
   bull_points=excluded.bull_points,
+  risk_points=excluded.risk_points,
+  signal_flags=excluded.signal_flags,
   future_outlook=excluded.future_outlook,
   risk=excluded.risk,
   foreign_flow=excluded.foreign_flow,
+  summary_source=excluded.summary_source,
   updated_at=excluded.updated_at
 `);
 
@@ -259,15 +588,26 @@ const analyses = stocks.map(buildAnalysis);
 const txAnalysis = db.transaction((rows) => {
   for (const row of rows) {
     upsertAnalysis.run({
-      code: row.code,
-      summary: row.summary,
-      favor_score: row.favor_score,
-      signal: row.signal,
-      bull_points: row.bull_points,
+      code:          row.code,
+      summary:       row.summary,
+      favor_score:   row.favor_score,
+      signal:        row.signal,
+      signal_emoji:  row.signal_emoji,
+      trigger_count: row.trigger_count,
+      tomorrow_prob: row.tomorrow_prob,
+      prob_1m:       row.prob_1m,
+      prob_3m:       row.prob_3m,
+      prob_1y:       row.prob_1y,
+      confidence:    row.confidence,
+      theme:         row.theme,
+      bull_points:   row.bull_points,
+      risk_points:   row.risk_points,
+      signal_flags:  JSON.stringify(row.signal_flags || []),
       future_outlook: row.future_outlook,
-      risk: row.risk,
-      foreign_flow: row.foreign_flow,
-      updated_at: now
+      risk:          row.risk,
+      foreign_flow:  row.foreign_flow,
+      summary_source: row.summary_source,
+      updated_at:    now
     });
   }
 });
@@ -348,6 +688,7 @@ const analysisMap = Object.fromEntries(
         future_outlook: a.future_outlook,
         risk: a.risk,
         foreign_flow: a.foreign_flow,
+        summary_source: a.summary_source,
         close_price: s.close_price ?? null,
         logo_url: s.logo_url || null,
         updated_at: now,

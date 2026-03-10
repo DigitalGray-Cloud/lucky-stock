@@ -1,10 +1,11 @@
+import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import iconv from 'iconv-lite';
 
 const ROOT = path.resolve('/home/user/luckstock');
 const DATA_DIR = path.join(ROOT, 'data');
-const TOP_PATH = path.join(DATA_DIR, 'ui_top_stocks.json');
+const DB_PATH = path.join(DATA_DIR, 'stocks.db');
 const OUT_PATH = path.join(DATA_DIR, 'ui_news_map.json');
 
 function decodeHtml(text = '') {
@@ -60,11 +61,37 @@ async function fetchNews(name, code) {
   return parseRss(text, 5);
 }
 
+function normalizeTitle(title = '') {
+  return String(title)
+    .replace(/\s+/g, ' ')
+    .replace(/\[[^\]]+\]/g, '')
+    .trim();
+}
+
+function dedupeRows(rows) {
+  const seen = new Set();
+  const out = [];
+  for (const row of rows) {
+    const key = normalizeTitle(row.title).toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ ...row, title: normalizeTitle(row.title) });
+  }
+  return out;
+}
+
 function loadTargets() {
-  if (!fs.existsSync(TOP_PATH)) return [];
-  const top = JSON.parse(fs.readFileSync(TOP_PATH, 'utf8'));
-  const items = Array.isArray(top.top) ? top.top : [];
-  return items.slice(0, 200).map((x) => ({ code: String(x.code || ''), name: String(x.name || x.code || '') })).filter((x) => x.code && x.name);
+  if (!fs.existsSync(DB_PATH)) return [];
+  const db = new Database(DB_PATH, { readonly: true });
+  try {
+    return db
+      .prepare("SELECT code, name FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
+      .all()
+      .map((x) => ({ code: String(x.code || ''), name: String(x.name || x.code || '') }))
+      .filter((x) => x.code && x.name);
+  } finally {
+    db.close();
+  }
 }
 
 async function main() {
@@ -87,8 +114,8 @@ async function main() {
       if (i >= targets.length) break;
       const t = targets[i];
       const rows = await fetchNews(t.name, t.code).catch(() => []);
-      map[t.code] = rows;
-      if ((i + 1) % 20 === 0 || i + 1 === targets.length) {
+      map[t.code] = dedupeRows(rows);
+      if ((i + 1) % 50 === 0 || i + 1 === targets.length) {
         console.log(`[news] progress ${i + 1}/${targets.length}`);
       }
     }

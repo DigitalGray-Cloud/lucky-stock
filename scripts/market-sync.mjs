@@ -46,11 +46,11 @@ async function main() {
   console.log("[market-sync] step1: prices sync");
   await runNode("scripts/build-stock-master.mjs");
 
-  console.log("[market-sync] step2: analysis/ranking cache build");
-  await runNode("scripts/build-ui-cache.mjs");
-
-  console.log("[market-sync] step3: latest news cache build");
+  console.log("[market-sync] step2: latest news cache build");
   await runNode("scripts/build-news-cache.mjs");
+
+  console.log("[market-sync] step3: analysis/ranking cache build");
+  await runNode("scripts/build-ui-cache.mjs");
 
   console.log("[market-sync] done");
 }

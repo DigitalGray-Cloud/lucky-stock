@@ -1,35 +1,55 @@
 {
-  "generated_at": "2026-03-08T14:17:00.389Z",
+  "generated_at": "2026-03-10T12:17:45.997Z",
   "items": [
     {
       "theme": "로봇",
-      "avg_score": 80,
-      "count": 16
+      "avg_score": 82,
+      "count": 20
     },
     {
       "theme": "AI플랫폼",
-      "avg_score": 77,
-      "count": 500
-    },
-    {
-      "theme": "전기차",
-      "avg_score": 74,
-      "count": 526
+      "avg_score": 79,
+      "count": 101
     },
     {
       "theme": "AI반도체",
-      "avg_score": 73,
-      "count": 492
+      "avg_score": 78,
+      "count": 27
+    },
+    {
+      "theme": "식품",
+      "avg_score": 75,
+      "count": 13
     },
     {
       "theme": "2차전지",
-      "avg_score": 72,
-      "count": 487
+      "avg_score": 75,
+      "count": 9
+    },
+    {
+      "theme": "유통",
+      "avg_score": 71,
+      "count": 14
     },
     {
       "theme": "제약/바이오",
-      "avg_score": 67,
-      "count": 601
+      "avg_score": 70,
+      "count": 189
+    },
+    {
+      "theme": "금융",
+      "avg_score": 70,
+      "count": 67
+    },
+    {
+      "theme": "철강/소재",
+      "avg_score": 70,
+      "count": 41
+    },
+    {
+      "theme": "해운/물류",
+      "avg_score": 70,
+      "count": 4
     }
   ]
 }

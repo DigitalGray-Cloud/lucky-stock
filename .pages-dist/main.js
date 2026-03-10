@@ -762,6 +762,11 @@ function getSignalFeedItems(cache) {
   const pool = cache.recent.length ? cache.recent : cache.top;
   return uniqueByCode(
     [...pool]
+      .filter((item) =>
+        Number(item.trigger_count || 0) >= 4 &&
+        item.signal === "상승 가능" &&
+        Number(item.favor_score || 0) >= 60
+      )
       .sort((a, b) =>
         Number(b.trigger_count || 0) - Number(a.trigger_count || 0) ||
         signalWeight(b) - signalWeight(a) ||

@@ -908,6 +908,8 @@ const recent = ordered.slice(0, 100).map((a) => {
     rank_score: a.rank_score,
     signal: a.signal,
     signal_emoji: a.signal_emoji,
+    trigger_count: a.trigger_count,
+    confidence: a.confidence,
     close_price: s.close_price ?? null,
     logo_url: s.logo_url || null,
     theme: a.theme,

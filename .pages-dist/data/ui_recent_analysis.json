@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-10T14:00:41.566Z",
+  "generated_at": "2026-03-10T14:27:12.808Z",
   "items": [
     {
       "code": "059090",
@@ -9,6 +9,8 @@
       "rank_score": 96,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 13770,
       "logo_url": "/data/logos/059090.png",
       "theme": "기타",
@@ -16,7 +18,7 @@
       "prob_1m": 83,
       "prob_3m": 94,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "079970",
@@ -26,6 +28,8 @@
       "rank_score": 96,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 86,
       "close_price": 596,
       "logo_url": "/data/logos/079970.png",
       "theme": "AI플랫폼",
@@ -33,7 +37,7 @@
       "prob_1m": 72,
       "prob_3m": 82,
       "prob_1y": 87,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "122310",
@@ -43,6 +47,8 @@
       "rank_score": 96,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 4005,
       "logo_url": "/data/logos/122310.png",
       "theme": "기타",
@@ -50,7 +56,7 @@
       "prob_1m": 85,
       "prob_3m": 91,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "141000",
@@ -60,6 +66,8 @@
       "rank_score": 95,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 86,
       "close_price": 8550,
       "logo_url": "/data/logos/141000.png",
       "theme": "기타",
@@ -67,7 +75,7 @@
       "prob_1m": 71,
       "prob_3m": 77,
       "prob_1y": 83,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "187420",
@@ -77,6 +85,8 @@
       "rank_score": 95,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 2555,
       "logo_url": "/data/logos/187420.png",
       "theme": "기타",
@@ -84,7 +94,7 @@
       "prob_1m": 73,
       "prob_3m": 80,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "259630",
@@ -94,6 +104,8 @@
       "rank_score": 95,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 12000,
       "logo_url": "/data/logos/259630.png",
       "theme": "기타",
@@ -101,7 +113,7 @@
       "prob_1m": 83,
       "prob_3m": 93,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "007590",
@@ -111,6 +123,8 @@
       "rank_score": 94,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 5810,
       "logo_url": "/data/logos/007590.png",
       "theme": "기타",
@@ -118,7 +132,7 @@
       "prob_1m": 73,
       "prob_3m": 78,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "138610",
@@ -128,6 +142,8 @@
       "rank_score": 94,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 28400,
       "logo_url": "/data/logos/138610.png",
       "theme": "기타",
@@ -135,7 +151,7 @@
       "prob_1m": 72,
       "prob_3m": 78,
       "prob_1y": 84,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "247660",
@@ -145,6 +161,8 @@
       "rank_score": 94,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 3660,
       "logo_url": "/data/logos/247660.png",
       "theme": "기타",
@@ -152,7 +170,7 @@
       "prob_1m": 78,
       "prob_3m": 87,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "006400",
@@ -162,6 +180,8 @@
       "rank_score": 93,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 89,
       "close_price": 389000,
       "logo_url": "/data/logos/006400.png",
       "theme": "AI반도체",
@@ -169,7 +189,7 @@
       "prob_1m": 84,
       "prob_3m": 94,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "020180",
@@ -179,6 +199,8 @@
       "rank_score": 92,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 972,
       "logo_url": "/data/logos/020180.png",
       "theme": "통신",
@@ -186,7 +208,7 @@
       "prob_1m": 76,
       "prob_3m": 83,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "058820",
@@ -196,6 +218,8 @@
       "rank_score": 92,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 84,
       "close_price": 1725,
       "logo_url": "/data/logos/058820.png",
       "theme": "제약/바이오",
@@ -203,7 +227,7 @@
       "prob_1m": 82,
       "prob_3m": 86,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "069140",
@@ -213,6 +237,8 @@
       "rank_score": 92,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 2080,
       "logo_url": "/data/logos/069140.png",
       "theme": "기타",
@@ -220,7 +246,7 @@
       "prob_1m": 72,
       "prob_3m": 78,
       "prob_1y": 84,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "265520",
@@ -230,6 +256,8 @@
       "rank_score": 92,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 21000,
       "logo_url": "/data/logos/265520.png",
       "theme": "AI플랫폼",
@@ -237,7 +265,7 @@
       "prob_1m": 76,
       "prob_3m": 82,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "205500",
@@ -247,6 +275,8 @@
       "rank_score": 91,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 88,
       "close_price": 1463,
       "logo_url": "/data/logos/205500.png",
       "theme": "기타",
@@ -254,7 +284,7 @@
       "prob_1m": 78,
       "prob_3m": 82,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "068330",
@@ -264,6 +294,8 @@
       "rank_score": 91,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 1419,
       "logo_url": "/data/logos/068330.png",
       "theme": "제약/바이오",
@@ -271,7 +303,7 @@
       "prob_1m": 76,
       "prob_3m": 85,
       "prob_1y": 91,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "108320",
@@ -281,6 +313,8 @@
       "rank_score": 91,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 50300,
       "logo_url": "/data/logos/108320.png",
       "theme": "기타",
@@ -288,7 +322,7 @@
       "prob_1m": 79,
       "prob_3m": 83,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "123330",
@@ -298,6 +332,8 @@
       "rank_score": 91,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 22350,
       "logo_url": "/data/logos/123330.png",
       "theme": "기타",
@@ -305,7 +341,7 @@
       "prob_1m": 70,
       "prob_3m": 78,
       "prob_1y": 83,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "214450",
@@ -315,6 +351,8 @@
       "rank_score": 91,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 84,
       "close_price": 315500,
       "logo_url": "/data/logos/214450.png",
       "theme": "기타",
@@ -322,7 +360,7 @@
       "prob_1m": 71,
       "prob_3m": 78,
       "prob_1y": 87,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000640",
@@ -332,6 +370,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 104900,
       "logo_url": "/data/logos/000640.png",
       "theme": "기타",
@@ -339,7 +379,7 @@
       "prob_1m": 73,
       "prob_3m": 77,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "011370",
@@ -349,6 +389,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 1015,
       "logo_url": "/data/logos/011370.png",
       "theme": "기타",
@@ -356,7 +398,7 @@
       "prob_1m": 70,
       "prob_3m": 79,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "045300",
@@ -366,6 +408,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 83,
       "close_price": 2800,
       "logo_url": "/data/logos/045300.png",
       "theme": "기타",
@@ -373,7 +417,7 @@
       "prob_1m": 81,
       "prob_3m": 89,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "047820",
@@ -383,6 +427,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 4065,
       "logo_url": "/data/logos/047820.png",
       "theme": "게임/엔터",
@@ -390,7 +436,7 @@
       "prob_1m": 78,
       "prob_3m": 85,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "054930",
@@ -400,6 +446,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 21000,
       "logo_url": "/data/logos/054930.png",
       "theme": "기타",
@@ -407,7 +455,7 @@
       "prob_1m": 79,
       "prob_3m": 88,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "089890",
@@ -417,6 +465,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 83,
       "close_price": 22500,
       "logo_url": "/data/logos/089890.png",
       "theme": "기타",
@@ -424,7 +474,7 @@
       "prob_1m": 77,
       "prob_3m": 82,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "101730",
@@ -434,6 +484,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 5670,
       "logo_url": "/data/logos/101730.png",
       "theme": "AI플랫폼",
@@ -441,7 +493,7 @@
       "prob_1m": 82,
       "prob_3m": 93,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "115530",
@@ -451,6 +503,8 @@
       "rank_score": 90,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 257,
       "logo_url": "/data/logos/115530.png",
       "theme": "기타",
@@ -458,7 +512,7 @@
       "prob_1m": 72,
       "prob_3m": 82,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "086710",
@@ -468,6 +522,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 87,
       "close_price": 8630,
       "logo_url": "/data/logos/086710.png",
       "theme": "기타",
@@ -475,7 +531,7 @@
       "prob_1m": 74,
       "prob_3m": 78,
       "prob_1y": 84,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "173130",
@@ -485,6 +541,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 87,
       "close_price": 6910,
       "logo_url": "/data/logos/173130.png",
       "theme": "기타",
@@ -492,7 +550,7 @@
       "prob_1m": 76,
       "prob_3m": 85,
       "prob_1y": 94,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "002460",
@@ -502,6 +560,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 12220,
       "logo_url": "/data/logos/002460.png",
       "theme": "기타",
@@ -509,7 +569,7 @@
       "prob_1m": 72,
       "prob_3m": 78,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "025560",
@@ -519,6 +579,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 83,
       "close_price": 12820,
       "logo_url": "/data/logos/025560.png",
       "theme": "기타",
@@ -526,7 +588,7 @@
       "prob_1m": 75,
       "prob_3m": 81,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "032850",
@@ -536,6 +598,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 5040,
       "logo_url": "/data/logos/032850.png",
       "theme": "기타",
@@ -543,7 +607,7 @@
       "prob_1m": 78,
       "prob_3m": 83,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "054220",
@@ -553,6 +617,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 653,
       "logo_url": "/data/logos/054220.png",
       "theme": "기타",
@@ -560,7 +626,7 @@
       "prob_1m": 81,
       "prob_3m": 87,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "066980",
@@ -570,6 +636,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 1250,
       "logo_url": "/data/logos/066980.png",
       "theme": "기타",
@@ -577,7 +645,7 @@
       "prob_1m": 77,
       "prob_3m": 81,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "099390",
@@ -587,6 +655,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 3950,
       "logo_url": "/data/logos/099390.png",
       "theme": "기타",
@@ -594,7 +664,7 @@
       "prob_1m": 71,
       "prob_3m": 81,
       "prob_1y": 87,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "114090",
@@ -604,6 +674,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 83,
       "close_price": 11740,
       "logo_url": "/data/logos/114090.png",
       "theme": "기타",
@@ -611,7 +683,7 @@
       "prob_1m": 78,
       "prob_3m": 85,
       "prob_1y": 91,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "143540",
@@ -621,6 +693,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 1125,
       "logo_url": "/data/logos/143540.png",
       "theme": "기타",
@@ -628,7 +702,7 @@
       "prob_1m": 72,
       "prob_3m": 77,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "200470",
@@ -638,6 +712,8 @@
       "rank_score": 89,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 83,
       "close_price": 7510,
       "logo_url": "/data/logos/200470.png",
       "theme": "기타",
@@ -645,7 +721,7 @@
       "prob_1m": 78,
       "prob_3m": 85,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000080",
@@ -655,6 +731,8 @@
       "rank_score": 88,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 87,
       "close_price": 16620,
       "logo_url": "/data/logos/000080.png",
       "theme": "식품",
@@ -662,7 +740,7 @@
       "prob_1m": 81,
       "prob_3m": 88,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000660",
@@ -672,6 +750,8 @@
       "rank_score": 88,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 87,
       "close_price": 836000,
       "logo_url": "/data/logos/000660.png",
       "theme": "AI반도체",
@@ -679,7 +759,7 @@
       "prob_1m": 84,
       "prob_3m": 88,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "047560",
@@ -689,6 +769,8 @@
       "rank_score": 88,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 82,
       "close_price": 12840,
       "logo_url": "/data/logos/047560.png",
       "theme": "AI플랫폼",
@@ -696,7 +778,7 @@
       "prob_1m": 68,
       "prob_3m": 73,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "072770",
@@ -706,6 +788,8 @@
       "rank_score": 88,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 757,
       "logo_url": "/data/logos/072770.png",
       "theme": "기타",
@@ -713,7 +797,7 @@
       "prob_1m": 75,
       "prob_3m": 84,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "092870",
@@ -723,6 +807,8 @@
       "rank_score": 88,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 27300,
       "logo_url": "/data/logos/092870.png",
       "theme": "기타",
@@ -730,7 +816,7 @@
       "prob_1m": 80,
       "prob_3m": 85,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "126600",
@@ -740,6 +826,8 @@
       "rank_score": 88,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 3510,
       "logo_url": "/data/logos/126600.png",
       "theme": "기타",
@@ -747,7 +835,7 @@
       "prob_1m": 69,
       "prob_3m": 74,
       "prob_1y": 79,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000890",
@@ -757,6 +845,8 @@
       "rank_score": 87,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 86,
       "close_price": 449,
       "logo_url": "/data/logos/000890.png",
       "theme": "기타",
@@ -764,7 +854,7 @@
       "prob_1m": 78,
       "prob_3m": 84,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "003000",
@@ -774,6 +864,8 @@
       "rank_score": 87,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 86,
       "close_price": 4945,
       "logo_url": "/data/logos/003000.png",
       "theme": "기타",
@@ -781,7 +873,7 @@
       "prob_1m": 85,
       "prob_3m": 92,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "005290",
@@ -791,6 +883,8 @@
       "rank_score": 87,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 49350,
       "logo_url": "/data/logos/005290.png",
       "theme": "기타",
@@ -798,7 +892,7 @@
       "prob_1m": 76,
       "prob_3m": 81,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "007210",
@@ -808,6 +902,8 @@
       "rank_score": 87,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 1797,
       "logo_url": "/data/logos/007210.png",
       "theme": "기타",
@@ -815,7 +911,7 @@
       "prob_1m": 85,
       "prob_3m": 91,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "213500",
@@ -825,6 +921,8 @@
       "rank_score": 87,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 86,
       "close_price": 8090,
       "logo_url": "/data/logos/213500.png",
       "theme": "기타",
@@ -832,7 +930,7 @@
       "prob_1m": 74,
       "prob_3m": 81,
       "prob_1y": 86,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000230",
@@ -842,6 +940,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 10150,
       "logo_url": "/data/logos/000230.png",
       "theme": "기타",
@@ -849,7 +949,7 @@
       "prob_1m": 77,
       "prob_3m": 82,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "004370",
@@ -859,6 +959,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 386500,
       "logo_url": "/data/logos/004370.png",
       "theme": "식품",
@@ -866,7 +968,7 @@
       "prob_1m": 78,
       "prob_3m": 84,
       "prob_1y": 94,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "009150",
@@ -876,6 +978,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 82,
       "close_price": 382000,
       "logo_url": "/data/logos/009150.png",
       "theme": "AI반도체",
@@ -883,7 +987,7 @@
       "prob_1m": 77,
       "prob_3m": 87,
       "prob_1y": 91,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "010170",
@@ -893,6 +997,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 4245,
       "logo_url": "/data/logos/010170.png",
       "theme": "통신",
@@ -900,7 +1006,7 @@
       "prob_1m": 72,
       "prob_3m": 78,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "035080",
@@ -910,6 +1016,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 82,
       "close_price": 9600,
       "logo_url": "/data/logos/035080.png",
       "theme": "기타",
@@ -917,7 +1025,7 @@
       "prob_1m": 73,
       "prob_3m": 78,
       "prob_1y": 84,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "056090",
@@ -927,6 +1035,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 2455,
       "logo_url": "/data/logos/056090.png",
       "theme": "기타",
@@ -934,7 +1044,7 @@
       "prob_1m": 69,
       "prob_3m": 74,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "090470",
@@ -944,6 +1054,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 7460,
       "logo_url": "/data/logos/090470.png",
       "theme": "기타",
@@ -951,7 +1063,7 @@
       "prob_1m": 80,
       "prob_3m": 87,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "168360",
@@ -961,6 +1073,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 82,
       "close_price": 21350,
       "logo_url": "/data/logos/168360.png",
       "theme": "기타",
@@ -968,7 +1082,7 @@
       "prob_1m": 73,
       "prob_3m": 80,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "192080",
@@ -978,6 +1092,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 82,
       "close_price": 48800,
       "logo_url": "/data/logos/192080.png",
       "theme": "게임/엔터",
@@ -985,7 +1101,7 @@
       "prob_1m": 74,
       "prob_3m": 82,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "214260",
@@ -995,6 +1111,8 @@
       "rank_score": 87,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 82,
       "close_price": 9880,
       "logo_url": "/data/logos/214260.png",
       "theme": "기타",
@@ -1002,7 +1120,7 @@
       "prob_1m": 74,
       "prob_3m": 85,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000680",
@@ -1012,6 +1130,8 @@
       "rank_score": 86,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 4,
+      "confidence": 86,
       "close_price": 3050,
       "logo_url": "/data/logos/000680.png",
       "theme": "기타",
@@ -1019,7 +1139,7 @@
       "prob_1m": 77,
       "prob_3m": 87,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "084440",
@@ -1029,6 +1149,8 @@
       "rank_score": 86,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 86,
       "close_price": 1007,
       "logo_url": "/data/logos/084440.png",
       "theme": "기타",
@@ -1036,7 +1158,7 @@
       "prob_1m": 73,
       "prob_3m": 77,
       "prob_1y": 86,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "085310",
@@ -1046,6 +1168,8 @@
       "rank_score": 86,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 86,
       "close_price": 996,
       "logo_url": "/data/logos/085310.png",
       "theme": "기타",
@@ -1053,7 +1177,7 @@
       "prob_1m": 80,
       "prob_3m": 84,
       "prob_1y": 93,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "021240",
@@ -1063,6 +1187,8 @@
       "rank_score": 86,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 72200,
       "logo_url": "/data/logos/021240.png",
       "theme": "기타",
@@ -1070,7 +1196,7 @@
       "prob_1m": 72,
       "prob_3m": 76,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "028050",
@@ -1080,6 +1206,8 @@
       "rank_score": 86,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 32900,
       "logo_url": "/data/logos/028050.png",
       "theme": "기타",
@@ -1087,7 +1215,7 @@
       "prob_1m": 73,
       "prob_3m": 83,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "033500",
@@ -1097,6 +1225,8 @@
       "rank_score": 86,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 26100,
       "logo_url": "/data/logos/033500.png",
       "theme": "기타",
@@ -1104,7 +1234,7 @@
       "prob_1m": 78,
       "prob_3m": 85,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "036800",
@@ -1114,6 +1244,8 @@
       "rank_score": 86,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 23900,
       "logo_url": "/data/logos/036800.png",
       "theme": "통신",
@@ -1121,7 +1253,7 @@
       "prob_1m": 77,
       "prob_3m": 87,
       "prob_1y": 94,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "067160",
@@ -1131,6 +1263,8 @@
       "rank_score": 86,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 81,
       "close_price": 65200,
       "logo_url": "/data/logos/067160.png",
       "theme": "기타",
@@ -1138,7 +1272,7 @@
       "prob_1m": 79,
       "prob_3m": 85,
       "prob_1y": 95,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000480",
@@ -1148,6 +1282,8 @@
       "rank_score": 85,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 4795,
       "logo_url": "/data/logos/000480.png",
       "theme": "기타",
@@ -1155,7 +1291,7 @@
       "prob_1m": 77,
       "prob_3m": 87,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "005490",
@@ -1165,6 +1301,8 @@
       "rank_score": 85,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 336000,
       "logo_url": "/data/logos/005490.png",
       "theme": "2차전지",
@@ -1172,7 +1310,7 @@
       "prob_1m": 73,
       "prob_3m": 82,
       "prob_1y": 87,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "009290",
@@ -1182,6 +1320,8 @@
       "rank_score": 85,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 8830,
       "logo_url": "/data/logos/009290.png",
       "theme": "제약/바이오",
@@ -1189,7 +1329,7 @@
       "prob_1m": 82,
       "prob_3m": 90,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "034220",
@@ -1199,6 +1339,8 @@
       "rank_score": 85,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 11330,
       "logo_url": "/data/logos/034220.png",
       "theme": "기타",
@@ -1206,7 +1348,7 @@
       "prob_1m": 75,
       "prob_3m": 80,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "000490",
@@ -1216,6 +1358,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 9800,
       "logo_url": "/data/logos/000490.png",
       "theme": "기타",
@@ -1223,7 +1367,7 @@
       "prob_1m": 68,
       "prob_3m": 77,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "002700",
@@ -1233,6 +1377,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 1327,
       "logo_url": "/data/logos/002700.png",
       "theme": "기타",
@@ -1240,7 +1386,7 @@
       "prob_1m": 66,
       "prob_3m": 77,
       "prob_1y": 81,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "007610",
@@ -1250,6 +1396,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 81,
       "close_price": 3000,
       "logo_url": "/data/logos/007610.png",
       "theme": "기타",
@@ -1257,7 +1405,7 @@
       "prob_1m": 70,
       "prob_3m": 78,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "012790",
@@ -1267,6 +1415,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 5990,
       "logo_url": "/data/logos/012790.png",
       "theme": "제약/바이오",
@@ -1274,7 +1424,7 @@
       "prob_1m": 66,
       "prob_3m": 76,
       "prob_1y": 82,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "048430",
@@ -1284,6 +1434,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 81,
       "close_price": 7420,
       "logo_url": "/data/logos/048430.png",
       "theme": "기타",
@@ -1291,7 +1443,7 @@
       "prob_1m": 70,
       "prob_3m": 79,
       "prob_1y": 86,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "064290",
@@ -1301,6 +1453,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 13610,
       "logo_url": "/data/logos/064290.png",
       "theme": "기타",
@@ -1308,7 +1462,7 @@
       "prob_1m": 76,
       "prob_3m": 85,
       "prob_1y": 95,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "089970",
@@ -1318,6 +1472,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 81,
       "close_price": 39900,
       "logo_url": "/data/logos/089970.png",
       "theme": "기타",
@@ -1325,7 +1481,7 @@
       "prob_1m": 73,
       "prob_3m": 80,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "100220",
@@ -1335,6 +1491,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 81,
       "close_price": 5140,
       "logo_url": "/data/logos/100220.png",
       "theme": "기타",
@@ -1342,7 +1500,7 @@
       "prob_1m": 68,
       "prob_3m": 72,
       "prob_1y": 81,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "105840",
@@ -1352,6 +1510,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 22400,
       "logo_url": "/data/logos/105840.png",
       "theme": "기타",
@@ -1359,7 +1519,7 @@
       "prob_1m": 70,
       "prob_3m": 76,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "136150",
@@ -1369,6 +1529,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 81,
       "close_price": 15150,
       "logo_url": "/data/logos/136150.png",
       "theme": "기타",
@@ -1376,7 +1538,7 @@
       "prob_1m": 75,
       "prob_3m": 84,
       "prob_1y": 91,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "183490",
@@ -1386,6 +1548,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 81,
       "close_price": 1039,
       "logo_url": "/data/logos/183490.png",
       "theme": "제약/바이오",
@@ -1393,7 +1557,7 @@
       "prob_1m": 69,
       "prob_3m": 77,
       "prob_1y": 83,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "186230",
@@ -1403,6 +1567,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 4485,
       "logo_url": "/data/logos/186230.png",
       "theme": "기타",
@@ -1410,7 +1576,7 @@
       "prob_1m": 69,
       "prob_3m": 79,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "199550",
@@ -1420,6 +1586,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 4835,
       "logo_url": "/data/logos/199550.png",
       "theme": "기타",
@@ -1427,7 +1595,7 @@
       "prob_1m": 74,
       "prob_3m": 84,
       "prob_1y": 91,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "212710",
@@ -1437,6 +1605,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 7770,
       "logo_url": "/data/logos/212710.png",
       "theme": "기타",
@@ -1444,7 +1614,7 @@
       "prob_1m": 76,
       "prob_3m": 86,
       "prob_1y": 94,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "261200",
@@ -1454,6 +1624,8 @@
       "rank_score": 85,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 81,
       "close_price": 3860,
       "logo_url": "/data/logos/261200.png",
       "theme": "기타",
@@ -1461,7 +1633,7 @@
       "prob_1m": 69,
       "prob_3m": 79,
       "prob_1y": 86,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "003230",
@@ -1471,6 +1643,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 1022000,
       "logo_url": "/data/logos/003230.png",
       "theme": "식품",
@@ -1478,7 +1652,7 @@
       "prob_1m": 71,
       "prob_3m": 81,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "026150",
@@ -1488,6 +1662,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 6040,
       "logo_url": "/data/logos/026150.png",
       "theme": "건설",
@@ -1495,7 +1671,7 @@
       "prob_1m": 74,
       "prob_3m": 81,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "067370",
@@ -1505,6 +1681,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 6,
+      "confidence": 85,
       "close_price": 5020,
       "logo_url": "/data/logos/067370.png",
       "theme": "제약/바이오",
@@ -1512,7 +1690,7 @@
       "prob_1m": 76,
       "prob_3m": 84,
       "prob_1y": 89,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "084730",
@@ -1522,6 +1700,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 7830,
       "logo_url": "/data/logos/084730.png",
       "theme": "기타",
@@ -1529,7 +1709,7 @@
       "prob_1m": 73,
       "prob_3m": 82,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "203400",
@@ -1539,6 +1719,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 2660,
       "logo_url": "/data/logos/203400.png",
       "theme": "기타",
@@ -1546,7 +1728,7 @@
       "prob_1m": 83,
       "prob_3m": 92,
       "prob_1y": 96,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "215200",
@@ -1556,6 +1738,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 45300,
       "logo_url": "/data/logos/215200.png",
       "theme": "에너지",
@@ -1563,7 +1747,7 @@
       "prob_1m": 70,
       "prob_3m": 77,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "282330",
@@ -1573,6 +1757,8 @@
       "rank_score": 84,
       "signal": "상승 가능",
       "signal_emoji": "📈",
+      "trigger_count": 5,
+      "confidence": 85,
       "close_price": 115500,
       "logo_url": "/data/logos/282330.png",
       "theme": "기타",
@@ -1580,7 +1766,7 @@
       "prob_1m": 74,
       "prob_3m": 84,
       "prob_1y": 92,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "007820",
@@ -1590,6 +1776,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 80,
       "close_price": 4995,
       "logo_url": "/data/logos/007820.png",
       "theme": "기타",
@@ -1597,7 +1785,7 @@
       "prob_1m": 73,
       "prob_3m": 84,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "008770",
@@ -1607,6 +1795,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 80,
       "close_price": 40400,
       "logo_url": "/data/logos/008770.png",
       "theme": "여행/관광",
@@ -1614,7 +1804,7 @@
       "prob_1m": 75,
       "prob_3m": 83,
       "prob_1y": 88,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "013810",
@@ -1624,6 +1814,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 80,
       "close_price": 2865,
       "logo_url": "/data/logos/013810.png",
       "theme": "기타",
@@ -1631,7 +1823,7 @@
       "prob_1m": 73,
       "prob_3m": 81,
       "prob_1y": 85,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "033310",
@@ -1641,6 +1833,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 4,
+      "confidence": 80,
       "close_price": 1717,
       "logo_url": "/data/logos/033310.png",
       "theme": "기타",
@@ -1648,7 +1842,7 @@
       "prob_1m": 72,
       "prob_3m": 82,
       "prob_1y": 86,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "041910",
@@ -1658,6 +1852,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 80,
       "close_price": 6090,
       "logo_url": "/data/logos/041910.png",
       "theme": "AI플랫폼",
@@ -1665,7 +1861,7 @@
       "prob_1m": 65,
       "prob_3m": 74,
       "prob_1y": 83,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "068760",
@@ -1675,6 +1871,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 5,
+      "confidence": 80,
       "close_price": 62500,
       "logo_url": "/data/logos/068760.png",
       "theme": "제약/바이오",
@@ -1682,7 +1880,7 @@
       "prob_1m": 71,
       "prob_3m": 75,
       "prob_1y": 81,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     },
     {
       "code": "089140",
@@ -1692,6 +1890,8 @@
       "rank_score": 84,
       "signal": "중립",
       "signal_emoji": "➖",
+      "trigger_count": 6,
+      "confidence": 80,
       "close_price": 2175,
       "logo_url": "/data/logos/089140.png",
       "theme": "기타",
@@ -1699,7 +1899,7 @@
       "prob_1m": 75,
       "prob_3m": 85,
       "prob_1y": 90,
-      "updated_at": "2026-03-10T14:00:41.566Z"
+      "updated_at": "2026-03-10T14:27:12.808Z"
     }
   ]
 }

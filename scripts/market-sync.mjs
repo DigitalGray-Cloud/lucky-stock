@@ -49,7 +49,10 @@ async function main() {
   console.log("[market-sync] step2: latest news cache build");
   await runNode("scripts/build-news-cache.mjs");
 
-  console.log("[market-sync] step3: analysis/ranking cache build");
+  console.log("[market-sync] step3: naver finance popular build");
+  await runNode("scripts/build-naver-popular.mjs");
+
+  console.log("[market-sync] step4: analysis/ranking cache build");
   await runNode("scripts/build-ui-cache.mjs");
 
   console.log("[market-sync] done");

@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-03-10T14:36:54.214Z",
+  "mode": "full",
+  "items": [
+    {
+      "code": "122310",
+      "favor_score": 82,
+      "rank_score": 96,
+      "rank": 3,
+      "name": "제노레이",
+      "market": "KOSDAQ",
+      "close_price": 4005,
+      "logo_url": "/data/logos/122310.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 85,
+      "trigger_count": 6,
+      "theme": "기타"
+    },
+    {
+      "code": "059090",
+      "favor_score": 82,
+      "rank_score": 96,
+      "rank": 1,
+      "name": "미코",
+      "market": "KOSDAQ",
+      "close_price": 13770,
+      "logo_url": "/data/logos/059090.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 82,
+      "trigger_count": 6,
+      "theme": "기타"
+    },
+    {
+      "code": "079970",
+      "favor_score": 82,
+      "rank_score": 96,
+      "rank": 2,
+      "name": "투비소프트",
+      "market": "KOSDAQ",
+      "close_price": 596,
+      "logo_url": "/data/logos/079970.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 75,
+      "trigger_count": 5,
+      "theme": "AI플랫폼"
+    },
+    {
+      "code": "141000",
+      "favor_score": 81,
+      "rank_score": 95,
+      "rank": 4,
+      "name": "비아트론",
+      "market": "KOSDAQ",
+      "close_price": 8550,
+      "logo_url": "/data/logos/141000.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 81,
+      "trigger_count": 5,
+      "theme": "기타"
+    },
+    {
+      "code": "259630",
+      "favor_score": 81,
+      "rank_score": 95,
+      "rank": 6,
+      "name": "엠플러스",
+      "market": "KOSDAQ",
+      "close_price": 12000,
+      "logo_url": "/data/logos/259630.png",
+      "signal": "상승 가능",
+      "signal_emoji": "📈",
+      "tomorrow_prob": 76,
+      "trigger_count": 6,
+      "theme": "기타"
+    }
+  ]
+}

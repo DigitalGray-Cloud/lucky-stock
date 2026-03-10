@@ -58,6 +58,9 @@ const cacheState = {
   recent: [],
   themes: [],
   newsMap: {},
+  homeToday: [],
+  homeTomorrow: [],
+  homeSignal: [],
   naverPopular: [],
   naverPopularMap: {}
 };
@@ -331,14 +334,17 @@ async function apiGet(path) {
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
 
-  const [ac, amap, top, recent, themes, news, naverPopular] = await Promise.all([
+  const [ac, amap, top, recent, themes, news, naverPopular, homeToday, homeTomorrow, homeSignal] = await Promise.all([
     fetch("/data/ui_autocomplete.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_analysis_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
     fetch("/data/ui_top_stocks.json").then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
     fetch("/data/ui_recent_analysis.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     fetch("/data/ui_news_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
-    fetch("/data/ui_naver_popular.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
+    fetch("/data/ui_naver_popular.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_home_today.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_home_tomorrow.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    fetch("/data/ui_home_signal.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
   ]);
 
   cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
@@ -347,6 +353,9 @@ async function loadStaticCache() {
   cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
   cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
   cacheState.newsMap = news.map || {};
+  cacheState.homeToday = Array.isArray(homeToday.items) ? homeToday.items : [];
+  cacheState.homeTomorrow = Array.isArray(homeTomorrow.items) ? homeTomorrow.items : [];
+  cacheState.homeSignal = Array.isArray(homeSignal.items) ? homeSignal.items : [];
   cacheState.naverPopular = Array.isArray(naverPopular.items) ? naverPopular.items : [];
   cacheState.naverPopularMap = Object.fromEntries(cacheState.naverPopular.map((item) => [item.code, item]));
   cacheState.loaded = true;
@@ -731,6 +740,7 @@ function uniqueByCode(items = []) {
 }
 
 function getTodaySurgeItems(cache) {
+  if (Array.isArray(cache.homeToday) && cache.homeToday.length) return cache.homeToday.slice(0, 5);
   return uniqueByCode(
     [...cache.top]
       .sort((a, b) =>
@@ -742,6 +752,7 @@ function getTodaySurgeItems(cache) {
 }
 
 function getTomorrowTopItems(cache) {
+  if (Array.isArray(cache.homeTomorrow) && cache.homeTomorrow.length) return cache.homeTomorrow.slice(0, 10);
   const pool = cache.recent.length ? cache.recent : cache.top;
   return uniqueByCode(
     [...pool]
@@ -754,6 +765,7 @@ function getTomorrowTopItems(cache) {
 }
 
 function getSignalFeedItems(cache) {
+  if (Array.isArray(cache.homeSignal) && cache.homeSignal.length) return cache.homeSignal.slice(0, 6);
   const signalWeight = (item) => {
     if (item.signal === "상승 가능") return 3;
     if (item.signal === "중립") return 2;

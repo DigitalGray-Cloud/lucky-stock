@@ -596,7 +596,36 @@ async function resolveStockByQuery(query) {
   const q = String(query || "").trim();
   if (!q) return null;
 
-  if (/^\d{6}$/.test(q)) return { code: q, name: q, market: "KOSPI/KOSDAQ" };
+  if (/^\d{6}$/.test(q)) {
+    try {
+      const ac = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
+      const items = Array.isArray(ac?.items) ? ac.items : [];
+      const exact = items.find((x) => String(x.code || "") === q);
+      if (exact) {
+        return {
+          code: String(exact.code || q),
+          name: String(exact.name || exact.code || q),
+          market: String(exact.market || "KOSPI/KOSDAQ"),
+          close_price: Number(exact.close_price || 0) || null,
+          logo_url: String(exact.logo_url || "")
+        };
+      }
+    } catch {}
+
+    const cache = await loadStaticCache();
+    const exact = cache.autocomplete.find((x) => String(x.code || "") === q);
+    if (exact) {
+      return {
+        code: String(exact.code || q),
+        name: String(exact.name || exact.code || q),
+        market: String(exact.market || "KOSPI/KOSDAQ"),
+        close_price: Number(exact.close_price || 0) || null,
+        logo_url: String(exact.logo_url || "")
+      };
+    }
+
+    return { code: q, name: q, market: "KOSPI/KOSDAQ" };
+  }
 
   let items = [];
   try {

@@ -45,3 +45,17 @@ CREATE TABLE IF NOT EXISTS batch_runs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_batch_runs_started_at ON batch_runs(started_at DESC);
+
+CREATE TABLE IF NOT EXISTS daily_visitors (
+  id BIGSERIAL PRIMARY KEY,
+  visit_date DATE NOT NULL,
+  ip_hash VARCHAR(64) NOT NULL,
+  first_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  hit_count INTEGER NOT NULL DEFAULT 1,
+  path VARCHAR(255),
+  user_agent TEXT,
+  UNIQUE(visit_date, ip_hash)
+);
+
+CREATE INDEX IF NOT EXISTS idx_daily_visitors_visit_date ON daily_visitors(visit_date DESC);

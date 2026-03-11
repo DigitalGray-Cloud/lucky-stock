@@ -75,6 +75,32 @@ body {
   gap: 8px;
 }
 
+.today-visitor-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid #bfd0eb;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%);
+  color: #0b357f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.today-visitor-label {
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #5d7495;
+}
+
+.today-visitor-chip strong {
+  font-size: 0.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .manual-btn {
   border: 1px solid #b8cde8;
   border-radius: 999px;
@@ -250,6 +276,12 @@ body {
   margin: 0;
   color: var(--muted);
   font-size: 0.82rem;
+}
+.data-update-note {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
 }
 
 .ad-card.not-configured .ad-unit::before {
@@ -1163,6 +1195,7 @@ body {
   .top-right-tools {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .manual-panel {

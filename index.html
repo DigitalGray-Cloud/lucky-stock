@@ -38,7 +38,7 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vsiiv6kbxt");
   </script>
-  <link rel="stylesheet" href="/style.css?v=20260310a" />
+  <link rel="stylesheet" href="/style.css?v=20260311a" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -95,6 +95,10 @@
       </div>
     </div>
     <div class="top-right-tools">
+      <div id="today-visitor-chip" class="today-visitor-chip" aria-live="polite">
+        <span class="today-visitor-label">TODAY</span>
+        <strong id="today-visitor-count">-</strong>
+      </div>
       <p class="build-note">KOSPI · KOSDAQ · v2.1.0</p>
       <button id="manual-toggle" class="manual-btn" type="button">사용 매뉴얼</button>
       <div id="manual-panel" class="manual-panel" hidden>
@@ -119,12 +123,7 @@
       </div>
       <ul id="autocomplete-list" class="autocomplete-list"></ul>
       <div id="quick-tags" class="quick-tags"></div>
-    </section>
-
-    <section class="ad-card" aria-label="광고 영역">
-      <div class="ad-label">광고</div>
-      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000101" data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <p class="ad-note">광고는 콘텐츠와 명확히 구분되어 표시됩니다.</p>
+      <p id="data-update-time" class="data-update-note"></p>
     </section>
 
     <section class="grid-two">
@@ -143,6 +142,12 @@
         </div>
         <div id="tomorrow-top10" class="rank-list compact"></div>
       </article>
+    </section>
+
+    <section class="ad-card" aria-label="광고 영역">
+      <div class="ad-label">광고</div>
+      <ins class="adsbygoogle ad-unit" data-ad-slot="0000000101" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <p class="ad-note">광고는 콘텐츠와 명확히 구분되어 표시됩니다.</p>
     </section>
 
     <section class="grid-three">
@@ -325,6 +330,6 @@
     </div>
   </footer>
 
-  <script defer src="/main.js?v=20260310a"></script>
+  <script defer src="/main.js?v=20260311a"></script>
 </body>
 </html>

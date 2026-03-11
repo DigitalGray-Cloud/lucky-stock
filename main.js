@@ -43,7 +43,9 @@ const els = {
   signalSummary: document.getElementById("signal-summary"),
   signalVisual: document.getElementById("signal-visual"),
   shareStatus: document.getElementById("share-status"),
-  shareCopyBtn: document.getElementById("share-copy-btn")
+  shareCopyBtn: document.getElementById("share-copy-btn"),
+  todayVisitorChip: document.getElementById("today-visitor-chip"),
+  todayVisitorCount: document.getElementById("today-visitor-count")
 };
 
 let autoCompleteSeq = 0;
@@ -62,7 +64,8 @@ const cacheState = {
   homeTomorrow: [],
   homeSignal: [],
   naverPopular: [],
-  naverPopularMap: {}
+  naverPopularMap: {},
+  generatedAt: ""
 };
 
 function normalize(text) {
@@ -331,6 +334,25 @@ async function apiGet(path) {
   return res.json();
 }
 
+async function loadTodayVisitors() {
+  if (!els.todayVisitorCount) return;
+
+  try {
+    const path = `${location.pathname || "/"}${location.search || ""}`;
+    const data = await apiGet(`/api/visitors/today?track=1&path=${encodeURIComponent(path)}`);
+    const count = Number(data?.unique_visitors || 0);
+    els.todayVisitorCount.textContent = formatNumber(count);
+    if (els.todayVisitorChip) {
+      els.todayVisitorChip.title = `오늘 고유 방문자 ${formatNumber(count)}명`;
+    }
+  } catch {
+    els.todayVisitorCount.textContent = "-";
+    if (els.todayVisitorChip) {
+      els.todayVisitorChip.title = "오늘 방문자 수를 불러오지 못했습니다.";
+    }
+  }
+}
+
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
 
@@ -356,6 +378,7 @@ async function loadStaticCache() {
   cacheState.homeToday = Array.isArray(homeToday.items) ? homeToday.items : [];
   cacheState.homeTomorrow = Array.isArray(homeTomorrow.items) ? homeTomorrow.items : [];
   cacheState.homeSignal = Array.isArray(homeSignal.items) ? homeSignal.items : [];
+  cacheState.generatedAt = homeToday.generated_at || amap.generated_at || "";
   cacheState.naverPopular = Array.isArray(naverPopular.items) ? naverPopular.items : [];
   cacheState.naverPopularMap = Object.fromEntries(cacheState.naverPopular.map((item) => [item.code, item]));
   cacheState.loaded = true;
@@ -823,6 +846,16 @@ async function initHomeWidgets() {
 
   try {
     const cache = await loadStaticCache();
+
+    const updateTimeEl = document.getElementById("data-update-time");
+    if (updateTimeEl && cache.generatedAt) {
+      try {
+        const d = new Date(cache.generatedAt);
+        const fmt = d.toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        updateTimeEl.textContent = `데이터 기준: ${fmt} 갱신`;
+      } catch {}
+    }
+
     const todayItems = getTodaySurgeItems(cache);
     const tomorrowItems = getTomorrowTopItems(cache);
     const signalItems = getSignalFeedItems(cache);
@@ -975,3 +1008,4 @@ initHomeWidgets();
 initRankingClicks();
 initEmptyResultState();
 initFromUrl();
+loadTodayVisitors();

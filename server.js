@@ -11,6 +11,7 @@ import {
   getTopStocks
 } from "./src/stock-service.js";
 import { createIpRateLimiter } from "./src/rateLimit.js";
+import { extractClientIp, getTodayVisitorStats, recordDailyVisitor } from "./src/visitor-service.js";
 
 const app = express();
 
@@ -98,6 +99,28 @@ app.get("/api/autocomplete", async (req, res) => {
     res.json({ items });
   } catch (err) {
     res.status(500).json({ error: "autocomplete_failed", message: String(err?.message || err) });
+  }
+});
+
+app.get("/api/visitors/today", async (req, res) => {
+  const shouldTrack = String(req.query.track || "1") !== "0";
+
+  try {
+    const stats = shouldTrack
+      ? await recordDailyVisitor({
+          ip: extractClientIp(req),
+          path: String(req.query.path || req.path || "/"),
+          userAgent: req.get("user-agent") || ""
+        })
+      : await getTodayVisitorStats();
+
+    res.json({
+      visit_date: stats.visit_date,
+      unique_visitors: Number(stats.unique_visitors || 0),
+      total_hits: Number(stats.total_hits || 0)
+    });
+  } catch (err) {
+    res.status(500).json({ error: "visitor_stats_failed", message: String(err?.message || err) });
   }
 });
 

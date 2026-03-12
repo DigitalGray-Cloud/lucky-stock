@@ -18,6 +18,7 @@ LuckyStock 백엔드는 한국 주식 분석 API, DB 스키마, 배치 워커를
 - `GET /api/health`
 - `GET /api/db-status`
 - `GET /api/autocomplete?q=삼성`
+- `GET /api/visitors/today`
 
 ## Analysis Cache Policy
 
@@ -32,6 +33,7 @@ LuckyStock 백엔드는 한국 주식 분석 API, DB 스키마, 배치 워커를
 ```bash
 PORT=8787
 DATABASE_URL=postgres://user:password@localhost:5432/luckystock
+VISITOR_API_BASE_URL=https://api.example.com
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4.1-mini
 ANALYSIS_CACHE_HOURS=24
@@ -77,6 +79,13 @@ npm start
 ```
 
 `batch:market-sync`는 내부에서 KST 기준 평일 09:00~15:30만 실행하고, 그 외 시간은 자동 skip 합니다.
+
+## Visitor Counter
+
+- 방문자 수 집계는 PostgreSQL `daily_visitors` 테이블을 기준으로 처리합니다.
+- 고유 사용자 수는 `visit_date + ip_hash` 조합으로 계산합니다.
+- 프론트에는 TODAY 숫자만 노출하고, 내부적으로는 `unique_visitors`와 `total_hits`를 함께 저장합니다.
+- Cloudflare Pages 함수는 직접 카운트하지 않고 `VISITOR_API_BASE_URL`로 지정한 백엔드 `/api/visitors/today`로 프록시합니다.
 
 ## API Examples
 

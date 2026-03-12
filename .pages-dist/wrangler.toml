@@ -1,0 +1,10 @@
+name = "luckystock"
+compatibility_date = "2026-03-07"
+pages_build_output_dir = "."
+
+[env.production]
+
+[[env.production.d1_databases]]
+binding = "luckystock_visitors"
+database_name = "luckystock-visitors"
+database_id = "fb751b63-39be-42b9-8f2a-d2d2973ac127"

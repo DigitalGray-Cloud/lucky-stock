@@ -34,6 +34,16 @@ body {
   gap: 12px;
 }
 
+.brand-home-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-home-link:hover .brand-title,
+.brand-home-link:focus-visible .brand-title {
+  text-decoration: underline;
+}
+
 .brand-badge {
   width: 58px;
   height: 58px;
@@ -314,13 +324,17 @@ body {
   gap: 8px;
 }
 
+.section-head-stacked {
+  align-items: flex-start;
+}
+
 .section-head h2,
 .section-head h3,
 .card h3 {
   margin: 0;
-  font-size: 1.12rem;
+  font-size: 1.28rem;
   font-weight: 900;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.2px;
 }
 
 .section-head.emph h2 {
@@ -328,6 +342,14 @@ body {
   color: #0a2a66;
   font-weight: 900;
   letter-spacing: -0.2px;
+}
+
+.section-date-stamp {
+  margin: 0 0 6px;
+  color: #0b357f;
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: -0.15px;
 }
 
 .section-head.large {
@@ -521,10 +543,10 @@ body {
 
 .mini-badge {
   display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-size: 0.76rem;
+  font-weight: 900;
   border-radius: 999px;
-  padding: 2px 8px;
+  padding: 3px 9px;
   margin-right: 8px;
   vertical-align: middle;
 }
@@ -637,6 +659,29 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.theme-row {
+  align-items: flex-start;
+}
+
+.theme-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  border: 1px solid #c8d8ef;
+  background: linear-gradient(180deg, #ffffff 0%, #edf5ff 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex: 0 0 auto;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.theme-copy strong {
+  display: block;
+  font-size: 1rem;
 }
 
 .rank-logo {
@@ -760,15 +805,33 @@ body {
 }
 
 .summary-news-title {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid #cfe0ff;
-  border-left: 4px solid #1d5fd4;
-  border-radius: 10px;
-  background: #f6faff;
+  margin-top: 4px;
   font-weight: 800;
   color: #0b357f;
   line-height: 1.6;
+}
+
+.summary-news-card {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #cfe0ff;
+  border-left: 4px solid #1d5fd4;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f6faff 0%, #ffffff 100%);
+  box-shadow: 0 8px 18px rgba(17, 70, 167, 0.07);
+}
+
+.summary-news-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #dcebff;
+  color: #2753a6;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
 }
 
 .summary-news-title a {
@@ -781,13 +844,24 @@ body {
 }
 
 .summary-news-explain {
-  margin-top: 6px;
-  margin-left: 10px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: #f8fafc;
+  margin-top: 8px;
+  margin-left: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid #9dbaf1;
+  border-radius: 0 10px 10px 0;
+  background: #f8fbff;
   color: #334155;
   line-height: 1.72;
+}
+
+.summary-news-explain-label {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: #6b7f99;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .summary-gap {
@@ -1322,4 +1396,70 @@ body {
 .stock-page-link-top:hover {
   background: linear-gradient(180deg, #0d43ac, #0f3f96);
   color: #ffffff;
+}
+
+/* AI Models Section */
+.ai-models-section {
+  margin-top: 1.5rem;
+}
+.ai-models-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+.ai-models-desc {
+  font-size: 0.88rem;
+  color: #6b7280;
+  margin-bottom: 1.2rem;
+}
+.ai-models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.ai-model-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.2rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.ai-model-card:hover {
+  box-shadow: 0 6px 18px rgba(17, 70, 167, 0.12);
+  transform: translateY(-2px);
+}
+.ai-model-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+}
+.ai-model-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #111827;
+  margin-bottom: 0.3rem;
+}
+.ai-model-role {
+  font-size: 0.78rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.ai-models-disclaimer {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* AI model logo SVG fill */
+.ai-model-logo {
+  fill: #111827;
+}
+.ai-model-logo path {
+  fill: inherit;
 }

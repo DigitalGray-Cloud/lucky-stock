@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>서비스 소개 | LuckyStock AI</title>
-  <meta name="description" content="LuckyStock AI 서비스 소개. 한국 주식 종목의 AI 분석 점수, 투자 신호, 리스크 정보를 배치 기반 데이터로 제공합니다." />
+  <title>서비스 소개 | LuckyStock AI - AI 한국 주식 투자 판단 엔진</title>
+  <meta name="description" content="LuckyStock AI는 OpenAI, Claude, Gemini 등 복수 AI 모델로 한국 주식 2,600개 종목을 분석해 BUY/HOLD/SELL 결론을 3초 내 제공하는 투자 판단 보조 서비스입니다." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <link rel="canonical" href="https://luckystock.pages.dev/about" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="서비스 소개 | LuckyStock AI" />
-  <meta property="og:description" content="한국 주식 투자 판단 보조를 위한 LuckyStock AI 서비스 소개" />
+  <meta property="og:description" content="AI가 말해주는 지금 사야 할 한국 주식. OpenAI·Claude·Gemini 기반 투자 판단 보조 엔진." />
   <meta property="og:url" content="https://luckystock.pages.dev/about" />
-  <meta property="og:image" content="https://luckystock.pages.dev/favicon.png" />
+  <meta property="og:image" content="https://luckystock.pages.dev/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="서비스 소개 | LuckyStock AI" />
-  <meta name="twitter:description" content="LuckyStock AI 서비스와 데이터 구성 소개" />
-  <meta name="twitter:image" content="https://luckystock.pages.dev/favicon.png" />
+  <meta name="twitter:description" content="AI가 말해주는 지금 사야 할 한국 주식. 투자 판단 보조 엔진." />
+  <meta name="twitter:image" content="https://luckystock.pages.dev/og-image.png" />
   <link rel="icon" href="/favicon.png" />
-  <!-- Google tag (gtag.js) -->
+  <link rel="apple-touch-icon" href="/favicon.png" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7Z766ZWFG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -32,11 +34,27 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vsiiv6kbxt");
   </script>
-  <link rel="stylesheet" href="/style.css?v=20260308a" />
+  <link rel="stylesheet" href="/style.css?v=20260313a" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "LuckyStock AI 서비스 소개",
+    "url": "https://luckystock.pages.dev/about",
+    "description": "LuckyStock AI 서비스 소개 — AI 기반 한국 주식 투자 판단 엔진",
+    "inLanguage": "ko",
+    "publisher": {
+      "@type": "Organization",
+      "name": "LuckyStock AI",
+      "url": "https://luckystock.pages.dev/",
+      "logo": {"@type": "ImageObject", "url": "https://luckystock.pages.dev/favicon.png"}
+    }
+  }
+  </script>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand-wrap">
+    <a href="/" class="brand-wrap brand-home-link" aria-label="LuckyStock AI 홈으로 이동">
       <div class="brand-badge" aria-hidden="true">
         <img src="/favicon.png" alt="LuckyStock AI 로고" />
       </div>
@@ -44,22 +62,181 @@
         <p class="brand-title">LuckyStock AI</p>
         <p class="brand-sub">서비스 소개</p>
       </div>
+    </a>
+    <div class="top-right-tools">
+      <a href="/" class="manual-btn" style="text-decoration:none;">← 홈으로</a>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h1>LuckyStock AI 소개</h1>
-      <p>LuckyStock AI는 한국 주식 종목 데이터를 기반으로 AI 분석 요약, 점수, 신호, 리스크, 전망을 빠르게 제공하는 투자 판단 보조 서비스입니다.</p>
-      <h2>핵심 기능</h2>
-      <ul class="bullet">
-        <li>종목 검색 기반 AI 분석 결과 제공</li>
-        <li>상위 랭킹, 실시간 신호, 테마 급등 탐지 제공</li>
-        <li>10분 주기 배치 동기화로 시장 데이터 최신화</li>
-      </ul>
-      <p>서비스는 투자 권유가 아니며 최종 투자 판단 책임은 사용자에게 있습니다.</p>
-      <p><a href="/">메인으로 이동</a></p>
+
+    <!-- Hero -->
+    <section class="card" style="background:linear-gradient(135deg,#0b1f3a 0%,#1146a7 100%);color:#fff;margin-bottom:1.5rem;">
+      <h1 style="color:#fff;font-size:1.8rem;margin-bottom:0.5rem;">LuckyStock AI 소개</h1>
+      <p style="color:#93c5fd;font-size:1.05rem;line-height:1.7;">분석 사이트가 아니라 결론 엔진입니다.<br>종목 검색 3초 내 BUY / HOLD / SELL 투자 판단을 제공합니다.</p>
     </section>
+
+    <!-- 서비스 개요 -->
+    <section class="card">
+      <h2>서비스 개요</h2>
+      <p>LuckyStock AI는 <strong>한국 KOSPI·KOSDAQ 2,600개 이상 종목</strong>을 대상으로 AI가 수급·뉴스·기술적 지표·밸류에이션을 종합 분석해 투자 판단 결론(BUY / HOLD / SELL)을 즉시 제공하는 서비스입니다.</p>
+      <p>기존 증권사 HTS나 분석 사이트가 수십 개의 차트와 지표를 제시하는 것과 달리, LuckyStock AI는 <strong>"지금 이 종목을 사야 하는가"</strong> 라는 핵심 질문에 바로 답합니다.</p>
+      <ul class="bullet">
+        <li>검색 후 3초 이내 AI 투자 결론 제공</li>
+        <li>AI 분석 점수(100점 만점), 신뢰도(%), 기간별 상승 확률 수치화</li>
+        <li>수급(외국인·기관 흐름), 뉴스 모멘텀, 기술적 분석, 밸류에이션 종합</li>
+        <li>KRX KOSPI·KOSDAQ 전 종목 커버</li>
+        <li>약 10분 주기 배치 갱신으로 시장 흐름 반영</li>
+      </ul>
+    </section>
+
+    <!-- 핵심 기능 -->
+    <section class="card">
+      <h2>핵심 기능</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:1rem;">
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔍</div>
+          <strong>종목 검색 &amp; 즉시 판단</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">종목명 또는 6자리 코드 검색 시 3초 내 BUY/HOLD/SELL 결론과 AI 분석 점수를 제공합니다.</p>
+        </div>
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔥</div>
+          <strong>오늘 AI 급등주 Top 5</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">당일 AI 분석 점수 및 Signal 기준 상위 5개 종목을 실시간 노출합니다.</p>
+        </div>
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">📈</div>
+          <strong>내일 상승 가능 Top 10</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">단기 상승 확률 추정치 기준 상위 10개 종목을 보여줍니다. 모멘텀 트레이딩 전략에 활용 가능합니다.</p>
+        </div>
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">⚡</div>
+          <strong>Signal 실시간 탐지</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">거래량 급증, 외국인 순매수, 기관 매집, 뉴스 모멘텀 등 다중 신호 충족 종목을 실시간 피드로 제공합니다.</p>
+        </div>
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🏆</div>
+          <strong>네이버금융 인기종목</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">국내 최대 금융 포털 네이버금융의 실시간 인기 종목과 LuckyStock AI 판단을 연계해 보여줍니다.</p>
+        </div>
+        <div style="padding:1.2rem;background:#f0f7ff;border-radius:12px;border-left:4px solid #1146a7;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🎯</div>
+          <strong>테마 급등 탐지</strong>
+          <p style="margin:0.4rem 0 0;font-size:0.9rem;color:#374151;">AI반도체, 제약/바이오, 게임/엔터, 에너지 등 주요 테마별 급등 흐름을 자동 탐지해 표시합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI 분석 구조 -->
+    <section class="card">
+      <h2>AI 분석 판단 구조</h2>
+      <p>LuckyStock AI의 투자 판단은 아래 요소를 종합해 산출됩니다.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;margin-top:1rem;">
+        <thead>
+          <tr style="background:#f0f7ff;">
+            <th style="padding:0.75rem;text-align:left;border-bottom:2px solid #1146a7;">분석 항목</th>
+            <th style="padding:0.75rem;text-align:left;border-bottom:2px solid #1146a7;">설명</th>
+            <th style="padding:0.75rem;text-align:left;border-bottom:2px solid #1146a7;">비중</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #e5e7eb;">
+            <td style="padding:0.75rem;font-weight:600;">수급 분석</td>
+            <td style="padding:0.75rem;color:#374151;">외국인·기관 5일 순매수 흐름</td>
+            <td style="padding:0.75rem;">높음</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e5e7eb;background:#fafafa;">
+            <td style="padding:0.75rem;font-weight:600;">기술적 지표</td>
+            <td style="padding:0.75rem;color:#374151;">52주 고저가 대비 현재가, 지지/저항선</td>
+            <td style="padding:0.75rem;">중간</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e5e7eb;">
+            <td style="padding:0.75rem;font-weight:600;">뉴스 모멘텀</td>
+            <td style="padding:0.75rem;color:#374151;">Google News 기반 AI 감성 분석</td>
+            <td style="padding:0.75rem;">중간</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e5e7eb;background:#fafafa;">
+            <td style="padding:0.75rem;font-weight:600;">밸류에이션</td>
+            <td style="padding:0.75rem;color:#374151;">동종 업계 상대 밸류 평가</td>
+            <td style="padding:0.75rem;">보조</td>
+          </tr>
+          <tr>
+            <td style="padding:0.75rem;font-weight:600;">거래량</td>
+            <td style="padding:0.75rem;color:#374151;">평균 대비 거래량 급증 여부</td>
+            <td style="padding:0.75rem;">보조</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:1.2rem;padding:1rem;background:#fef9c3;border-radius:8px;border-left:4px solid #ca8a04;">
+        <strong>판단 기준</strong><br>
+        <span style="font-size:0.9rem;color:#374151;">AI 점수 75점 이상 → <strong style="color:#16a34a;">BUY</strong> &nbsp;|&nbsp; 50~74점 → <strong style="color:#d97706;">HOLD</strong> &nbsp;|&nbsp; 50점 미만 → <strong style="color:#dc2626;">SELL</strong></span>
+      </div>
+    </section>
+
+    <!-- Powered by AI -->
+    <section class="card ai-models-section">
+      <h2>Powered by World-Class AI Models</h2>
+      <p class="ai-models-desc">LuckyStock AI delivers institutional-grade stock analysis by combining insights from multiple leading large language models.</p>
+      <div class="ai-models-grid">
+        <div class="ai-model-card">
+          <svg viewBox="0 0 41 41" class="ai-model-logo" aria-label="OpenAI logo" xmlns="http://www.w3.org/2000/svg"><path d="M37.5 16.9a10.2 10.2 0 0 0-.9-8.4 10.4 10.4 0 0 0-11.2-5A10.3 10.3 0 0 0 17.6 0a10.4 10.4 0 0 0-9.9 7.2 10.3 10.3 0 0 0-6.9 5 10.4 10.4 0 0 0 1.3 12.2 10.2 10.2 0 0 0 .9 8.4 10.4 10.4 0 0 0 11.2 5 10.3 10.3 0 0 0 7.8 3.5 10.4 10.4 0 0 0 9.9-7.2 10.3 10.3 0 0 0 6.9-5 10.4 10.4 0 0 0-1.3-12.2zm-15.5 21.7a7.7 7.7 0 0 1-5-1.8l.3-.1 8.2-4.7a1.4 1.4 0 0 0 .7-1.2v-11.5l3.5 2a.1.1 0 0 1 .1.1v9.5a7.7 7.7 0 0 1-7.8 7.7zM4.6 31.5a7.7 7.7 0 0 1-.9-5.2l.2.2 8.2 4.7a1.4 1.4 0 0 0 1.4 0l10-5.8v4a.1.1 0 0 1-.1.1l-8.3 4.8a7.7 7.7 0 0 1-10.5-2.8zm-1-16.9a7.7 7.7 0 0 1 4-3.4v9.6a1.4 1.4 0 0 0 .7 1.2l10 5.8-3.5 2a.1.1 0 0 1-.1 0L6.4 24.9a7.7 7.7 0 0 1-2.8-10.4zm28.6 6.6-10-5.8 3.5-2a.1.1 0 0 1 .1 0l8.3 4.8a7.7 7.7 0 0 1-1.2 13.9v-9.6a1.4 1.4 0 0 0-.7-1.3zm3.4-5.2-.2-.2-8.2-4.7a1.4 1.4 0 0 0-1.4 0l-10 5.8v-4a.1.1 0 0 1 .1-.1l8.3-4.8a7.7 7.7 0 0 1 11.5 8zm-21.7 7.1-3.5-2a.1.1 0 0 1-.1-.1v-9.5a7.7 7.7 0 0 1 12.6-5.9l-.3.1-8.2 4.7a1.4 1.4 0 0 0-.7 1.2zm1.9-4.1 4.5-2.6 4.5 2.6v5.2l-4.5 2.6-4.5-2.6z"/></svg>
+          <div class="ai-model-name">OpenAI GPT</div>
+          <div class="ai-model-role">News sentiment &amp; market narrative analysis</div>
+        </div>
+        <div class="ai-model-card">
+          <img src="https://cdn.simpleicons.org/anthropic/191919" alt="Anthropic Claude logo" class="ai-model-logo" />
+          <div class="ai-model-name">Anthropic Claude</div>
+          <div class="ai-model-role">Deep stock reasoning &amp; risk evaluation</div>
+        </div>
+        <div class="ai-model-card">
+          <img src="https://cdn.simpleicons.org/googlegemini/8E75B2" alt="Google Gemini logo" class="ai-model-logo" />
+          <div class="ai-model-name">Google Gemini</div>
+          <div class="ai-model-role">Real-time data synthesis &amp; trend detection</div>
+        </div>
+      </div>
+      <p class="ai-models-disclaimer">AI outputs are probabilistic references only. Always conduct your own due diligence before investing.</p>
+    </section>
+
+    <!-- 데이터 출처 -->
+    <section class="card">
+      <h2>데이터 출처 및 갱신 주기</h2>
+      <ul class="bullet">
+        <li><strong>KRX(한국거래소):</strong> 주가, 등락률, 거래량, 외국인·기관 수급 데이터</li>
+        <li><strong>네이버금융:</strong> 인기 종목, 실시간 시세, 종목 기본 정보</li>
+        <li><strong>Google News:</strong> 종목별 최신 뉴스 수집 및 AI 감성 분석</li>
+        <li><strong>갱신 주기:</strong> 주가·수급·랭킹은 약 10분 배치 갱신 / AI 분석 요약은 변동성에 따라 별도 갱신</li>
+      </ul>
+    </section>
+
+    <!-- 면책조항 -->
+    <section class="card">
+      <h2>이용 안내 및 면책조항</h2>
+      <ul class="bullet">
+        <li>본 서비스는 <strong>투자 판단 보조 도구</strong>이며 금융투자업 인가를 받은 투자 권유 서비스가 아닙니다.</li>
+        <li>AI가 제공하는 BUY/HOLD/SELL 결론 및 모든 분석 수치는 <strong>참고 정보</strong>이며 미래 수익을 보장하지 않습니다.</li>
+        <li>최종 투자 판단과 그에 따른 손익 책임은 전적으로 사용자 본인에게 있습니다.</li>
+        <li>주식 투자는 원금 손실이 발생할 수 있습니다. 반드시 개인 재무 상황과 위험 수용 범위를 고려하세요.</li>
+      </ul>
+    </section>
+
+    <div style="text-align:center;margin:2rem 0;">
+      <a href="/" style="display:inline-block;padding:0.85rem 2.5rem;background:#1146a7;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:1rem;">
+        🔍 지금 바로 종목 분석하기
+      </a>
+    </div>
+
   </main>
+
+  <footer class="footer">
+    <div>
+      <strong>LuckyStock AI</strong>
+      <p>데이터 출처: KRX/네이버금융/Google News 기반 가공 데이터</p>
+    </div>
+    <div class="footer-links">
+      <a href="/about">서비스 소개</a>
+      <a href="/privacy">개인정보 처리방침</a>
+      <a href="/contact">문의</a>
+    </div>
+  </footer>
 </body>
 </html>

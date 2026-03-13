@@ -11,6 +11,7 @@ const els = {
   autoList: document.getElementById("autocomplete-list"),
   quickTags: document.getElementById("quick-tags"),
   todayHeadline: document.getElementById("today-headline"),
+  todayDateStamp: document.getElementById("today-date-stamp"),
   tomorrowHeadline: document.getElementById("tomorrow-headline"),
   todaySurgeList: document.getElementById("today-surge-list"),
   tomorrowTop10: document.getElementById("tomorrow-top10"),
@@ -43,7 +44,9 @@ const els = {
   signalSummary: document.getElementById("signal-summary"),
   signalVisual: document.getElementById("signal-visual"),
   shareStatus: document.getElementById("share-status"),
-  shareCopyBtn: document.getElementById("share-copy-btn")
+  shareCopyBtn: document.getElementById("share-copy-btn"),
+  todayVisitorChip: document.getElementById("today-visitor-chip"),
+  todayVisitorCount: document.getElementById("today-visitor-count")
 };
 
 let autoCompleteSeq = 0;
@@ -62,7 +65,8 @@ const cacheState = {
   homeTomorrow: [],
   homeSignal: [],
   naverPopular: [],
-  naverPopularMap: {}
+  naverPopularMap: {},
+  generatedAt: ""
 };
 
 function normalize(text) {
@@ -75,6 +79,40 @@ function clamp(v, min, max) {
 
 function formatNumber(value) {
   return Number(value).toLocaleString("ko-KR");
+}
+
+function getKstDateKey(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const pick = (type) => parts.find((part) => part.type === type)?.value || "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
+}
+
+function hashString(text) {
+  return [...String(text || "")].reduce((acc, ch) => ((acc * 31) + ch.charCodeAt(0)) >>> 0, 7);
+}
+
+function rotateCandidates(items, count, seedKey, identityFn, poolSize = Math.max(count + 3, count * 2)) {
+  const pool = [];
+  const seen = new Set();
+  for (const item of items || []) {
+    const key = identityFn(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    pool.push(item);
+    if (pool.length >= poolSize) break;
+  }
+  if (pool.length <= count) return pool.slice(0, count);
+  const offset = hashString(seedKey) % pool.length;
+  const rotated = [];
+  for (let i = 0; i < pool.length && rotated.length < count; i += 1) {
+    rotated.push(pool[(offset + i) % pool.length]);
+  }
+  return rotated;
 }
 
 function getSignalEmoji(signal, fallback = "") {
@@ -176,13 +214,28 @@ function renderSummaryHtml(summary, code = "") {
         const href = findNewsLinkForSummaryLine(code, t);
         const text = escapeHtml(t);
         if (href) {
-          return `<div class="summary-news-title"><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></div>`;
+          return `
+            <div class="summary-news-card">
+              <div class="summary-news-kicker">핵심 기사</div>
+              <div class="summary-news-title"><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${text}</a></div>
+            </div>
+          `;
         }
-        return `<div class="summary-news-title">${text}</div>`;
+        return `
+          <div class="summary-news-card">
+            <div class="summary-news-kicker">핵심 기사</div>
+            <div class="summary-news-title">${text}</div>
+          </div>
+        `;
       }
       if (t.startsWith("-> ")) {
         const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        return `<div class="summary-news-explain">${boldHtml}</div>`;
+        return `
+          <div class="summary-news-explain">
+            <span class="summary-news-explain-label">해석</span>
+            <div>${boldHtml.slice(3)}</div>
+          </div>
+        `;
       }
       const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       return `<div class="summary-line">${boldHtml}</div>`;
@@ -331,6 +384,40 @@ async function apiGet(path) {
   return res.json();
 }
 
+async function loadTodayVisitors() {
+  if (!els.todayVisitorCount) return;
+
+  try {
+    // 오늘 날짜 키 (KST)
+    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const todayKey = kst.toISOString().slice(0, 10);
+
+    // localStorage로 하루 1회만 카운트 (새로고침 시 중복 방지)
+    let track = 1;
+    try {
+      const lastVisit = localStorage.getItem("ls_visit_date");
+      if (lastVisit === todayKey) {
+        track = 0; // 오늘 이미 카운트됨
+      } else {
+        localStorage.setItem("ls_visit_date", todayKey);
+      }
+    } catch {}
+
+    const path = `${location.pathname || "/"}${location.search || ""}`;
+    const data = await apiGet(`/api/visitors/today?track=${track}&path=${encodeURIComponent(path)}`);
+    const count = Number(data?.unique_visitors || 0);
+    els.todayVisitorCount.textContent = formatNumber(count);
+    if (els.todayVisitorChip) {
+      els.todayVisitorChip.title = `오늘 방문자 ${formatNumber(count)}명`;
+    }
+  } catch {
+    els.todayVisitorCount.textContent = "-";
+    if (els.todayVisitorChip) {
+      els.todayVisitorChip.title = "오늘 방문자 수를 불러오지 못했습니다.";
+    }
+  }
+}
+
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
 
@@ -356,6 +443,7 @@ async function loadStaticCache() {
   cacheState.homeToday = Array.isArray(homeToday.items) ? homeToday.items : [];
   cacheState.homeTomorrow = Array.isArray(homeTomorrow.items) ? homeTomorrow.items : [];
   cacheState.homeSignal = Array.isArray(homeSignal.items) ? homeSignal.items : [];
+  cacheState.generatedAt = homeToday.generated_at || amap.generated_at || "";
   cacheState.naverPopular = Array.isArray(naverPopular.items) ? naverPopular.items : [];
   cacheState.naverPopularMap = Object.fromEntries(cacheState.naverPopular.map((item) => [item.code, item]));
   cacheState.loaded = true;
@@ -769,15 +857,17 @@ function uniqueByCode(items = []) {
 }
 
 function getTodaySurgeItems(cache) {
-  if (Array.isArray(cache.homeToday) && cache.homeToday.length) return cache.homeToday.slice(0, 5);
-  return uniqueByCode(
-    [...cache.top]
+  const candidates = Array.isArray(cache.homeToday) && cache.homeToday.length
+    ? uniqueByCode([...cache.homeToday, ...cache.top])
+    : uniqueByCode(
+      [...cache.top]
       .sort((a, b) =>
         Number(b.rank_score || 0) - Number(a.rank_score || 0) ||
         Number(b.favor_score || 0) - Number(a.favor_score || 0) ||
         Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0)
       )
-  ).slice(0, 5);
+    );
+  return rotateCandidates(candidates, 5, `today:${getKstDateKey()}`, (item) => item.code, 10);
 }
 
 function getTomorrowTopItems(cache) {
@@ -817,16 +907,82 @@ function getSignalFeedItems(cache) {
   ).slice(0, 6);
 }
 
+function getThemeIcon(theme) {
+  const text = String(theme || "");
+  if (/AI플랫폼/.test(text)) return "🕸";
+  if (/AI반도체/.test(text)) return "🧩";
+  if (/로봇/.test(text)) return "🤖";
+  if (/유통|리테일|커머스|쇼핑/.test(text)) return "🛍";
+  if (/식품|푸드|식자재|외식/.test(text)) return "🍽";
+  if (/2차전지|배터리|전기차/.test(text)) return "🔋";
+  if (/AI|인공지능/.test(text)) return "🧠";
+  if (/반도체|칩/.test(text)) return "💾";
+  if (/바이오|제약|의료/.test(text)) return "💊";
+  if (/게임|콘텐츠/.test(text)) return "🎮";
+  if (/조선|해운|물류/.test(text)) return "🚢";
+  if (/원전|전력|에너지/.test(text)) return "⚡";
+  if (/우주|항공|드론/.test(text)) return "🚀";
+  if (/금융|은행|증권/.test(text)) return "💹";
+  return "📌";
+}
+
+function getThemeFeedItems(cache) {
+  const rankedThemes = [...(cache.themes || [])]
+    .sort((a, b) =>
+      Number(b.avg_score || 0) - Number(a.avg_score || 0) ||
+      Number(b.count || 0) - Number(a.count || 0)
+    );
+  return rotateCandidates(rankedThemes, 5, `theme:${getKstDateKey()}`, (item) => item.theme, 8);
+}
+
+function getThemeHref(theme) {
+  const themeSlugs = {
+    "AI플랫폼": "ai-platform",
+    "AI반도체": "ai-semiconductor",
+    "로봇": "robotics",
+    "유통": "retail",
+    "식품": "food",
+    "2차전지": "battery",
+    "제약/바이오": "biotech",
+    "금융": "finance",
+    "에너지": "energy",
+    "게임/엔터": "game-ent",
+    "건설": "construction",
+    "화학": "chemical",
+    "통신": "telecom",
+    "항공": "airline",
+    "해운/물류": "shipping-logistics",
+    "반도체장비": "semiconductor-equipment",
+    "자동차": "auto",
+    "여행/관광": "travel-leisure",
+    "철강/소재": "steel-materials",
+    "기타": "general"
+  };
+  const value = String(theme || "기타").trim();
+  return `/theme/${themeSlugs[value] || encodeURIComponent(value)}/`;
+}
+
 async function initHomeWidgets() {
   if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
+  if (els.todayDateStamp) els.todayDateStamp.textContent = `${getKstDateKey()} 기준`;
 
   try {
     const cache = await loadStaticCache();
+
+    const updateTimeEl = document.getElementById("data-update-time");
+    if (updateTimeEl && cache.generatedAt) {
+      try {
+        const d = new Date(cache.generatedAt);
+        const fmt = d.toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        updateTimeEl.textContent = `데이터 기준: ${fmt} 갱신`;
+      } catch {}
+    }
+
     const todayItems = getTodaySurgeItems(cache);
     const tomorrowItems = getTomorrowTopItems(cache);
     const signalItems = getSignalFeedItems(cache);
-    const themes = cache.themes.slice(0, 5);
+    const themes = getThemeFeedItems(cache);
 
     els.todaySurgeList.innerHTML = todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
     els.tomorrowTop10.innerHTML = tomorrowItems.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
@@ -853,10 +1009,15 @@ async function initHomeWidgets() {
     `).join("");
 
     els.themeFeed.innerHTML = themes.map((t) => `
-      <div class="feed-item">
-        <strong>${t.theme} 테마</strong>
-        <div class="rank-meta">평균 AI 분석 점수 ${t.avg_score}</div>
-      </div>
+      <a class="feed-item clickable" href="${getThemeHref(t.theme)}" style="display:block;text-decoration:none;color:inherit;">
+        <div class="rank-row theme-row">
+          <span class="theme-icon" aria-hidden="true">${getThemeIcon(t.theme)}</span>
+          <div class="theme-copy">
+            <strong>${t.theme}</strong>
+            <div class="rank-meta">${t.theme} 테마 · 평균 AI 분석 점수 ${t.avg_score}${t.count ? ` · ${t.count}종목` : ""}</div>
+          </div>
+        </div>
+      </a>
     `).join("");
   } catch {
     els.todaySurgeList.innerHTML = `<div class="rank-item">랭킹 API 연결 실패</div>`;
@@ -975,3 +1136,4 @@ initHomeWidgets();
 initRankingClicks();
 initEmptyResultState();
 initFromUrl();
+loadTodayVisitors();

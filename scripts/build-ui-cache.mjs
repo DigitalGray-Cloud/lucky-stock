@@ -1178,6 +1178,34 @@ const recent = ordered.slice(0, 100).map((a) => {
   };
 });
 
+const fallbackSignalPool = ordered.slice(0, 240).map((a) => {
+  const s = stockMap.get(a.code) || {};
+  return {
+    code: a.code,
+    name: s.name || a.code,
+    summary: a.summary,
+    favor_score: a.favor_score,
+    rank_score: a.rank_score,
+    signal: a.signal,
+    signal_emoji: a.signal_emoji,
+    trigger_count: a.trigger_count,
+    confidence: a.confidence,
+    close_price: s.close_price ?? null,
+    change_rate: s.change_rate ?? null,
+    volume: s.volume ?? null,
+    prev_price: s.prev_price ?? null,
+    high_price: s.high_price ?? null,
+    low_price: s.low_price ?? null,
+    logo_url: s.logo_url || null,
+    theme: a.theme,
+    tomorrow_prob: a.tomorrow_prob,
+    prob_1m: a.prob_1m,
+    prob_3m: a.prob_3m,
+    prob_1y: a.prob_1y,
+    updated_at: now
+  };
+});
+
 const todayCandidates = uniqueByCode(
   [...top].sort((a, b) =>
     getTodayThemeScore(b) - getTodayThemeScore(a) ||
@@ -1236,13 +1264,37 @@ const signalCandidates = uniqueByCode(
       Number(b.favor_score || 0) - Number(a.favor_score || 0)
     )
 );
+const relaxedSignalCandidates = uniqueByCode(
+  [...fallbackSignalPool]
+    .filter((item) =>
+      Number(item.trigger_count || 0) >= 3 ||
+      Number(item.favor_score || 0) >= 55 ||
+      item.signal === '상승 가능' ||
+      Number(item.change_rate || 0) >= 2
+    )
+    .sort((a, b) =>
+      getIntradaySignalScore(b) - getIntradaySignalScore(a) ||
+      Number(b.trigger_count || 0) - Number(a.trigger_count || 0) ||
+      Number(b.confidence || 0) - Number(a.confidence || 0) ||
+      Number(b.favor_score || 0) - Number(a.favor_score || 0)
+    )
+);
 const signalExcludedCodes = new Set([
-  ...getRecentExcludedCodes('signal', 7),
+  ...getRecentExcludedCodes('signal', 2),
   ...getIntradaySignalExcludedCodes(),
   ...todayHome.map((item) => String(item?.code || '')).filter(Boolean),
   ...tomorrowHome.map((item) => String(item?.code || '')).filter(Boolean)
 ]);
-const signalHome = selectFreshItems(signalCandidates, 6, signalExcludedCodes);
+const signalSelected = selectFreshItems(signalCandidates, 5, signalExcludedCodes);
+const signalSelectedCodes = new Set(signalSelected.map((item) => String(item?.code || '')).filter(Boolean));
+for (const item of selectFreshItems(relaxedSignalCandidates, 5, signalExcludedCodes)) {
+  const code = String(item?.code || '');
+  if (!code || signalSelectedCodes.has(code)) continue;
+  signalSelected.push(item);
+  signalSelectedCodes.add(code);
+  if (signalSelected.length >= 5) break;
+}
+const signalHome = signalSelected.slice(0, 5);
 
 const analysisMap = Object.fromEntries(
   analyses.map((a) => {

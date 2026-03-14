@@ -104,6 +104,16 @@ function getPreviousKstDateKey(dateKey = getKstDateKey()) {
   return getKstDateKey(dt);
 }
 
+function getRecentKstDateKeys(endDateKey = getKstDateKey(), days = 7, includeEnd = false) {
+  const keys = [];
+  let cursor = includeEnd ? endDateKey : getPreviousKstDateKey(endDateKey);
+  for (let i = 0; i < days; i += 1) {
+    keys.push(cursor);
+    cursor = getPreviousKstDateKey(cursor);
+  }
+  return keys;
+}
+
 function readJsonFile(filePath, fallback) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -139,6 +149,26 @@ function loadExposureHistory() {
 function getExposureCodes(history, listKey, dateKey) {
   const items = history?.daily?.[listKey]?.[dateKey];
   return new Set(Array.isArray(items) ? items.map((code) => String(code || '')).filter(Boolean) : []);
+}
+
+function getExposureCodesForRecentDays(history, listKey, endDateKey, days = 7, includeEnd = false) {
+  const codes = new Set();
+  for (const dateKey of getRecentKstDateKeys(endDateKey, days, includeEnd)) {
+    for (const code of getExposureCodes(history, listKey, dateKey)) {
+      codes.add(code);
+    }
+  }
+  return codes;
+}
+
+function getExposureCodesForAllLists(history, endDateKey, days = 7, includeEnd = false) {
+  const codes = new Set();
+  for (const listKey of ['today', 'tomorrow', 'signal']) {
+    for (const code of getExposureCodesForRecentDays(history, listKey, endDateKey, days, includeEnd)) {
+      codes.add(code);
+    }
+  }
+  return codes;
 }
 
 function mergeExposureCodes(history, listKey, dateKey, items) {
@@ -1067,7 +1097,7 @@ const top = ordered.slice(0, 50).map((a, i) => {
   };
 });
 
-const getDailyExcludedCodes = (listKey) => getExposureCodes(exposureHistory, listKey, previousDateKey);
+const getRecentExcludedCodes = (_listKey, days = 7) => getExposureCodesForAllLists(exposureHistory, todayDateKey, days, true);
 const getIntradaySignalExcludedCodes = () => {
   if (opts.mode !== 'intraday') return new Set();
   return getExposureCodes(exposureHistory, 'signal', todayDateKey);
@@ -1151,7 +1181,7 @@ const topThemesForToday = themeRanking
   .slice(0, 3);
 const todaySelected = [];
 const todaySelectedCodes = new Set();
-const todayExcludedCodes = getDailyExcludedCodes('today');
+const todayExcludedCodes = getRecentExcludedCodes('today', 7);
 for (const theme of topThemesForToday.slice(0, 2)) {
   const match = pickFirstFreshByTheme(todayCandidates, theme, todayExcludedCodes, todaySelectedCodes);
   if (!match) continue;
@@ -1175,7 +1205,11 @@ const tomorrowCandidates = uniqueByCode(
     Number(themePriorityBonus.get(b.theme) || 0) - Number(themePriorityBonus.get(a.theme) || 0)
   )
 );
-const tomorrowHome = selectFreshItems(tomorrowCandidates, 10, getDailyExcludedCodes('tomorrow'));
+const tomorrowExcludedCodes = new Set([
+  ...getRecentExcludedCodes('tomorrow', 7),
+  ...todayHome.map((item) => String(item?.code || '')).filter(Boolean)
+]);
+const tomorrowHome = selectFreshItems(tomorrowCandidates, 10, tomorrowExcludedCodes);
 
 const signalCandidates = uniqueByCode(
   [...recent]
@@ -1192,8 +1226,10 @@ const signalCandidates = uniqueByCode(
     )
 );
 const signalExcludedCodes = new Set([
-  ...getDailyExcludedCodes('signal'),
-  ...getIntradaySignalExcludedCodes()
+  ...getRecentExcludedCodes('signal', 7),
+  ...getIntradaySignalExcludedCodes(),
+  ...todayHome.map((item) => String(item?.code || '')).filter(Boolean),
+  ...tomorrowHome.map((item) => String(item?.code || '')).filter(Boolean)
 ]);
 const signalHome = selectFreshItems(signalCandidates, 6, signalExcludedCodes);
 

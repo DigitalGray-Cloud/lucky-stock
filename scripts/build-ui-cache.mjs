@@ -24,6 +24,10 @@ const BLUE_CHIP_CODES = new Set([
   '012330'  // 현대모비스
 ]);
 
+const HARD_EXCLUDED_CODES = new Set([
+  '059090' // 미코
+]);
+
 const db = new Database(DB_PATH);
 
 db.exec(`
@@ -190,6 +194,10 @@ function pruneExposureHistory(history, keepDays = 20) {
 
 function isBlueChip(code) {
   return BLUE_CHIP_CODES.has(String(code || ''));
+}
+
+function isHardExcludedCode(code) {
+  return HARD_EXCLUDED_CODES.has(String(code || ''));
 }
 
 function uniqueByCode(items = []) {
@@ -1007,7 +1015,9 @@ ON CONFLICT(code) DO UPDATE SET
   updated_at=excluded.updated_at
 `);
 
-const analyses = stocks.map(buildAnalysis);
+const analyses = stocks
+  .map(buildAnalysis)
+  .filter((row) => !isHardExcludedCode(row.code));
 const opts = parseArgs();
 const txAnalysis = db.transaction((rows) => {
   for (const row of rows) {

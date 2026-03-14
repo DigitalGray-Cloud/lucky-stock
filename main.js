@@ -979,17 +979,32 @@ function getThemeHref(theme) {
   return `/theme/${themeSlugs[value] || encodeURIComponent(value)}/`;
 }
 
+function renderThemeCards(items = [], compact = false) {
+  return items.map((t) => `
+    <a class="${compact ? "feed-item" : "rank-item"} clickable" href="${getThemeHref(t.theme)}" style="display:block;text-decoration:none;color:inherit;">
+      <div class="rank-row theme-row">
+        <span class="theme-icon" aria-hidden="true">${getThemeIcon(t.theme)}</span>
+        <div class="theme-copy">
+          <strong>${compact ? t.theme : `${t.theme} 테마`}</strong>
+          <div class="rank-meta">${compact ? `${t.theme} 테마` : "주말 테마 섹터 추천"} · 평균 AI 분석 점수 ${t.avg_score}${t.count ? ` · ${t.count}종목` : ""}</div>
+        </div>
+      </div>
+    </a>
+  `).join("");
+}
+
 async function initHomeWidgets() {
-  if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
+  const weekend = isWeekendKst();
+  if (els.todayHeadline) els.todayHeadline.textContent = weekend ? "주말 테마 섹터 추천" : "오늘 AI 발견 급등주";
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
   if (els.todayDateStamp) els.todayDateStamp.textContent = `${getKstDateKey()} 기준`;
   if (els.themeHeadline) {
-    els.themeHeadline.innerHTML = isWeekendKst()
+    els.themeHeadline.innerHTML = weekend
       ? `<span class="mini-badge theme">Theme</span>주말 테마 섹터 추천`
       : `<span class="mini-badge theme">Theme</span>테마 급등 탐지`;
   }
-  if (els.miniGrid && els.themeCard && isWeekendKst()) {
-    els.miniGrid.prepend(els.themeCard);
+  if (els.themeCard) {
+    els.themeCard.hidden = weekend;
   }
 
   try {
@@ -1009,7 +1024,9 @@ async function initHomeWidgets() {
     const signalItems = getSignalFeedItems(cache);
     const themes = getThemeFeedItems(cache);
 
-    els.todaySurgeList.innerHTML = todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
+    els.todaySurgeList.innerHTML = weekend
+      ? renderThemeCards(themes, false)
+      : todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
     els.tomorrowTop10.innerHTML = tomorrowItems.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
 
     els.signalFeed.innerHTML = signalItems.map((a) => `
@@ -1033,17 +1050,7 @@ async function initHomeWidgets() {
       </div>
     `).join("");
 
-    els.themeFeed.innerHTML = themes.map((t) => `
-      <a class="feed-item clickable" href="${getThemeHref(t.theme)}" style="display:block;text-decoration:none;color:inherit;">
-        <div class="rank-row theme-row">
-          <span class="theme-icon" aria-hidden="true">${getThemeIcon(t.theme)}</span>
-          <div class="theme-copy">
-            <strong>${t.theme}</strong>
-            <div class="rank-meta">${t.theme} 테마 · 평균 AI 분석 점수 ${t.avg_score}${t.count ? ` · ${t.count}종목` : ""}</div>
-          </div>
-        </div>
-      </a>
-    `).join("");
+    els.themeFeed.innerHTML = renderThemeCards(themes, true);
   } catch {
     els.todaySurgeList.innerHTML = `<div class="rank-item">랭킹 API 연결 실패</div>`;
     els.tomorrowTop10.innerHTML = `<div class="rank-item">랭킹 API 연결 실패</div>`;

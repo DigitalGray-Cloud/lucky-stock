@@ -25,7 +25,8 @@ const BLUE_CHIP_CODES = new Set([
 ]);
 
 const HARD_EXCLUDED_CODES = new Set([
-  '059090' // 미코
+  '059090', // 미코
+  '122310'  // 제노레이
 ]);
 
 const db = new Database(DB_PATH);

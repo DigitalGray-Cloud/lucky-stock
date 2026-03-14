@@ -530,18 +530,22 @@ async function loadTodayVisitors() {
 
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
+  const fetchJson = (path, fallback) =>
+    fetch(path, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : fallback))
+      .catch(() => fallback);
 
   const [ac, amap, top, recent, themes, news, naverPopular, homeToday, homeTomorrow, homeSignal] = await Promise.all([
-    fetch("/data/ui_autocomplete.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_analysis_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
-    fetch("/data/ui_top_stocks.json").then((r) => (r.ok ? r.json() : { top: [] })).catch(() => ({ top: [] })),
-    fetch("/data/ui_recent_analysis.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_theme_ranking.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_news_map.json").then((r) => (r.ok ? r.json() : { map: {} })).catch(() => ({ map: {} })),
-    fetch("/data/ui_naver_popular.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_home_today.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_home_tomorrow.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-    fetch("/data/ui_home_signal.json").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] }))
+    fetchJson("/data/ui_autocomplete.json", { items: [] }),
+    fetchJson("/data/ui_analysis_map.json", { map: {} }),
+    fetchJson("/data/ui_top_stocks.json", { top: [] }),
+    fetchJson("/data/ui_recent_analysis.json", { items: [] }),
+    fetchJson("/data/ui_theme_ranking.json", { items: [] }),
+    fetchJson("/data/ui_news_map.json", { map: {} }),
+    fetchJson("/data/ui_naver_popular.json", { items: [] }),
+    fetchJson("/data/ui_home_today.json", { items: [] }),
+    fetchJson("/data/ui_home_tomorrow.json", { items: [] }),
+    fetchJson("/data/ui_home_signal.json", { items: [] })
   ]);
 
   cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];

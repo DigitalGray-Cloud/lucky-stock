@@ -104,6 +104,8 @@ body {
   font-size: 0.72rem;
   font-weight: 800;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lang-btn.active {

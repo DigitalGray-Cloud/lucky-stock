@@ -995,7 +995,8 @@ function renderThemeCards(items = [], compact = false) {
 
 async function initHomeWidgets() {
   const weekend = isWeekendKst();
-  if (els.todayHeadline) els.todayHeadline.textContent = weekend ? "주말 테마 섹터 추천" : "오늘 AI 발견 급등주";
+  const gridTwo = document.querySelector(".grid-two");
+  if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
   if (els.todayDateStamp) els.todayDateStamp.textContent = `${getKstDateKey()} 기준`;
   if (els.themeHeadline) {
@@ -1003,8 +1004,9 @@ async function initHomeWidgets() {
       ? `<span class="mini-badge theme">Theme</span>주말 테마 섹터 추천`
       : `<span class="mini-badge theme">Theme</span>테마 급등 탐지`;
   }
-  if (els.themeCard) {
-    els.themeCard.hidden = weekend;
+  if (els.themeCard && gridTwo && els.miniGrid) {
+    if (weekend) gridTwo.parentNode.insertBefore(els.themeCard, gridTwo);
+    else els.miniGrid.appendChild(els.themeCard);
   }
 
   try {
@@ -1024,9 +1026,7 @@ async function initHomeWidgets() {
     const signalItems = getSignalFeedItems(cache);
     const themes = getThemeFeedItems(cache);
 
-    els.todaySurgeList.innerHTML = weekend
-      ? renderThemeCards(themes, false)
-      : todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
+    els.todaySurgeList.innerHTML = todayItems.map((a, idx) => renderRankCard(a, idx, "today")).join("");
     els.tomorrowTop10.innerHTML = tomorrowItems.map((a, idx) => renderRankCard(a, idx, "tomorrow")).join("");
 
     els.signalFeed.innerHTML = signalItems.map((a) => `

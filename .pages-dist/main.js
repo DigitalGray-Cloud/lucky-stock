@@ -18,6 +18,9 @@ const els = {
   signalFeed: document.getElementById("signal-feed"),
   popularList: document.getElementById("popular-list"),
   themeFeed: document.getElementById("theme-feed"),
+  miniGrid: document.getElementById("home-mini-grid"),
+  themeCard: document.getElementById("theme-card"),
+  themeHeadline: document.getElementById("theme-headline"),
   companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
   companyCode: document.getElementById("company-code"),
@@ -75,6 +78,14 @@ function normalize(text) {
 
 function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
+}
+
+function isWeekendKst(date = new Date()) {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Seoul",
+    weekday: "short"
+  }).format(date);
+  return weekday === "Sat" || weekday === "Sun";
 }
 
 function formatNumber(value) {
@@ -656,7 +667,12 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
 
   renderSignalCards(data);
 
-  const newsItems = (cacheState.newsMap && cacheState.newsMap[code]) ? cacheState.newsMap[code] : [];
+  const newsItems = Array.isArray(data.news_items) && data.news_items.length
+    ? data.news_items
+    : ((cacheState.newsMap && cacheState.newsMap[code]) ? cacheState.newsMap[code] : []);
+  if (Array.isArray(data.news_items) && data.news_items.length) {
+    cacheState.newsMap[code] = data.news_items;
+  }
   if (Array.isArray(newsItems) && newsItems.length) {
     els.newsList.innerHTML = newsItems.slice(0, 5).map((n) => `<li><span><a href="${n.link}" target="_blank" rel="noopener noreferrer">${n.title}</a></span><span class="rank-meta">${(n.date || "").slice(0, 16)}</span></li>`).join("");
   } else {
@@ -751,7 +767,8 @@ async function searchAndRender(query, context = { source: "search" }) {
 
     let data;
     try {
-      data = await apiGet(`/api/analyze?code=${encodeURIComponent(stock.code)}`);
+      const source = String(context?.source || "search");
+      data = await apiGet(`/api/analyze?code=${encodeURIComponent(stock.code)}&source=${encodeURIComponent(source)}`);
     } catch {
       const cache = await loadStaticCache();
       data = cache.analysisMap[stock.code];
@@ -966,6 +983,14 @@ async function initHomeWidgets() {
   if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
   if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
   if (els.todayDateStamp) els.todayDateStamp.textContent = `${getKstDateKey()} 기준`;
+  if (els.themeHeadline) {
+    els.themeHeadline.innerHTML = isWeekendKst()
+      ? `<span class="mini-badge theme">Theme</span>주말 테마 섹터 추천`
+      : `<span class="mini-badge theme">Theme</span>테마 급등 탐지`;
+  }
+  if (els.miniGrid && els.themeCard && isWeekendKst()) {
+    els.miniGrid.prepend(els.themeCard);
+  }
 
   try {
     const cache = await loadStaticCache();
@@ -1052,6 +1077,11 @@ function initRankingClicks() {
   els.tomorrowTop10.addEventListener("click", onClick);
   els.signalFeed.addEventListener("click", onClick);
   els.popularList.addEventListener("click", onClick);
+  els.themeFeed.addEventListener("click", (e) => {
+    const link = e.target.closest("a.feed-item.clickable[href]");
+    if (!link) return;
+    window.location.href = link.getAttribute("href");
+  });
 }
 
 function initEvents() {

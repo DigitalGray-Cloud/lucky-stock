@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { fetchPopularSearchCodes } from "./search-targets.mjs";
 
 function nowInKstParts() {
   const now = new Date();
@@ -47,7 +48,13 @@ async function main() {
   await runNode("scripts/build-stock-master.mjs");
 
   console.log("[market-sync] step2: latest top-stock news cache build");
-  await runNode("scripts/build-news-cache.mjs", ["--mode=top", "--limit=120"]);
+  const searchedCodes = await fetchPopularSearchCodes({ limit: 30, days: 3 });
+  const newsArgs = ["--mode=top", "--limit=120"];
+  if (searchedCodes.length) {
+    newsArgs.push(`--codes=${searchedCodes.join(",")}`);
+    console.log(`[market-sync] searched-stock news targets=${searchedCodes.length}`);
+  }
+  await runNode("scripts/build-news-cache.mjs", newsArgs);
 
   console.log("[market-sync] step3: naver finance popular build");
   await runNode("scripts/build-naver-popular.mjs");

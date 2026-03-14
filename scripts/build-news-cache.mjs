@@ -96,10 +96,16 @@ function loadTargets() {
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
-  const opts = { mode: 'all', limit: 100 };
+  const opts = { mode: 'all', limit: 100, codes: [] };
   for (const arg of argv) {
     if (arg.startsWith('--mode=')) opts.mode = String(arg.split('=')[1] || 'all');
     if (arg.startsWith('--limit=')) opts.limit = Number(arg.split('=')[1] || 100) || 100;
+    if (arg.startsWith('--codes=')) {
+      opts.codes = String(arg.split('=')[1] || '')
+        .split(',')
+        .map((code) => String(code || '').trim())
+        .filter(Boolean);
+    }
   }
   return opts;
 }
@@ -116,14 +122,18 @@ function loadTopCodes(limit = 100) {
 async function main() {
   const opts = parseArgs();
   const allTargets = loadTargets();
-  const topCodes = opts.mode === 'top' ? new Set(loadTopCodes(opts.limit)) : null;
-  const targets = opts.mode === 'top'
-    ? allTargets.filter((target) => topCodes.has(target.code))
-    : allTargets;
+  const explicitCodes = new Set(opts.codes);
+  const topCodes = opts.mode === 'top' ? new Set(loadTopCodes(opts.limit)) : new Set();
+  const targetCodes = opts.mode === 'all'
+    ? explicitCodes
+    : new Set([...topCodes, ...explicitCodes]);
+  const targets = opts.mode === 'all' && !targetCodes.size
+    ? allTargets
+    : allTargets.filter((target) => targetCodes.has(target.code));
   const existing = fs.existsSync(OUT_PATH)
     ? (JSON.parse(fs.readFileSync(OUT_PATH, 'utf-8')).map || {})
     : {};
-  const map = opts.mode === 'top' ? { ...existing } : {};
+  const map = opts.mode === 'all' && !targetCodes.size ? {} : { ...existing };
 
   if (!targets.length) {
     fs.writeFileSync(OUT_PATH, JSON.stringify({ generated_at: new Date().toISOString(), map }, null, 2));

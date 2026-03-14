@@ -65,7 +65,9 @@ npm start
 ## Batch Jobs
 
 - Daily 00:10: `npm run batch:stocks`
+- Daily 08:30: `npm run batch:morning-0830`
 - Market hours sync (every 10m): `npm run batch:market-sync`
+- Daily 18:10: `npm run batch:searched-refresh -- --window=pm`
 - Daily 00:30: `npm run batch:daily`
 - Hourly: `npm run batch:ranking`
 
@@ -73,12 +75,16 @@ npm start
 
 ```cron
 10 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:stocks >> /var/log/luckystock-stocks.log 2>&1
+30 8 * * * cd /home/user/luckstock && /usr/bin/npm run batch:morning-0830 >> /var/log/luckystock-morning-0830.log 2>&1
 */10 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:market-sync >> /var/log/luckystock-market-sync.log 2>&1
+10 18 * * * cd /home/user/luckstock && /usr/bin/npm run batch:searched-refresh -- --window=pm >> /var/log/luckystock-searched-refresh.log 2>&1
 30 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:daily >> /var/log/luckystock-daily.log 2>&1
 0 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:ranking >> /var/log/luckystock-ranking.log 2>&1
 ```
 
 `batch:market-sync`는 내부에서 KST 기준 평일 09:00~15:30만 실행하고, 그 외 시간은 자동 skip 합니다.
+`batch:morning-0830`는 오전 8시 30분에 전체 뉴스 캐시를 강제 갱신한 뒤 전체 분석/홈 캐시를 다시 만들고, 최근 검색 종목에 대해서는 뉴스/상세 AI 요약을 한 번 더 보강합니다.
+`batch:searched-refresh`는 아침/저녁에 최근 검색 종목을 다시 읽어 뉴스와 상세 분석을 재생성하는 용도입니다.
 
 ## Visitor Counter
 

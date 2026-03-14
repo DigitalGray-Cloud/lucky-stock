@@ -17,6 +17,8 @@
     "batch:market-sync": "node scripts/market-sync.mjs",
     "batch:market-sync:intraday": "node scripts/market-sync.mjs",
     "batch:full-refresh": "node scripts/daily-full-refresh.mjs",
+    "batch:morning-0830": "node scripts/morning-0830-refresh.mjs",
+    "batch:searched-refresh": "node scripts/refresh-searched-stocks.mjs",
     "batch:daily": "node scripts/run-daily-analysis.mjs",
     "batch:ranking": "node scripts/run-ranking-batch.mjs",
     "db:status": "node scripts/db-status.mjs"
@@ -28,5 +30,9 @@
     "express": "^4.21.2",
     "iconv-lite": "^0.7.2",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^0.1.96",
+    "pngjs": "^7.0.0"
   }
 }

@@ -9,6 +9,20 @@ const NEWS_MAP_PATH = path.join(OUT_DIR, 'ui_news_map.json');
 const HOME_TODAY_PATH = path.join(OUT_DIR, 'ui_home_today.json');
 const HOME_TOMORROW_PATH = path.join(OUT_DIR, 'ui_home_tomorrow.json');
 const HOME_SIGNAL_PATH = path.join(OUT_DIR, 'ui_home_signal.json');
+const HOME_EXPOSURE_HISTORY_PATH = path.join(OUT_DIR, 'ui_home_exposure_history.json');
+
+const BLUE_CHIP_CODES = new Set([
+  '005930', // 삼성전자
+  '000660', // SK하이닉스
+  '373220', // LG에너지솔루션
+  '207940', // 삼성바이오로직스
+  '005380', // 현대차
+  '068270', // 셀트리온
+  '105560', // KB금융
+  '000270', // 기아
+  '035420', // NAVER
+  '012330'  // 현대모비스
+]);
 
 const db = new Database(DB_PATH);
 
@@ -71,6 +85,115 @@ function seededRange(seed, min, max) {
 
 function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));
+}
+
+function getKstDateKey(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date);
+  const pick = (type) => parts.find((part) => part.type === type)?.value || '';
+  return `${pick('year')}-${pick('month')}-${pick('day')}`;
+}
+
+function getPreviousKstDateKey(dateKey = getKstDateKey()) {
+  const dt = new Date(`${dateKey}T00:00:00+09:00`);
+  dt.setUTCDate(dt.getUTCDate() - 1);
+  return getKstDateKey(dt);
+}
+
+function readJsonFile(filePath, fallback) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJsonFile(filePath, value) {
+  fs.writeFileSync(filePath, JSON.stringify(value, null, 2));
+}
+
+function createEmptyExposureHistory() {
+  return {
+    generated_at: '',
+    daily: {
+      today: {},
+      tomorrow: {},
+      signal: {}
+    }
+  };
+}
+
+function loadExposureHistory() {
+  const history = readJsonFile(HOME_EXPOSURE_HISTORY_PATH, createEmptyExposureHistory());
+  history.daily = history.daily || {};
+  history.daily.today = history.daily.today || {};
+  history.daily.tomorrow = history.daily.tomorrow || {};
+  history.daily.signal = history.daily.signal || {};
+  return history;
+}
+
+function getExposureCodes(history, listKey, dateKey) {
+  const items = history?.daily?.[listKey]?.[dateKey];
+  return new Set(Array.isArray(items) ? items.map((code) => String(code || '')).filter(Boolean) : []);
+}
+
+function mergeExposureCodes(history, listKey, dateKey, items) {
+  const bucket = history.daily[listKey];
+  const current = getExposureCodes(history, listKey, dateKey);
+  for (const item of items || []) {
+    const code = String(item?.code || '');
+    if (code) current.add(code);
+  }
+  bucket[dateKey] = [...current];
+}
+
+function pruneExposureHistory(history, keepDays = 20) {
+  for (const key of ['today', 'tomorrow', 'signal']) {
+    const entries = Object.entries(history.daily[key] || {}).sort((a, b) => b[0].localeCompare(a[0]));
+    history.daily[key] = Object.fromEntries(entries.slice(0, keepDays));
+  }
+}
+
+function isBlueChip(code) {
+  return BLUE_CHIP_CODES.has(String(code || ''));
+}
+
+function uniqueByCode(items = []) {
+  const seen = new Set();
+  return items.filter((item) => {
+    const code = String(item?.code || '');
+    if (!code || seen.has(code)) return false;
+    seen.add(code);
+    return true;
+  });
+}
+
+function selectFreshItems(candidates, count, excludedCodes = new Set()) {
+  const picked = [];
+  const seen = new Set();
+  for (const item of uniqueByCode(candidates)) {
+    const code = String(item?.code || '');
+    if (!code || seen.has(code)) continue;
+    if (excludedCodes.has(code) && !isBlueChip(code)) continue;
+    seen.add(code);
+    picked.push(item);
+    if (picked.length >= count) break;
+  }
+  return picked;
+}
+
+function pickFirstFreshByTheme(candidates, theme, excludedCodes, selectedCodes) {
+  return candidates.find((item) => {
+    const code = String(item?.code || '');
+    if (!code || selectedCodes.has(code)) return false;
+    if (item.theme !== theme) return false;
+    if (excludedCodes.has(code) && !isBlueChip(code)) return false;
+    return true;
+  }) || null;
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
@@ -789,11 +912,12 @@ function buildAnalysis(stock) {
     theme,
     tomorrowProb
   }, newsContext);
+  const preservedAiSummary = existingAiSummaryMap.get(stock.code);
 
   return {
     code: stock.code,
-    summary,
-    summary_source: `news_grade_${newsContext.grade}`,
+    summary: preservedAiSummary || summary,
+    summary_source: preservedAiSummary ? 'ai' : `news_grade_${newsContext.grade}`,
     favor_score: favor,
     rank_score: rankScore,
     signal,
@@ -817,6 +941,11 @@ function buildAnalysis(stock) {
 const newsMap = fs.existsSync(NEWS_MAP_PATH)
   ? (JSON.parse(fs.readFileSync(NEWS_MAP_PATH, 'utf8')).map || {})
   : {};
+const existingAiSummaryMap = new Map(
+  db.prepare("SELECT code, summary FROM stock_analysis WHERE summary_source = 'ai' AND summary IS NOT NULL").all()
+    .map((row) => [String(row.code || ''), String(row.summary || '').trim()])
+    .filter(([code, summary]) => code && summary)
+);
 
 const stocks = db
   .prepare("SELECT code, name, market, close_price, prev_price, change_rate, volume, high_price, low_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
@@ -890,6 +1019,29 @@ txRank(ordered);
 
 const stockMap = new Map(stocks.map((s) => [s.code, s]));
 const analysisMapLocal = new Map(analyses.map((a) => [a.code, a]));
+const exposureHistory = loadExposureHistory();
+const todayDateKey = getKstDateKey();
+const previousDateKey = getPreviousKstDateKey(todayDateKey);
+
+const themeMap = new Map();
+for (const a of analyses) {
+  const arr = themeMap.get(a.theme) || [];
+  arr.push(a.favor_score);
+  themeMap.set(a.theme, arr);
+}
+
+const themeBias = { '로봇': 14, 'AI플랫폼': 10, '전기차': 7, 'AI반도체': 6, '2차전지': 5 };
+const themeRanking = [...themeMap.entries()]
+  .map(([theme, values]) => ({
+    theme,
+    avg_score: clamp(Math.round(values.reduce((sum, v) => sum + v, 0) / values.length) + (themeBias[theme] || 0), 40, 95),
+    count: values.length
+  }))
+  .sort((x, y) => y.avg_score - x.avg_score)
+  .slice(0, 10);
+const themePriorityBonus = new Map(
+  themeRanking.map((item, index) => [item.theme, Math.max(0, 12 - (index * 3))])
+);
 
 const top = ordered.slice(0, 50).map((a, i) => {
   const s = stockMap.get(a.code) || {};
@@ -901,6 +1053,11 @@ const top = ordered.slice(0, 50).map((a, i) => {
     name: s.name || a.code,
     market: s.market || '-',
     close_price: s.close_price ?? null,
+    change_rate: s.change_rate ?? null,
+    volume: s.volume ?? null,
+    prev_price: s.prev_price ?? null,
+    high_price: s.high_price ?? null,
+    low_price: s.low_price ?? null,
     logo_url: s.logo_url || null,
     signal: a.signal,
     signal_emoji: a.signal_emoji,
@@ -910,23 +1067,47 @@ const top = ordered.slice(0, 50).map((a, i) => {
   };
 });
 
-function uniqueByCode(items = []) {
-  const seen = new Set();
-  return items.filter((item) => {
-    const code = String(item?.code || '');
-    if (!code || seen.has(code)) return false;
-    seen.add(code);
-    return true;
-  });
+const getDailyExcludedCodes = (listKey) => getExposureCodes(exposureHistory, listKey, previousDateKey);
+const getIntradaySignalExcludedCodes = () => {
+  if (opts.mode !== 'intraday') return new Set();
+  return getExposureCodes(exposureHistory, 'signal', todayDateKey);
+};
+
+function getTodayThemeScore(item) {
+  const themeBonus = Number(themePriorityBonus.get(item.theme) || 0);
+  return (
+    Number(item.rank_score || 0) * 1.25 +
+    Number(item.favor_score || 0) * 0.45 +
+    Number(item.tomorrow_prob || 0) * 0.18 +
+    Number(item.trigger_count || 0) * 1.8 +
+    themeBonus
+  );
 }
 
-const todayHome = uniqueByCode(
-  [...top].sort((a, b) =>
-    Number(b.rank_score || 0) - Number(a.rank_score || 0) ||
-    Number(b.favor_score || 0) - Number(a.favor_score || 0) ||
-    Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0)
-  )
-).slice(0, 5);
+function getIntradaySignalScore(item) {
+  const signalWeight = item.signal === '상승 가능' ? 3 : item.signal === '중립' ? 2 : 1;
+  const changeRate = Number(item.change_rate || 0);
+  const volume = Number(item.volume || 0);
+  const price = Number(item.close_price || 0);
+  const highPrice = Number(item.high_price || price);
+  const lowPrice = Number(item.low_price || price);
+  const rangeRatio = price > 0 ? (highPrice - lowPrice) / price : 0;
+  const volumeScore = volume > 0 ? clamp(Math.round(Math.log10(volume + 1) * 4), 0, 24) : 0;
+  const momentumScore = clamp(Math.round(changeRate * 3.2), -12, 24);
+  const rangeScore = clamp(Math.round(rangeRatio * 120), 0, 12);
+  const themeScore = Number(themePriorityBonus.get(item.theme) || 0);
+  return (
+    Number(item.trigger_count || 0) * 10 +
+    signalWeight * 12 +
+    Number(item.confidence || 0) * 0.45 +
+    Number(item.favor_score || 0) * 0.3 +
+    Number(item.tomorrow_prob || 0) * 0.2 +
+    volumeScore +
+    momentumScore +
+    rangeScore +
+    themeScore
+  );
+}
 
 const recent = ordered.slice(0, 100).map((a) => {
   const s = stockMap.get(a.code) || {};
@@ -941,6 +1122,11 @@ const recent = ordered.slice(0, 100).map((a) => {
     trigger_count: a.trigger_count,
     confidence: a.confidence,
     close_price: s.close_price ?? null,
+    change_rate: s.change_rate ?? null,
+    volume: s.volume ?? null,
+    prev_price: s.prev_price ?? null,
+    high_price: s.high_price ?? null,
+    low_price: s.low_price ?? null,
     logo_url: s.logo_url || null,
     theme: a.theme,
     tomorrow_prob: a.tomorrow_prob,
@@ -951,29 +1137,65 @@ const recent = ordered.slice(0, 100).map((a) => {
   };
 });
 
-const tomorrowHome = uniqueByCode(
+const todayCandidates = uniqueByCode(
+  [...top].sort((a, b) =>
+    getTodayThemeScore(b) - getTodayThemeScore(a) ||
+    Number(b.rank_score || 0) - Number(a.rank_score || 0) ||
+    Number(b.favor_score || 0) - Number(a.favor_score || 0) ||
+    Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0)
+  )
+);
+const topThemesForToday = themeRanking
+  .map((item) => item.theme)
+  .filter((theme) => theme && theme !== '기타')
+  .slice(0, 3);
+const todaySelected = [];
+const todaySelectedCodes = new Set();
+const todayExcludedCodes = getDailyExcludedCodes('today');
+for (const theme of topThemesForToday.slice(0, 2)) {
+  const match = pickFirstFreshByTheme(todayCandidates, theme, todayExcludedCodes, todaySelectedCodes);
+  if (!match) continue;
+  todaySelected.push(match);
+  todaySelectedCodes.add(String(match.code));
+}
+for (const item of selectFreshItems(todayCandidates, 5, todayExcludedCodes)) {
+  const code = String(item.code || '');
+  if (!code || todaySelectedCodes.has(code)) continue;
+  todaySelected.push(item);
+  todaySelectedCodes.add(code);
+  if (todaySelected.length >= 5) break;
+}
+const todayHome = todaySelected.slice(0, 5);
+
+const tomorrowCandidates = uniqueByCode(
   [...recent].sort((a, b) =>
     Number(b.tomorrow_prob || 0) - Number(a.tomorrow_prob || 0) ||
     Number(b.prob_1m || 0) - Number(a.prob_1m || 0) ||
-    Number(b.favor_score || 0) - Number(a.favor_score || 0)
+    Number(b.favor_score || 0) - Number(a.favor_score || 0) ||
+    Number(themePriorityBonus.get(b.theme) || 0) - Number(themePriorityBonus.get(a.theme) || 0)
   )
-).slice(0, 10);
+);
+const tomorrowHome = selectFreshItems(tomorrowCandidates, 10, getDailyExcludedCodes('tomorrow'));
 
-const signalWeight = (item) => item.signal === '상승 가능' ? 3 : item.signal === '중립' ? 2 : 1;
-const signalHome = uniqueByCode(
+const signalCandidates = uniqueByCode(
   [...recent]
     .filter((item) =>
       Number(item.trigger_count || 0) >= 4 &&
-      item.signal === '상승 가능' &&
-      Number(item.favor_score || 0) >= 60
+      Number(item.favor_score || 0) >= 60 &&
+      (item.signal === '상승 가능' || Number(item.change_rate || 0) >= 3)
     )
     .sort((a, b) =>
+      getIntradaySignalScore(b) - getIntradaySignalScore(a) ||
       Number(b.trigger_count || 0) - Number(a.trigger_count || 0) ||
-      signalWeight(b) - signalWeight(a) ||
       Number(b.confidence || 0) - Number(a.confidence || 0) ||
       Number(b.favor_score || 0) - Number(a.favor_score || 0)
     )
-).slice(0, 6);
+);
+const signalExcludedCodes = new Set([
+  ...getDailyExcludedCodes('signal'),
+  ...getIntradaySignalExcludedCodes()
+]);
+const signalHome = selectFreshItems(signalCandidates, 6, signalExcludedCodes);
 
 const analysisMap = Object.fromEntries(
   analyses.map((a) => {
@@ -1019,23 +1241,6 @@ const autocomplete = stocks.map((s) => ({
   logo_url: s.logo_url || null
 }));
 
-const themeMap = new Map();
-for (const a of analyses) {
-  const arr = themeMap.get(a.theme) || [];
-  arr.push(a.favor_score);
-  themeMap.set(a.theme, arr);
-}
-
-const themeBias = { '로봇': 14, 'AI플랫폼': 10, '전기차': 7, 'AI반도체': 6, '2차전지': 5 };
-const themeRanking = [...themeMap.entries()]
-  .map(([theme, values]) => ({
-    theme,
-    avg_score: clamp(Math.round(values.reduce((sum, v) => sum + v, 0) / values.length) + (themeBias[theme] || 0), 40, 95),
-    count: values.length
-  }))
-  .sort((x, y) => y.avg_score - x.avg_score)
-  .slice(0, 10);
-
 fs.writeFileSync(path.join(OUT_DIR, 'ui_top_stocks.json'), JSON.stringify({ generated_at: now, top }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_recent_analysis.json'), JSON.stringify({ generated_at: now, items: recent }, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, 'ui_analysis_map.json'), JSON.stringify({ generated_at: now, map: analysisMap }, null, 2));
@@ -1046,6 +1251,14 @@ fs.writeFileSync(HOME_SIGNAL_PATH, JSON.stringify({ generated_at: now, mode: opt
 if (opts.mode === 'full' || !fs.existsSync(HOME_TOMORROW_PATH)) {
   fs.writeFileSync(HOME_TOMORROW_PATH, JSON.stringify({ generated_at: now, mode: opts.mode, items: tomorrowHome }, null, 2));
 }
+mergeExposureCodes(exposureHistory, 'today', todayDateKey, todayHome);
+mergeExposureCodes(exposureHistory, 'signal', todayDateKey, signalHome);
+if (opts.mode === 'full' || !fs.existsSync(HOME_TOMORROW_PATH)) {
+  mergeExposureCodes(exposureHistory, 'tomorrow', todayDateKey, tomorrowHome);
+}
+exposureHistory.generated_at = now;
+pruneExposureHistory(exposureHistory);
+writeJsonFile(HOME_EXPOSURE_HISTORY_PATH, exposureHistory);
 
 console.log(`[cache] mode=${opts.mode} stocks=${stocks.length}, top=${top.length}, recent=${recent.length}, analysis_map=${Object.keys(analysisMap).length}, themes=${themeRanking.length}`);
 console.log(`[cache] files written to ${OUT_DIR}`);

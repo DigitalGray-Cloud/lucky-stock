@@ -2,14 +2,21 @@ const QUICK_TAGS = ["삼성전자", "005930", "SK하이닉스", "000660", "삼�
 const AUTO_COMPLETE_LIMIT = 12;
 
 const els = {
+  langKo: document.getElementById("lang-ko"),
+  langEn: document.getElementById("lang-en"),
   resultPanel: document.getElementById("result-panel"),
   searchLoading: document.getElementById("search-loading"),
   manualToggle: document.getElementById("manual-toggle"),
   manualPanel: document.getElementById("manual-panel"),
+  manualTitle: document.getElementById("manual-title"),
+  manualList: document.getElementById("manual-list"),
+  manualNote: document.getElementById("manual-note"),
   searchInput: document.getElementById("stock-search"),
   searchBtn: document.getElementById("search-btn"),
   autoList: document.getElementById("autocomplete-list"),
   quickTags: document.getElementById("quick-tags"),
+  heroTitle: document.getElementById("hero-title"),
+  heroSubtitle: document.getElementById("hero-subtitle"),
   todayHeadline: document.getElementById("today-headline"),
   todayDateStamp: document.getElementById("today-date-stamp"),
   tomorrowHeadline: document.getElementById("tomorrow-headline"),
@@ -21,6 +28,8 @@ const els = {
   miniGrid: document.getElementById("home-mini-grid"),
   themeCard: document.getElementById("theme-card"),
   themeHeadline: document.getElementById("theme-headline"),
+  signalHeadline: document.getElementById("signal-headline"),
+  popularHeadline: document.getElementById("popular-headline"),
   companyLogo: document.getElementById("company-logo-img"),
   companyName: document.getElementById("company-name"),
   companyCode: document.getElementById("company-code"),
@@ -49,12 +58,15 @@ const els = {
   shareStatus: document.getElementById("share-status"),
   shareCopyBtn: document.getElementById("share-copy-btn"),
   todayVisitorChip: document.getElementById("today-visitor-chip"),
-  todayVisitorCount: document.getElementById("today-visitor-count")
+  todayVisitorCount: document.getElementById("today-visitor-count"),
+  todayVisitorLabel: document.getElementById("today-visitor-label"),
+  buildNote: document.getElementById("build-note")
 };
 
 let autoCompleteSeq = 0;
 let suppressUrlUpdate = false;
 let currentSelectionContext = { source: "search" };
+let currentLang = localStorage.getItem("luckystock_lang") === "en" ? "en" : "ko";
 
 const cacheState = {
   loaded: false,
@@ -71,6 +83,93 @@ const cacheState = {
   naverPopularMap: {},
   generatedAt: ""
 };
+
+const I18N = {
+  ko: {
+    heroTitle: "AI가 말해주는 지금 사야 할 한국 주식",
+    heroSubtitle: "분석 사이트가 아니라 결론 엔진입니다. 검색하면 3초 내 투자 판단을 제공합니다.",
+    searchPlaceholder: "종목명 또는 종목코드 입력 (예: 삼성전자, 005930)",
+    searchButton: "지금 판단",
+    manualButton: "사용 매뉴얼",
+    manualTitle: "LuckyStock AI 사용법",
+    manualItems: [
+      "<strong>종목 검색:</strong> 종목명 또는 종목코드(6자리)를 검색하면 3초 내 AI BUY/HOLD/SELL 결론을 확인합니다.",
+      "<strong>결론 해석:</strong> BUY(매수 우세), HOLD(관망·보유), SELL(리스크 구간)과 AI 분석 점수(100점), 신뢰도(%)를 함께 확인합니다.",
+      "<strong>Signal 확인:</strong> 🔥 강한 상승(3개↑) · 📈 상승 가능(1~2개) · ➖ 중립(0개) · ⚠️ 주의 · 🔻 리스크 순으로 강도를 판단합니다.",
+      "<strong>랭킹 활용:</strong> Top5(오늘 급등 발굴) / Top10(내일 상승확률 상위) / Signal(실시간 신호) / Popular(네이버 인기) / Theme(테마 급등) 중 원하는 섹션을 클릭해 분석 결과를 확인합니다.",
+      "<strong>종목 전용 페이지:</strong> 검색 결과 상단 \"📄 전용 분석 페이지 →\"를 클릭하면 해당 종목 전용 URL로 이동해 공유·저장이 가능합니다.",
+      "<strong>상승 확률:</strong> 1개월·3개월·1년 기간별 통계 기반 상승 확률을 참고하되, 투자 판단의 보조 지표로만 활용하세요.",
+      "<strong>뉴스 근거:</strong> AI가 판단 근거로 사용한 최신 뉴스 링크를 분석 결과 하단에서 확인할 수 있습니다."
+    ],
+    manualNote: "<strong>투자 책임 고지:</strong> 본 서비스는 투자 보조 도구이며 최종 투자 판단과 책임은 본인에게 있습니다. AI 판단은 확률적 참고 정보입니다.",
+    todayHeadline: "오늘 AI 발견 급등주",
+    tomorrowHeadline: "AI 급등 가능성 추천 TOP10",
+    signalHeadline: '<span class="mini-badge signal">Signal</span>실시간 AI 투자 신호',
+    popularHeadline: '<span class="mini-badge popular">Popular</span>네이버 금융 인기종목',
+    themeHeadlineWeekday: '<span class="mini-badge theme">Theme</span>테마 급등 탐지',
+    themeHeadlineWeekend: '<span class="mini-badge theme">Theme</span>주말 테마 섹터 추천',
+    todayVisitorLabel: "TODAY",
+    buildNote: "KOSPI · KOSDAQ"
+  },
+  en: {
+    heroTitle: "AI picks Korean stocks worth watching now",
+    heroSubtitle: "Not another analysis site. Search and get a decision in seconds.",
+    searchPlaceholder: "Enter stock name or code (e.g. Samsung Electronics, 005930)",
+    searchButton: "Analyze Now",
+    manualButton: "Guide",
+    manualTitle: "How to use LuckyStock AI",
+    manualItems: [
+      "<strong>Search a stock:</strong> Enter a stock name or 6-digit code and get an AI BUY/HOLD/SELL call in seconds.",
+      "<strong>Read the verdict:</strong> Check BUY, HOLD, SELL together with the AI score, confidence, and core rationale.",
+      "<strong>Read Signal:</strong> 🔥 strong upside, 📈 upside possible, ➖ neutral, ⚠️ caution, 🔻 risk, based on live conditions.",
+      "<strong>Use rankings:</strong> Click Top5, Top10, Signal, Popular, or Theme sections to open a stock analysis directly.",
+      "<strong>Stock page:</strong> Click \"📄 Dedicated analysis page →\" at the top of results to open a shareable stock page.",
+      "<strong>Probabilities:</strong> Use 1M, 3M, and 1Y upside probabilities only as support data for your own decision.",
+      "<strong>News basis:</strong> Check the latest linked news used by the AI at the bottom of the analysis result."
+    ],
+    manualNote: "<strong>Disclaimer:</strong> This service is an investment assistant tool. Final investment decisions and responsibility remain with the user.",
+    todayHeadline: "Today's AI breakout picks",
+    tomorrowHeadline: "AI next-day surge picks TOP10",
+    signalHeadline: '<span class="mini-badge signal">Signal</span>Live AI trade signals',
+    popularHeadline: '<span class="mini-badge popular">Popular</span>Naver Finance trending stocks',
+    themeHeadlineWeekday: '<span class="mini-badge theme">Theme</span>Theme momentum scanner',
+    themeHeadlineWeekend: '<span class="mini-badge theme">Theme</span>Weekend sector themes',
+    todayVisitorLabel: "TODAY",
+    buildNote: "KOSPI · KOSDAQ"
+  }
+};
+
+function t(key) {
+  return I18N[currentLang]?.[key] ?? I18N.ko[key] ?? "";
+}
+
+function applyLanguage() {
+  const weekend = isWeekendKst();
+  document.documentElement.lang = currentLang === "en" ? "en" : "ko";
+  if (els.langKo) els.langKo.classList.toggle("active", currentLang === "ko");
+  if (els.langEn) els.langEn.classList.toggle("active", currentLang === "en");
+  if (els.heroTitle) els.heroTitle.textContent = t("heroTitle");
+  if (els.heroSubtitle) els.heroSubtitle.textContent = t("heroSubtitle");
+  if (els.searchInput) els.searchInput.placeholder = t("searchPlaceholder");
+  if (els.searchBtn) els.searchBtn.textContent = t("searchButton");
+  if (els.manualToggle) els.manualToggle.textContent = t("manualButton");
+  if (els.manualTitle) els.manualTitle.textContent = t("manualTitle");
+  if (els.manualList) els.manualList.innerHTML = t("manualItems").map((item) => `<li>${item}</li>`).join("");
+  if (els.manualNote) els.manualNote.innerHTML = t("manualNote");
+  if (els.todayHeadline) els.todayHeadline.textContent = t("todayHeadline");
+  if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = t("tomorrowHeadline");
+  if (els.signalHeadline) els.signalHeadline.innerHTML = t("signalHeadline");
+  if (els.popularHeadline) els.popularHeadline.innerHTML = t("popularHeadline");
+  if (els.themeHeadline) els.themeHeadline.innerHTML = weekend ? t("themeHeadlineWeekend") : t("themeHeadlineWeekday");
+  if (els.todayVisitorLabel) els.todayVisitorLabel.textContent = t("todayVisitorLabel");
+  if (els.buildNote) els.buildNote.textContent = t("buildNote");
+}
+
+function setLanguage(lang) {
+  currentLang = lang === "en" ? "en" : "ko";
+  localStorage.setItem("luckystock_lang", currentLang);
+  applyLanguage();
+}
 
 function normalize(text) {
   return String(text || "").toLowerCase().trim();
@@ -996,18 +1095,12 @@ function renderThemeCards(items = [], compact = false) {
 async function initHomeWidgets() {
   const weekend = isWeekendKst();
   const gridTwo = document.querySelector(".grid-two");
-  if (els.todayHeadline) els.todayHeadline.textContent = "오늘 AI 발견 급등주";
-  if (els.tomorrowHeadline) els.tomorrowHeadline.textContent = "AI 급등 가능성 추천 TOP10";
   if (els.todayDateStamp) els.todayDateStamp.textContent = `${getKstDateKey()} 기준`;
-  if (els.themeHeadline) {
-    els.themeHeadline.innerHTML = weekend
-      ? `<span class="mini-badge theme">Theme</span>주말 테마 섹터 추천`
-      : `<span class="mini-badge theme">Theme</span>테마 급등 탐지`;
-  }
   if (els.themeCard && gridTwo && els.miniGrid) {
     if (weekend) gridTwo.parentNode.insertBefore(els.themeCard, gridTwo);
     else els.miniGrid.appendChild(els.themeCard);
   }
+  applyLanguage();
 
   try {
     const cache = await loadStaticCache();
@@ -1092,6 +1185,12 @@ function initRankingClicks() {
 }
 
 function initEvents() {
+  if (els.langKo) {
+    els.langKo.addEventListener("click", () => setLanguage("ko"));
+  }
+  if (els.langEn) {
+    els.langEn.addEventListener("click", () => setLanguage("en"));
+  }
   if (els.manualToggle && els.manualPanel) {
     els.manualToggle.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1169,6 +1268,7 @@ function initFromUrl() {
 
 initQuickTags();
 initEvents();
+applyLanguage();
 initHomeWidgets();
 initRankingClicks();
 initEmptyResultState();

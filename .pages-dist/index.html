@@ -40,7 +40,7 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vsiiv6kbxt");
   </script>
-  <link rel="stylesheet" href="/style.css?v=20260313a" />
+  <link rel="stylesheet" href="/style.css?v=20260314b" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -145,15 +145,19 @@
       </div>
     </a>
     <div class="top-right-tools">
+      <div class="lang-switch" aria-label="Language switch">
+        <button id="lang-ko" class="lang-btn active" type="button">KR</button>
+        <button id="lang-en" class="lang-btn" type="button">EN</button>
+      </div>
       <div id="today-visitor-chip" class="today-visitor-chip" aria-live="polite">
-        <span class="today-visitor-label">TODAY</span>
+        <span id="today-visitor-label" class="today-visitor-label">TODAY</span>
         <strong id="today-visitor-count">-</strong>
       </div>
-      <p class="build-note">KOSPI · KOSDAQ</p>
+      <p id="build-note" class="build-note">KOSPI · KOSDAQ</p>
       <button id="manual-toggle" class="manual-btn" type="button">사용 매뉴얼</button>
       <div id="manual-panel" class="manual-panel" hidden>
-        <h4>LuckyStock AI 사용법</h4>
-        <ol>
+        <h4 id="manual-title">LuckyStock AI 사용법</h4>
+        <ol id="manual-list">
           <li><strong>종목 검색:</strong> 종목명 또는 종목코드(6자리)를 검색하면 3초 내 AI BUY/HOLD/SELL 결론을 확인합니다.</li>
           <li><strong>결론 해석:</strong> BUY(매수 우세), HOLD(관망·보유), SELL(리스크 구간)과 AI 분석 점수(100점), 신뢰도(%)를 함께 확인합니다.</li>
           <li><strong>Signal 확인:</strong> 🔥 강한 상승(3개↑) · 📈 상승 가능(1~2개) · ➖ 중립(0개) · ⚠️ 주의 · 🔻 리스크 순으로 강도를 판단합니다.</li>
@@ -162,15 +166,15 @@
           <li><strong>상승 확률:</strong> 1개월·3개월·1년 기간별 통계 기반 상승 확률을 참고하되, 투자 판단의 보조 지표로만 활용하세요.</li>
           <li><strong>뉴스 근거:</strong> AI가 판단 근거로 사용한 최신 뉴스 링크를 분석 결과 하단에서 확인할 수 있습니다.</li>
         </ol>
-        <p><strong>투자 책임 고지:</strong> 본 서비스는 투자 보조 도구이며 최종 투자 판단과 책임은 본인에게 있습니다. AI 판단은 확률적 참고 정보입니다.</p>
+        <p id="manual-note"><strong>투자 책임 고지:</strong> 본 서비스는 투자 보조 도구이며 최종 투자 판단과 책임은 본인에게 있습니다. AI 판단은 확률적 참고 정보입니다.</p>
       </div>
     </div>
   </header>
 
   <main class="container">
     <section class="hero card">
-      <h1>AI가 말해주는 지금 사야 할 한국 주식</h1>
-      <p>분석 사이트가 아니라 결론 엔진입니다. 검색하면 3초 내 투자 판단을 제공합니다.</p>
+      <h1 id="hero-title">AI가 말해주는 지금 사야 할 한국 주식</h1>
+      <p id="hero-subtitle">분석 사이트가 아니라 결론 엔진입니다. 검색하면 3초 내 투자 판단을 제공합니다.</p>
       <div class="search-row">
         <input id="stock-search" type="text" placeholder="종목명 또는 종목코드 입력 (예: 삼성전자, 005930)" autocomplete="off" />
         <button id="search-btn" type="button">지금 판단</button>
@@ -209,11 +213,11 @@
 
     <section id="home-mini-grid" class="grid-three">
       <article class="card">
-        <h3><span class="mini-badge signal">Signal</span>실시간 AI 투자 신호</h3>
+        <h3 id="signal-headline"><span class="mini-badge signal">Signal</span>실시간 AI 투자 신호</h3>
         <div id="signal-feed" class="mini-feed"></div>
       </article>
       <article class="card">
-        <h3><span class="mini-badge popular">Popular</span>네이버 금융 인기종목</h3>
+        <h3 id="popular-headline"><span class="mini-badge popular">Popular</span>네이버 금융 인기종목</h3>
         <div id="popular-list" class="mini-feed"></div>
       </article>
       <article id="theme-card" class="card">
@@ -410,6 +414,6 @@
     </div>
   </footer>
 
-  <script defer src="/main.js?v=20260314e"></script>
+  <script defer src="/main.js?v=20260314f"></script>
 </body>
 </html>

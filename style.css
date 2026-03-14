@@ -85,6 +85,32 @@ body {
   gap: 8px;
 }
 
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid #bfd0eb;
+  border-radius: 999px;
+  background: #f3f7ff;
+}
+
+.lang-btn {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5d7495;
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lang-btn.active {
+  background: #1146a7;
+  color: #fff;
+}
+
 .today-visitor-chip {
   display: inline-flex;
   align-items: center;

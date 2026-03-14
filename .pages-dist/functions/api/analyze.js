@@ -157,8 +157,9 @@ export async function onRequestGet(context) {
   const cachedNews = Array.isArray(newsPayload?.map?.[code]) ? newsPayload.map[code] : [];
   const newsAgeHours = getHoursDiff(newsPayload?.generated_at || "");
   let newsItems = cachedNews;
+  const shouldLiveRefreshNews = (source === "search" || source === "autocomplete" || source === "url") && (newsAgeHours >= 6 || !cachedNews.length);
 
-  if (newsAgeHours >= 6 || !cachedNews.length) {
+  if (shouldLiveRefreshNews) {
     try {
       newsItems = await fetchFreshNews(String(stockMeta?.name || analysis?.code || code), code);
     } catch {
@@ -170,6 +171,6 @@ export async function onRequestGet(context) {
     ...analysis,
     news_items: Array.isArray(newsItems) ? newsItems.slice(0, 5) : [],
     news_generated_at: newsPayload?.generated_at || "",
-    news_live_refreshed: newsAgeHours >= 6 || !cachedNews.length
+    news_live_refreshed: shouldLiveRefreshNews
   });
 }

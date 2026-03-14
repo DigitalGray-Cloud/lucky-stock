@@ -804,6 +804,19 @@ async function resolveStockByQuery(query) {
   if (!q) return null;
 
   if (/^\d{6}$/.test(q)) {
+    if (cacheState.loaded) {
+      const exactCached = cacheState.autocomplete.find((x) => String(x.code || "") === q);
+      if (exactCached) {
+        return {
+          code: String(exactCached.code || q),
+          name: String(exactCached.name || exactCached.code || q),
+          market: String(exactCached.market || "KOSPI/KOSDAQ"),
+          close_price: Number(exactCached.close_price || 0) || null,
+          logo_url: String(exactCached.logo_url || "")
+        };
+      }
+    }
+
     try {
       const ac = await apiGet(`/api/autocomplete?q=${encodeURIComponent(q)}`);
       const items = Array.isArray(ac?.items) ? ac.items : [];

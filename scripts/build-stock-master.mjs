@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import iconv from 'iconv-lite';
+import { fetchKrxMaster } from './_krx.mjs';
 
 const ROOT = path.resolve('/home/user/luckstock');
 const DATA_DIR = path.join(ROOT, 'data');
@@ -53,21 +54,6 @@ const insertMany = db.transaction((rows) => {
   for (const row of rows) upsert.run(row);
 });
 
-function norm(text = '') {
-  return String(text).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function isCode(code = '') {
-  return /^\d{6}$/.test(String(code));
-}
-
-function toMarket(text = '') {
-  const t = String(text);
-  if (t.includes('코스닥')) return 'KOSDAQ';
-  if (t.includes('코넥스')) return 'KONEX';
-  return 'KOSPI';
-}
-
 function parseNumber(text = '') {
   const n = Number(String(text).replace(/[^\d.-]/g, ''));
   return Number.isFinite(n) ? n : null;
@@ -81,27 +67,6 @@ async function fetchWithTimeout(url, ms = 8000) {
   } finally {
     clearTimeout(t);
   }
-}
-
-async function fetchKrxMaster() {
-  const url = 'https://kind.krx.co.kr/corpgeneral/corpList.do?method=download';
-  const res = await fetchWithTimeout(url, 12000);
-  if (!res.ok) throw new Error(`KRX list error ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  const html = iconv.decode(buf, 'euc-kr');
-
-  const rows = html.match(/<tr>[\s\S]*?<\/tr>/g) || [];
-  const out = [];
-  for (const row of rows.slice(1)) {
-    const tds = row.match(/<td[\s\S]*?<\/td>/g) || [];
-    if (tds.length < 3) continue;
-    const name = norm(tds[0]);
-    const marketRaw = norm(tds[1]);
-    const code = norm(tds[2]);
-    if (!name || !isCode(code)) continue;
-    out.push({ code, name, market: toMarket(marketRaw) });
-  }
-  return out;
 }
 
 // 단일 종목 전체 시장 데이터 반환 (현재가, 전일가, 등락률, 거래량, 고가, 저가)

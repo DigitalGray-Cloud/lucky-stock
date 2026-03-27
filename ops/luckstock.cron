@@ -1,0 +1,15 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Core daily sync
+10 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:stocks >> /var/log/luckystock-stocks.log 2>&1
+0 8 * * * cd /home/user/luckstock && /usr/bin/npm run batch:morning-0800 >> /var/log/luckystock-morning-0800.log 2>&1
+30 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:daily >> /var/log/luckystock-daily.log 2>&1
+0 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:ranking >> /var/log/luckystock-ranking.log 2>&1
+
+# Market hours sync keepalive
+@reboot cd /home/user/luckstock && /usr/bin/npm run batch:market-sync:launcher:ensure >> /var/log/luckystock-market-sync-launcher.log 2>&1
+* * * * * cd /home/user/luckstock && /usr/bin/npm run batch:market-sync:launcher:ensure >> /var/log/luckystock-market-sync-launcher.log 2>&1
+
+# Searched stocks refresh
+10 18 * * * cd /home/user/luckstock && /usr/bin/npm run batch:searched-refresh -- --window=pm >> /var/log/luckystock-searched-refresh.log 2>&1

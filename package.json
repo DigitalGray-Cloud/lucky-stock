@@ -16,12 +16,21 @@
     "batch:news:top": "node scripts/build-news-cache.mjs --mode=top --limit=120",
     "batch:market-sync": "node scripts/market-sync.mjs",
     "batch:market-sync:intraday": "node scripts/market-sync.mjs",
+    "batch:market-sync:supervisor": "bash scripts/market-sync-supervisor.sh",
     "batch:full-refresh": "node scripts/daily-full-refresh.mjs",
+    "batch:morning-0800": "node scripts/morning-0800-refresh.mjs",
     "batch:morning-0830": "node scripts/morning-0830-refresh.mjs",
     "batch:searched-refresh": "node scripts/refresh-searched-stocks.mjs",
     "batch:daily": "node scripts/run-daily-analysis.mjs",
     "batch:ranking": "node scripts/run-ranking-batch.mjs",
-    "db:status": "node scripts/db-status.mjs"
+    "batch:sync-pages-dist": "node scripts/sync-pages-dist.mjs",
+    "batch:deploy-pages": "node scripts/deploy-pages.mjs",
+    "db:status": "node scripts/db-status.mjs",
+    "batch:market-sync:ensure": "bash scripts/ensure-market-sync-supervisor.sh",
+    "batch:market-sync:watchdog": "bash scripts/market-sync-watchdog-loop.sh",
+    "batch:market-sync:watchdog:ensure": "bash scripts/ensure-market-sync-watchdog.sh",
+    "batch:market-sync:launcher": "bash scripts/market-sync-autostart-launcher.sh",
+    "batch:market-sync:launcher:ensure": "bash scripts/ensure-market-sync-autostart-launcher.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

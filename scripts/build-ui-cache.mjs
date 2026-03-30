@@ -978,6 +978,7 @@ function buildAnalysis(stock) {
   };
 }
 
+const opts = parseArgs();
 const newsMap = fs.existsSync(NEWS_MAP_PATH)
   ? (JSON.parse(fs.readFileSync(NEWS_MAP_PATH, 'utf8')).map || {})
   : {};
@@ -1022,7 +1023,6 @@ ON CONFLICT(code) DO UPDATE SET
 const analyses = stocks
   .map(buildAnalysis)
   .filter((row) => !isHardExcludedCode(row.code));
-const opts = parseArgs();
 const txAnalysis = db.transaction((rows) => {
   for (const row of rows) {
     upsertAnalysis.run({

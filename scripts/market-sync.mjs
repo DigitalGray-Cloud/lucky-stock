@@ -1,8 +1,9 @@
 import { spawn } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { fetchPopularSearchCodes } from "./search-targets.mjs";
+import { loadDisplayedStockCodes } from "./news-targets.mjs";
 
-const WEEKEND_RUN_STATE_PATH = new URL("../data/market-sync-weekend-state.json", import.meta.url);
+const FULL_RUN_STATE_PATH = new URL("../data/market-sync-full-run-state.json", import.meta.url);
 
 function nowInKstParts() {
   const now = new Date();
@@ -47,9 +48,9 @@ function isWeekendKst() {
   return weekday === "Sat" || weekday === "Sun";
 }
 
-async function readWeekendRunState() {
+async function readFullRunState() {
   try {
-    const raw = await readFile(WEEKEND_RUN_STATE_PATH, "utf8");
+    const raw = await readFile(FULL_RUN_STATE_PATH, "utf8");
     return JSON.parse(raw);
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
@@ -59,31 +60,41 @@ async function readWeekendRunState() {
   }
 }
 
-async function markWeekendRunComplete(kstDate) {
+async function markFullRunComplete(kstDate, mode) {
   await writeFile(
-    WEEKEND_RUN_STATE_PATH,
-    JSON.stringify({ lastSuccessfulKstDate: kstDate, updatedAt: new Date().toISOString() }, null, 2) + "\n",
+    FULL_RUN_STATE_PATH,
+    JSON.stringify({ lastSuccessfulKstDate: kstDate, mode, updatedAt: new Date().toISOString() }, null, 2) + "\n",
     "utf8"
   );
 }
 
 async function shouldRunNow() {
-  const { kstDate } = nowInKstParts();
+  const { kstDate, weekday, hour, minute } = nowInKstParts();
 
   if (isMarketOpenKst()) {
     return { run: true, mode: "intraday", kstDate };
   }
 
-  if (!isWeekendKst()) {
-    return { run: false, reason: "out of market hours (KST)", kstDate };
+  const state = await readFullRunState();
+  const hasFullRunToday = state?.lastSuccessfulKstDate === kstDate;
+  const isWeekday = ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(weekday);
+  const afterClose = hour > 15 || (hour === 15 && minute >= 30);
+
+  if (isWeekday && afterClose) {
+    if (hasFullRunToday) {
+      return { run: false, reason: `after-close full sync already completed (${kstDate} KST)`, kstDate };
+    }
+    return { run: true, mode: "after-close-full", kstDate };
   }
 
-  const state = await readWeekendRunState();
-  if (state?.lastSuccessfulKstDate === kstDate) {
-    return { run: false, reason: `weekend daily sync already completed (${kstDate} KST)`, kstDate };
+  if (isWeekendKst()) {
+    if (hasFullRunToday) {
+      return { run: false, reason: `weekend full sync already completed (${kstDate} KST)`, kstDate };
+    }
+    return { run: true, mode: "weekend-daily", kstDate };
   }
 
-  return { run: true, mode: "weekend-daily", kstDate };
+  return { run: false, reason: "out of market hours (KST)", kstDate };
 }
 
 function runNode(scriptPath, args = []) {
@@ -104,20 +115,31 @@ async function main() {
   }
 
   console.log(`[market-sync] mode=${runDecision.mode} kstDate=${runDecision.kstDate}`);
+
+  if (runDecision.mode === "weekend-daily" || runDecision.mode === "after-close-full") {
+    console.log(`[market-sync] ${runDecision.mode}: full news + full analysis cache rebuild`);
+    await runNode("scripts/daily-full-refresh.mjs", ["--reset-ai-summaries"]);
+    await markFullRunComplete(runDecision.kstDate, runDecision.mode);
+    console.log("[market-sync] done");
+    return;
+  }
+
   console.log("[market-sync] step1: prices sync");
   await runNode("scripts/build-stock-master.mjs");
 
-  console.log("[market-sync] step2: latest top-stock news cache build");
+  console.log("[market-sync] step2: naver finance popular build");
+  await runNode("scripts/build-naver-popular.mjs");
+
+  console.log("[market-sync] step3: latest visible-stock news cache build");
   const searchedCodes = await fetchPopularSearchCodes({ limit: 30, days: 3 });
+  const displayedCodes = loadDisplayedStockCodes({ includeExposureHistoryDays: 7 });
   const newsArgs = ["--mode=top", "--limit=120"];
-  if (searchedCodes.length) {
-    newsArgs.push(`--codes=${searchedCodes.join(",")}`);
-    console.log(`[market-sync] searched-stock news targets=${searchedCodes.length}`);
+  const extraCodes = [...new Set([...searchedCodes, ...displayedCodes])];
+  if (extraCodes.length) {
+    newsArgs.push(`--codes=${extraCodes.join(",")}`);
+    console.log(`[market-sync] extra news targets searched=${searchedCodes.length} displayed=${displayedCodes.length} unique=${extraCodes.length}`);
   }
   await runNode("scripts/build-news-cache.mjs", newsArgs);
-
-  console.log("[market-sync] step3: naver finance popular build");
-  await runNode("scripts/build-naver-popular.mjs");
 
   console.log("[market-sync] step4: analysis/ranking cache build");
   await runNode("scripts/build-ui-cache.mjs", ["--mode=intraday"]);
@@ -130,10 +152,6 @@ async function main() {
 
   console.log("[market-sync] step7: pages deploy");
   await runNode("scripts/deploy-pages.mjs");
-
-  if (runDecision.mode === "weekend-daily") {
-    await markWeekendRunComplete(runDecision.kstDate);
-  }
 
   console.log("[market-sync] done");
 }

@@ -236,9 +236,10 @@ function pickFirstFreshByTheme(candidates, theme, excludedCodes, selectedCodes) 
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
-  const opts = { mode: 'full' };
+  const opts = { mode: 'full', resetAiSummaries: false };
   for (const arg of argv) {
     if (arg.startsWith('--mode=')) opts.mode = String(arg.split('=')[1] || 'full');
+    if (arg === '--reset-ai-summaries') opts.resetAiSummaries = true;
   }
   return opts;
 }
@@ -980,11 +981,13 @@ function buildAnalysis(stock) {
 const newsMap = fs.existsSync(NEWS_MAP_PATH)
   ? (JSON.parse(fs.readFileSync(NEWS_MAP_PATH, 'utf8')).map || {})
   : {};
-const existingAiSummaryMap = new Map(
-  db.prepare("SELECT code, summary FROM stock_analysis WHERE summary_source = 'ai' AND summary IS NOT NULL").all()
-    .map((row) => [String(row.code || ''), String(row.summary || '').trim()])
-    .filter(([code, summary]) => code && summary)
-);
+const existingAiSummaryMap = opts.resetAiSummaries
+  ? new Map()
+  : new Map(
+    db.prepare("SELECT code, summary FROM stock_analysis WHERE summary_source = 'ai' AND summary IS NOT NULL").all()
+      .map((row) => [String(row.code || ''), String(row.summary || '').trim()])
+      .filter(([code, summary]) => code && summary)
+  );
 
 const stocks = db
   .prepare("SELECT code, name, market, close_price, prev_price, change_rate, volume, high_price, low_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")

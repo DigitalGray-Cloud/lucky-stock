@@ -60,10 +60,26 @@ async function readFullRunState() {
   }
 }
 
+function getStateDateKey(mode) {
+  if (mode === "pre-open-full") return "preOpenFullKstDate";
+  if (mode === "after-close-full") return "afterCloseFullKstDate";
+  if (mode === "weekend-daily") return "weekendFullKstDate";
+  return "lastSuccessfulKstDate";
+}
+
 async function markFullRunComplete(kstDate, mode) {
+  const prev = (await readFullRunState()) || {};
+  const next = {
+    ...prev,
+    lastSuccessfulKstDate: kstDate,
+    mode,
+    updatedAt: new Date().toISOString()
+  };
+  next[getStateDateKey(mode)] = kstDate;
+
   await writeFile(
     FULL_RUN_STATE_PATH,
-    JSON.stringify({ lastSuccessfulKstDate: kstDate, mode, updatedAt: new Date().toISOString() }, null, 2) + "\n",
+    JSON.stringify(next, null, 2) + "\n",
     "utf8"
   );
 }
@@ -76,19 +92,29 @@ async function shouldRunNow() {
   }
 
   const state = await readFullRunState();
-  const hasFullRunToday = state?.lastSuccessfulKstDate === kstDate;
   const isWeekday = ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(weekday);
-  const afterClose = hour > 15 || (hour === 15 && minute >= 30);
+  const preOpenWindow = isWeekday && (hour === 7 || hour === 8);
+  const afterClose = isWeekday && (hour > 15 || (hour === 15 && minute >= 30));
+  const hasPreOpenFullRunToday = state?.preOpenFullKstDate === kstDate;
+  const hasAfterCloseFullRunToday = state?.afterCloseFullKstDate === kstDate;
+  const hasWeekendFullRunToday = state?.weekendFullKstDate === kstDate;
 
-  if (isWeekday && afterClose) {
-    if (hasFullRunToday) {
+  if (preOpenWindow) {
+    if (hasPreOpenFullRunToday) {
+      return { run: false, reason: `pre-open full sync already completed (${kstDate} KST)`, kstDate };
+    }
+    return { run: true, mode: "pre-open-full", kstDate };
+  }
+
+  if (afterClose) {
+    if (hasAfterCloseFullRunToday) {
       return { run: false, reason: `after-close full sync already completed (${kstDate} KST)`, kstDate };
     }
     return { run: true, mode: "after-close-full", kstDate };
   }
 
   if (isWeekendKst()) {
-    if (hasFullRunToday) {
+    if (hasWeekendFullRunToday) {
       return { run: false, reason: `weekend full sync already completed (${kstDate} KST)`, kstDate };
     }
     return { run: true, mode: "weekend-daily", kstDate };
@@ -116,7 +142,7 @@ async function main() {
 
   console.log(`[market-sync] mode=${runDecision.mode} kstDate=${runDecision.kstDate}`);
 
-  if (runDecision.mode === "weekend-daily" || runDecision.mode === "after-close-full") {
+  if (runDecision.mode === "weekend-daily" || runDecision.mode === "after-close-full" || runDecision.mode === "pre-open-full") {
     console.log(`[market-sync] ${runDecision.mode}: full news + full analysis cache rebuild`);
     await runNode("scripts/daily-full-refresh.mjs", ["--reset-ai-summaries"]);
     await markFullRunComplete(runDecision.kstDate, runDecision.mode);

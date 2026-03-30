@@ -3,16 +3,16 @@ set -euo pipefail
 
 cd /home/user/luckstock
 
-LAUNCHER_PID_FILE="data/market-sync-autostart-launcher.pid"
-LAUNCHER_HEARTBEAT_FILE="data/market-sync-autostart-launcher.heartbeat"
-LAUNCHER_NOHUP_LOG_FILE="data/market-sync-autostart-launcher.nohup.log"
-LAUNCHER_LOG_FILE="data/market-sync-autostart-launcher.log"
-LOCK_DIR="/tmp/luckystock-market-sync-autostart-launcher-ensure.lock"
-MAX_HEARTBEAT_AGE_SECONDS="${AUTOSTART_LAUNCHER_MAX_HEARTBEAT_AGE_SECONDS:-180}"
-LAUNCHER_SCRIPT="/home/user/luckstock/scripts/market-sync-autostart-launcher.sh"
+WATCHDOG_PID_FILE="data/market-sync-watchdog.pid"
+WATCHDOG_HEARTBEAT_FILE="data/market-sync-watchdog.heartbeat"
+WATCHDOG_NOHUP_LOG_FILE="data/market-sync-watchdog.nohup.log"
+WATCHDOG_LOG_FILE="data/market-sync-watchdog.log"
+LOCK_DIR="/tmp/luckystock-market-sync-watchdog-ensure.lock"
+MAX_HEARTBEAT_AGE_SECONDS="${WATCHDOG_MAX_HEARTBEAT_AGE_SECONDS:-180}"
+WATCHDOG_SCRIPT="/home/user/luckstock/scripts/market-sync-watchdog-loop.sh"
 
 log() {
-  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [autostart-launcher-ensure] $*" >> "$LAUNCHER_LOG_FILE"
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [watchdog-ensure] $*" >> "$WATCHDOG_LOG_FILE"
 }
 
 cleanup() {
@@ -84,25 +84,25 @@ stop_pid_from_file() {
   fi
 }
 
-start_launcher() {
-  nohup bash "$LAUNCHER_SCRIPT" < /dev/null >> "$LAUNCHER_NOHUP_LOG_FILE" 2>&1 &
-  log "launcher started by ensure pid=$!"
+start_watchdog() {
+  nohup bash "$WATCHDOG_SCRIPT" < /dev/null >> "$WATCHDOG_NOHUP_LOG_FILE" 2>&1 &
+  log "watchdog started by ensure pid=$!"
 }
 
 trap cleanup EXIT INT TERM
 
 acquire_lock
 
-if is_alive_pid_file "$LAUNCHER_PID_FILE" && heartbeat_is_fresh "$LAUNCHER_HEARTBEAT_FILE"; then
+if is_alive_pid_file "$WATCHDOG_PID_FILE" && heartbeat_is_fresh "$WATCHDOG_HEARTBEAT_FILE"; then
   exit 0
 fi
 
 reasons=()
-is_alive_pid_file "$LAUNCHER_PID_FILE" || reasons+=("launcher-pid-dead")
-heartbeat_is_fresh "$LAUNCHER_HEARTBEAT_FILE" || reasons+=("launcher-heartbeat-stale")
+is_alive_pid_file "$WATCHDOG_PID_FILE" || reasons+=("watchdog-pid-dead")
+heartbeat_is_fresh "$WATCHDOG_HEARTBEAT_FILE" || reasons+=("watchdog-heartbeat-stale")
 log "restart requested reasons=$(IFS=,; echo "${reasons[*]}")"
 
-stop_pid_from_file "$LAUNCHER_PID_FILE"
-rm -f "$LAUNCHER_PID_FILE" "$LAUNCHER_HEARTBEAT_FILE"
-rm -rf /tmp/luckystock-market-sync-autostart-launcher.lock
-start_launcher
+stop_pid_from_file "$WATCHDOG_PID_FILE"
+rm -f "$WATCHDOG_PID_FILE" "$WATCHDOG_HEARTBEAT_FILE"
+rm -rf /tmp/luckystock-market-sync-watchdog.lock
+start_watchdog

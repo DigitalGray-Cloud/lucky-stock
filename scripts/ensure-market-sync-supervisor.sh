@@ -3,16 +3,18 @@ set -euo pipefail
 
 cd /home/user/luckstock
 
-LAUNCHER_PID_FILE="data/market-sync-autostart-launcher.pid"
-LAUNCHER_HEARTBEAT_FILE="data/market-sync-autostart-launcher.heartbeat"
-LAUNCHER_NOHUP_LOG_FILE="data/market-sync-autostart-launcher.nohup.log"
-LAUNCHER_LOG_FILE="data/market-sync-autostart-launcher.log"
-LOCK_DIR="/tmp/luckystock-market-sync-autostart-launcher-ensure.lock"
-MAX_HEARTBEAT_AGE_SECONDS="${AUTOSTART_LAUNCHER_MAX_HEARTBEAT_AGE_SECONDS:-180}"
-LAUNCHER_SCRIPT="/home/user/luckstock/scripts/market-sync-autostart-launcher.sh"
+SUPERVISOR_PID_FILE="data/market-sync-supervisor.pid"
+SUPERVISOR_HEARTBEAT_FILE="data/market-sync-supervisor.heartbeat"
+SUPERVISOR_NOHUP_LOG_FILE="data/market-sync-supervisor.nohup.log"
+SUPERVISOR_LOG_FILE="data/market-sync-supervisor.log"
+CHILD_PID_FILE="data/market-sync-loop.pid"
+CHILD_HEARTBEAT_FILE="data/market-sync-loop.heartbeat"
+LOCK_DIR="/tmp/luckystock-market-sync-ensure.lock"
+MAX_HEARTBEAT_AGE_SECONDS=1200
+SUPERVISOR_SCRIPT="/home/user/luckstock/scripts/market-sync-supervisor.sh"
 
 log() {
-  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [autostart-launcher-ensure] $*" >> "$LAUNCHER_LOG_FILE"
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [ensure] $*" >> "$SUPERVISOR_LOG_FILE"
 }
 
 cleanup() {
@@ -84,25 +86,28 @@ stop_pid_from_file() {
   fi
 }
 
-start_launcher() {
-  nohup bash "$LAUNCHER_SCRIPT" < /dev/null >> "$LAUNCHER_NOHUP_LOG_FILE" 2>&1 &
-  log "launcher started by ensure pid=$!"
+start_supervisor() {
+  nohup bash "$SUPERVISOR_SCRIPT" < /dev/null >> "$SUPERVISOR_NOHUP_LOG_FILE" 2>&1 &
+  log "supervisor started by ensure pid=$!"
 }
 
 trap cleanup EXIT INT TERM
 
 acquire_lock
 
-if is_alive_pid_file "$LAUNCHER_PID_FILE" && heartbeat_is_fresh "$LAUNCHER_HEARTBEAT_FILE"; then
+if is_alive_pid_file "$SUPERVISOR_PID_FILE" && heartbeat_is_fresh "$SUPERVISOR_HEARTBEAT_FILE" && is_alive_pid_file "$CHILD_PID_FILE" && heartbeat_is_fresh "$CHILD_HEARTBEAT_FILE"; then
   exit 0
 fi
 
 reasons=()
-is_alive_pid_file "$LAUNCHER_PID_FILE" || reasons+=("launcher-pid-dead")
-heartbeat_is_fresh "$LAUNCHER_HEARTBEAT_FILE" || reasons+=("launcher-heartbeat-stale")
+is_alive_pid_file "$SUPERVISOR_PID_FILE" || reasons+=("supervisor-pid-dead")
+heartbeat_is_fresh "$SUPERVISOR_HEARTBEAT_FILE" || reasons+=("supervisor-heartbeat-stale")
+is_alive_pid_file "$CHILD_PID_FILE" || reasons+=("child-pid-dead")
+heartbeat_is_fresh "$CHILD_HEARTBEAT_FILE" || reasons+=("child-heartbeat-stale")
 log "restart requested reasons=$(IFS=,; echo "${reasons[*]}")"
 
-stop_pid_from_file "$LAUNCHER_PID_FILE"
-rm -f "$LAUNCHER_PID_FILE" "$LAUNCHER_HEARTBEAT_FILE"
-rm -rf /tmp/luckystock-market-sync-autostart-launcher.lock
-start_launcher
+stop_pid_from_file "$CHILD_PID_FILE"
+stop_pid_from_file "$SUPERVISOR_PID_FILE"
+rm -f "$SUPERVISOR_PID_FILE" "$SUPERVISOR_HEARTBEAT_FILE" "$CHILD_PID_FILE"
+rm -rf /tmp/luckystock-market-sync.lock
+start_supervisor

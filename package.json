@@ -16,6 +16,7 @@
     "batch:news:top": "node scripts/build-news-cache.mjs --mode=top --limit=120",
     "batch:market-sync": "node scripts/market-sync.mjs",
     "batch:market-sync:intraday": "node scripts/market-sync.mjs",
+    "batch:market-sync:cron": "bash scripts/market-sync-cron.sh",
     "batch:market-sync:supervisor": "bash scripts/market-sync-supervisor.sh",
     "batch:full-refresh": "node scripts/daily-full-refresh.mjs",
     "batch:morning-0800": "node scripts/morning-0800-refresh.mjs",

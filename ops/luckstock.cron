@@ -7,9 +7,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 30 0 * * * cd /home/user/luckstock && /usr/bin/npm run batch:daily >> /var/log/luckystock-daily.log 2>&1
 0 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:ranking >> /var/log/luckystock-ranking.log 2>&1
 
-# Market hours sync keepalive
-@reboot cd /home/user/luckstock && /usr/bin/npm run batch:market-sync:launcher:ensure >> /var/log/luckystock-market-sync-launcher.log 2>&1
-* * * * * cd /home/user/luckstock && /usr/bin/npm run batch:market-sync:launcher:ensure >> /var/log/luckystock-market-sync-launcher.log 2>&1
+# Market sync every 10 minutes
+*/10 * * * * cd /home/user/luckstock && /usr/bin/npm run batch:market-sync:cron >> /var/log/luckystock-market-sync-cron.log 2>&1
 
 # Searched stocks refresh
 10 18 * * * cd /home/user/luckstock && /usr/bin/npm run batch:searched-refresh -- --window=pm >> /var/log/luckystock-searched-refresh.log 2>&1

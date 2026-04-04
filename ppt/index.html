@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>바이브코딩 Part Ⅱ</title>
+  <meta name="description" content="바이브코딩 Part Ⅱ 발표자료. 직접 만들어보며 느낀 경험과 서비스 사례를 정리한 1페이지 스크롤형 웹 PPT입니다.">
+  <style>
+    :root {
+      --bg: #f4f8fc;
+      --bg-strong: #ffffff;
+      --bg-soft: rgba(255, 255, 255, 0.72);
+      --text: #0f172a;
+      --muted: #516076;
+      --line: rgba(148, 163, 184, 0.28);
+      --blue: #1864ff;
+      --blue-strong: #0f4ad8;
+      --blue-soft: rgba(24, 100, 255, 0.12);
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.09);
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1240px;
+      --nav-width: 250px;
+      --transition: 220ms ease;
+      color-scheme: light;
+    }
+
+    body.dark {
+      --bg: #06101f;
+      --bg-strong: #0e1b2f;
+      --bg-soft: rgba(14, 27, 47, 0.78);
+      --text: #ecf3ff;
+      --muted: #a8bbd4;
+      --line: rgba(148, 163, 184, 0.18);
+      --blue: #66a3ff;
+      --blue-strong: #9ec5ff;
+      --blue-soft: rgba(102, 163, 255, 0.16);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.22);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(24, 100, 255, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(63, 131, 248, 0.1), transparent 22%),
+        linear-gradient(180deg, #f7fbff 0%, var(--bg) 42%, #eef4fb 100%);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+    }
+
+    body.dark {
+      background:
+        radial-gradient(circle at top left, rgba(79, 142, 255, 0.16), transparent 25%),
+        radial-gradient(circle at top right, rgba(33, 84, 180, 0.22), transparent 22%),
+        linear-gradient(180deg, #08111f 0%, var(--bg) 42%, #050d19 100%);
+    }
+
+    body.focus-mode .app-shell {
+      grid-template-columns: 1fr;
+      max-width: 980px;
+    }
+
+    body.focus-mode .side-nav,
+    body.focus-mode .mobile-nav-toggle,
+    body.focus-mode .progress-label {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(20px);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(148, 163, 184, 0.16);
+      z-index: 80;
+    }
+
+    .progress-bar > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), #53a8ff);
+      box-shadow: 0 0 20px rgba(24, 100, 255, 0.35);
+    }
+
+    .progress-label {
+      position: fixed;
+      top: 16px;
+      right: 24px;
+      z-index: 70;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+      font-size: 12px;
+      color: var(--muted);
+      transition: var(--transition);
+    }
+
+    .mobile-nav-toggle,
+    .floating-button,
+    .icon-toggle {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--text);
+      border-radius: 999px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+      cursor: pointer;
+      transition: transform var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .mobile-nav-toggle:hover,
+    .floating-button:hover,
+    .icon-toggle:hover,
+    .button:hover { transform: translateY(-2px); }
+
+    .mobile-nav-toggle {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 70;
+      display: none;
+      width: 54px;
+      height: 54px;
+      font-size: 20px;
+    }
+
+    .app-shell {
+      width: min(calc(100% - 48px), 1520px);
+      margin: 0 auto;
+      padding: 56px 0 96px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--nav-width);
+      gap: 28px;
+      transition: grid-template-columns var(--transition), max-width var(--transition);
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .side-nav {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      padding: 20px;
+      border-radius: 26px;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+    }
+
+    .side-nav h2 {
+      margin: 0 0 14px;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .toc {
+      display: grid;
+      gap: 8px;
+    }
+
+    .toc a {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--muted);
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .toc a.active {
+      color: var(--blue-strong);
+      background: var(--blue-soft);
+      font-weight: 700;
+      transform: translateX(-2px);
+    }
+
+    .toc-index {
+      flex: none;
+      width: 24px;
+      font-size: 12px;
+      color: inherit;
+      opacity: 0.8;
+      padding-top: 2px;
+    }
+
+    .side-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .icon-toggle {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .deck {
+      display: grid;
+      gap: 28px;
+    }
+
+    .section {
+      position: relative;
+      min-height: 100vh;
+      padding: 44px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72));
+      border: 1px solid rgba(255,255,255,0.64);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      scroll-margin-top: 28px;
+    }
+
+    body.dark .section {
+      background: linear-gradient(180deg, rgba(14,27,47,0.92), rgba(10,21,38,0.84));
+      border-color: rgba(120, 146, 187, 0.18);
+    }
+
+    .section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(24,100,255,0.06), transparent 35%, transparent 65%, rgba(83,168,255,0.08));
+      pointer-events: none;
+    }
+
+    .section-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 26px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .hero {
+      display: grid;
+      gap: 26px;
+      align-content: center;
+      min-height: calc(100vh - 88px);
+    }
+
+    .hero-grid,
+    .split,
+    .comparison-grid,
+    .gallery-grid,
+    .metrics-grid,
+    .card-grid,
+    .two-column,
+    .feature-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid,
+    .split,
+    .two-column { grid-template-columns: 1.2fr 0.8fr; }
+    .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .metrics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .comparison-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.2vw, 28px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .lead {
+      font-size: clamp(18px, 2.2vw, 24px);
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 920px;
+    }
+
+    .body-copy,
+    .bullet-list,
+    .quote,
+    .caption,
+    .card p,
+    .pillars p,
+    details {
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .section-heading {
+      display: grid;
+      gap: 14px;
+      max-width: 940px;
+    }
+
+    .strong-line {
+      padding: 20px 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(24,100,255,0.12), rgba(83,168,255,0.08));
+      border: 1px solid rgba(24,100,255,0.16);
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .panel,
+    .card,
+    .media-card,
+    .quote,
+    .stat-card,
+    .timeline-card,
+    .comparison-card {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: var(--bg-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .panel.soft {
+      background: linear-gradient(180deg, rgba(24,100,255,0.06), rgba(24,100,255,0.03));
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--blue-soft);
+      color: var(--blue-strong);
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .bullet-list {
+      padding-left: 1.1em;
+      display: grid;
+      gap: 8px;
+    }
+
+    .tag-row,
+    .button-row,
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(148,163,184,0.12);
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--blue), #53a8ff);
+      color: #fff;
+      box-shadow: 0 18px 28px rgba(24,100,255,0.2);
+    }
+
+    .button.secondary {
+      background: var(--bg-strong);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .hero-card {
+      display: grid;
+      gap: 20px;
+      align-content: end;
+      min-height: 440px;
+      padding: 28px;
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.92)),
+        radial-gradient(circle at top left, rgba(24,100,255,0.22), transparent 40%),
+        linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #bfdbfe 100%);
+      color: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    body.dark .hero-card {
+      background:
+        linear-gradient(180deg, rgba(6,16,31,0.12), rgba(6,16,31,0.72)),
+        radial-gradient(circle at top left, rgba(102,163,255,0.22), transparent 40%),
+        linear-gradient(135deg, #0a1323 0%, #123c9b 55%, #6da9ff 100%);
+    }
+
+    .hero-card small,
+    .hero-card p { color: rgba(255,255,255,0.88); }
+
+    .company-slot {
+      max-width: 220px;
+    }
+
+    .metric {
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric strong {
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: -0.03em;
+    }
+
+    .media-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .media-frame {
+      position: relative;
+      min-height: 240px;
+      border-radius: 20px;
+      border: 1px dashed rgba(24,100,255,0.26);
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(24,100,255,0.08), rgba(83,168,255,0.04)),
+        repeating-linear-gradient(45deg, rgba(24,100,255,0.04) 0 12px, transparent 12px 24px);
+      display: grid;
+      place-items: center;
+    }
+
+    .media-frame.is-loaded {
+      border-style: solid;
+      background: #dbe8f9;
+    }
+
+    .media-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .placeholder {
+      padding: 26px;
+      text-align: center;
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+    }
+
+    .placeholder strong {
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .media-card figcaption {
+      display: grid;
+      gap: 4px;
+    }
+
+    .media-card figcaption strong {
+      font-size: 15px;
+    }
+
+    .quote {
+      font-size: clamp(19px, 2.1vw, 26px);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.6;
+      border-left: 4px solid var(--blue);
+    }
+
+    .notes {
+      border-radius: 18px;
+      background: rgba(148,163,184,0.08);
+      border: 1px solid var(--line);
+      padding: 0 18px;
+    }
+
+    .notes summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 16px 0;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .notes summary::-webkit-details-marker { display: none; }
+    .notes-content { padding: 0 0 18px; }
+
+    .scroll-hint {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .floating-stack {
+      position: fixed;
+      right: 24px;
+      bottom: 90px;
+      z-index: 70;
+      display: grid;
+      gap: 10px;
+    }
+
+    .floating-button {
+      width: 54px;
+      height: 54px;
+      font-size: 20px;
+    }
+
+    .section-enter {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .section-enter.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 520ms ease, transform 520ms ease;
+    }
+
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .side-nav {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        width: min(320px, calc(100vw - 48px));
+        max-height: calc(100vh - 120px);
+        overflow: auto;
+        transform: translateX(calc(100% + 30px));
+        opacity: 0;
+        pointer-events: none;
+        z-index: 75;
+      }
+
+      body.nav-open .side-nav {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-nav-toggle { display: inline-grid; place-items: center; }
+      .progress-label { right: 88px; }
+    }
+
+    @media (max-width: 980px) {
+      .section { padding: 32px 22px; min-height: auto; }
+      .hero { min-height: auto; }
+      .hero-grid,
+      .split,
+      .two-column,
+      .comparison-grid,
+      .gallery-grid,
+      .metrics-grid,
+      .card-grid,
+      .feature-grid { grid-template-columns: 1fr; }
+      .floating-stack { right: 16px; bottom: 84px; }
+      .progress-label { left: 16px; right: auto; }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .progress-bar,
+      .progress-label,
+      .side-nav,
+      .mobile-nav-toggle,
+      .floating-stack,
+      .button-row,
+      .scroll-hint { display: none !important; }
+
+      .app-shell {
+        width: 100%;
+        display: block;
+        padding: 0;
+      }
+
+      .deck { gap: 16px; }
+      .section {
+        min-height: auto;
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" aria-hidden="true"><span id="progressFill"></span></div>
+  <div class="progress-label" id="progressLabel">00 / 11</div>
+  <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="목차 열기">☰</button>
+
+  <div class="app-shell">
+    <main>
+      <div class="deck">
+        <section class="section section-enter" id="cover" data-title="표지">
+          <div class="section-inner hero">
+            <span class="eyebrow">Vibe Coding Seminar Deck</span>
+            <div class="hero-grid">
+              <div style="display:grid;gap:24px;align-content:center;">
+                <div style="display:grid;gap:14px;">
+                  <small style="font-size:18px;font-weight:700;color:var(--blue-strong);">직접 만들어보니 이렇습니다</small>
+                  <h1>바이브코딩<br>Part Ⅱ</h1>
+                  <p class="lead">지난 발표가 개념 소개였다면, 이번에는 실제로 만들어본 경험을 공유하고자 합니다.</p>
+                </div>
+                <div class="meta-row">
+                  <span class="tag">발표자: IT개발팀 ** 과장</span>
+                  <span class="tag">실행 중심 경험 공유</span>
+                  <span class="tag">웹 서비스 제작 사례</span>
+                </div>
+                <div class="strong-line">구경은 한 번이면 충분하고, 이제는 한 번쯤 직접 해봐야 할 시점입니다.</div>
+                <div class="scroll-hint">↓ Scroll to begin</div>
+              </div>
+              <div class="hero-card">
+                <div class="company-slot">
+                  <figure class="media-card" style="padding:0;background:transparent;border:none;box-shadow:none;">
+                    <div class="media-frame" data-src="/ppt-assets/company-logo.png" data-title="회사 로고">
+                      <div class="placeholder">
+                        <strong>company-logo.png</strong>
+                        <span>회사 로고 파일을 넣으면 이 영역에 자동 반영됩니다.</span>
+                      </div>
+                    </div>
+                    <figcaption>
+                      <strong>회사 로고 슬롯</strong>
+                      <span class="caption">`/ppt-assets/company-logo.png` 파일 교체만으로 반영됩니다.</span>
+                    </figcaption>
+                  </figure>
+                </div>
+                <div>
+                  <h3 style="color:#fff;">이번 발표의 방향</h3>
+                  <p>같은 개념 설명을 반복하기보다, 실제로 서비스를 만들며 느낀 속도와 장점, 그리고 반드시 필요했던 검증 포인트를 공유합니다.</p>
+                </div>
+              </div>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">첫 장에서는 지난 발표와의 차이를 짚고, 이번에는 개념보다 실제 경험을 중심으로 이야기하겠다는 톤을 먼저 잡습니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="why" data-title="왜 다시">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">01. 왜 다시 이 주제인가</span>
+              <h2>소개를 듣는 것과 직접 만들어보는 것은 완전히 달랐습니다</h2>
+              <p class="lead">이미 한 차례 발표를 했지만, 실제로 손을 움직여 보니 체감이 전혀 달랐습니다. 이번에는 설명보다 경험 중심으로 공유하려고 합니다.</p>
+            </div>
+            <div class="split">
+              <div class="panel soft">
+                <ul class="bullet-list">
+                  <li>사실 바이브코딩으로 이미 한 차례 발표를 진행했었습니다.</li>
+                  <li>그런데 소개를 듣는 것과 직접 만들어보는 것은 완전히 달랐습니다.</li>
+                  <li>아직도 해보지 않은 사람이 더 많다고 생각합니다.</li>
+                  <li>그래서 이번에는 설명보다 경험 중심으로 공유하려고 합니다.</li>
+                  <li>결론부터 말하면, 생각보다 훨씬 빠르고 강력했지만 검증은 반드시 필요했습니다.</li>
+                </ul>
+              </div>
+              <div class="quote">구경은 한 번이면 충분하고, 이제는 한 번쯤 직접 해봐야 할 시점입니다.</div>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">여기서는 “왜 Part Ⅱ를 굳이 다시 하는가”에 대한 이유를 짧게 정리합니다. 같은 주제를 반복하는 것이 아니라, 실행 후 체감이 달랐다는 점을 강조하면 자연스럽습니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="setup" data-title="환경 세팅">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">02. 기본 환경 세팅 / 작업 방식</span>
+              <h2>배포·운영·분석까지 포함해 실제 서비스처럼 접근했습니다</h2>
+              <p class="lead">단순히 화면만 만든 것이 아니라, 배포와 운영, 분석과 공유까지 포함해 서비스 전체를 한 번에 굴러가게 만드는 방식으로 진행했습니다.</p>
+            </div>
+            <div class="feature-grid">
+              <article class="card"><div class="card-icon">🔥</div><h3>Firebase 기반 작업</h3><p>웹 기반 환경에서 빠르게 구조를 잡고, 초기 작업 흐름을 가볍게 시작했습니다.</p></article>
+              <article class="card"><div class="card-icon">☁️</div><h3>Cloudflare Pages 배포</h3><p>정적 배포와 운영 속도를 확보하기 위해 Pages 중심으로 배포했습니다.</p></article>
+              <article class="card"><div class="card-icon">🧾</div><h3>GitHub 소스 관리</h3><p>모든 변경 이력을 GitHub.com에 커밋해 작업 흐름과 검증 근거를 남겼습니다.</p></article>
+              <article class="card"><div class="card-icon">⌨️</div><h3>CLI 기반 AI 활용</h3><p>Gemini CLI, Claude, OpenAI를 CLI 환경에서 병행하며 작업 특성에 맞게 선택했습니다.</p></article>
+              <article class="card"><div class="card-icon">📈</div><h3>분석 도구 연결</h3><p>Google Analytics와 MS Clarity를 넣어 실제 사용 흐름을 확인할 수 있게 했습니다.</p></article>
+              <article class="card"><div class="card-icon">🔎</div><h3>SEO / GEO / 공유</h3><p>Google SEO, GEO, SNS 공유 메타, 광고 가능성까지 고려해 서비스 구조를 맞췄습니다.</p></article>
+            </div>
+            <div class="gallery-grid">
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/setup-firebase.png" data-title="Firebase 환경"><div class="placeholder"><strong>setup-firebase.png</strong><span>Firebase 작업 화면 또는 구조도를 넣어주세요.</span></div></div><figcaption><strong>Firebase 작업 환경</strong><span class="caption">초기 작업 환경과 흐름 설명용 이미지</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/setup-cloudflare.png" data-title="Cloudflare Pages"><div class="placeholder"><strong>setup-cloudflare.png</strong><span>Cloudflare Pages 배포 화면을 넣어주세요.</span></div></div><figcaption><strong>Cloudflare Pages</strong><span class="caption">정적 배포 구조와 운영 속도 강조</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/setup-github.png" data-title="GitHub"><div class="placeholder"><strong>setup-github.png</strong><span>GitHub 저장소나 커밋 흐름 이미지를 넣어주세요.</span></div></div><figcaption><strong>GitHub 소스 관리</strong><span class="caption">협업과 변경 추적 근거</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/setup-cli-ai.png" data-title="CLI AI"><div class="placeholder"><strong>setup-cli-ai.png</strong><span>CLI 기반 AI 작업 스크린샷을 넣어주세요.</span></div></div><figcaption><strong>CLI 기반 AI 작업</strong><span class="caption">프롬프트와 수정 요청을 반복한 흐름</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/setup-analytics.png" data-title="Analytics"><div class="placeholder"><strong>setup-analytics.png</strong><span>Analytics 또는 Clarity 화면을 넣어주세요.</span></div></div><figcaption><strong>분석 도구 반영</strong><span class="caption">운영 이후 데이터 확인 구조</span></figcaption></figure>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">이 섹션은 “단순 시연이 아니라 실제 운영 가능한 수준으로 접근했다”는 메시지를 주는 구간입니다. 배포, 분석, SEO, 공유까지 포함했다는 점이 핵심입니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="workout" data-title="결과물 1">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">03. 결과물 1 소개</span>
+              <h2>AI 운동 마스터</h2>
+              <p class="lead">무엇을 만들까 고민하다가, 내가 좋아하는 것부터 떠올렸습니다. 그중 가장 먼저 떠오른 것은 헬스였습니다.</p>
+            </div>
+            <div class="two-column">
+              <div class="panel soft">
+                <h3>문제 인식</h3>
+                <ul class="bullet-list">
+                  <li>근육의 성장조건은 결국 어제의 나를 이겨야 합니다.</li>
+                  <li>어제의 나를 이기려면 기록이 필요합니다.</li>
+                  <li>기록 앱은 많지만 수작업 타이핑이 귀찮습니다.</li>
+                  <li>운동 후 입력까지 하는 시간도 아깝다고 느꼈습니다.</li>
+                  <li>그래서 녹음 버튼을 이용한 구조를 떠올렸습니다.</li>
+                </ul>
+              </div>
+              <div class="panel">
+                <h3>구현 방향</h3>
+                <ul class="bullet-list">
+                  <li>녹음 버튼으로 빠르게 기록</li>
+                  <li>기록 저장 후 통계화</li>
+                  <li>AI가 부족한 점 판단</li>
+                  <li>오늘의 추천 운동 제안</li>
+                  <li>운동 시 주의할 점 판단</li>
+                  <li>추후 피드백 기능으로 발전 예정</li>
+                </ul>
+              </div>
+            </div>
+            <div class="quote">기록의 불편함을 줄이면, 지속성은 생각보다 크게 올라갑니다.</div>
+            <div class="gallery-grid">
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/project-workout-main.png" data-title="AI 운동 마스터 메인"><div class="placeholder"><strong>project-workout-main.png</strong><span>메인 화면 스크린샷을 넣어주세요.</span></div></div><figcaption><strong>메인 화면</strong><span class="caption">핵심 UX와 첫인상 설명용</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/project-workout-detail.png" data-title="AI 운동 마스터 상세"><div class="placeholder"><strong>project-workout-detail.png</strong><span>상세 기능 스크린샷을 넣어주세요.</span></div></div><figcaption><strong>상세 기능</strong><span class="caption">기록, 통계, AI 추천 흐름 설명용</span></figcaption></figure>
+            </div>
+            <div class="button-row">
+              <a class="button primary" href="https://product-builder-1cm.pages.dev/" target="_blank" rel="noreferrer">서비스 바로가기 ↗</a>
+              <a class="button secondary" href="#luckystock">다음 섹션으로 이동</a>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">내가 좋아하는 주제를 먼저 만들었다는 점이 중요합니다. 억지 아이템보다 문제를 실제로 느껴본 영역에서 출발하니 아이디어를 구체화하기가 쉬웠다는 흐름으로 연결하면 좋습니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="luckystock" data-title="결과물 2">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">04. 결과물 2 소개</span>
+              <h2>LuckyStock AI</h2>
+              <p class="lead">다음으로는 관심도가 높고, 반복 방문 가능성이 있는 주제를 생각했습니다. 그래서 뉴스 기반으로 AI가 판단을 도와주는 주식 사이트를 만들고 싶었습니다.</p>
+            </div>
+            <div class="two-column">
+              <div class="panel soft">
+                <h3>핵심 기능</h3>
+                <ul class="bullet-list">
+                  <li>오늘 AI 발견 급등주</li>
+                  <li>AI 급등 가능성 추천</li>
+                  <li>실시간 AI 투자 신호</li>
+                  <li>AI 점수를 토대로 한 분석 순위</li>
+                  <li>네이버금융 및 API 연결 기반 순위 제공</li>
+                  <li>클릭 시 종목 분석</li>
+                  <li>뉴스 기반 판단 보조</li>
+                </ul>
+              </div>
+              <div class="panel">
+                <h3>핵심 메시지</h3>
+                <p class="body-copy">주식 사이트는 많지만, 정보가 많아도 바로 판단하기는 어렵다고 느꼈습니다. 그래서 정보 나열보다 판단 보조에 집중했습니다.</p>
+                <div class="quote" style="margin-top:16px;">정보를 더 많이 보여주는 것이 아니라, 판단을 더 빨리 내리게 하는 쪽에 집중했습니다.</div>
+              </div>
+            </div>
+            <div class="gallery-grid">
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/project-stock-main.png" data-title="LuckyStock 메인"><div class="placeholder"><strong>project-stock-main.png</strong><span>메인 화면 스크린샷을 넣어주세요.</span></div></div><figcaption><strong>메인 화면</strong><span class="caption">랭킹, 신호, 요약 구조 설명용</span></figcaption></figure>
+              <figure class="media-card"><div class="media-frame" data-src="/ppt-assets/project-stock-detail.png" data-title="LuckyStock 상세"><div class="placeholder"><strong>project-stock-detail.png</strong><span>상세 분석 화면을 넣어주세요.</span></div></div><figcaption><strong>상세 분석</strong><span class="caption">뉴스 기반 판단 보조 흐름 설명용</span></figcaption></figure>
+            </div>
+            <div class="button-row">
+              <a class="button primary" href="https://luckystock.pages.dev/" target="_blank" rel="noreferrer">서비스 바로가기 ↗</a>
+              <a class="button secondary" href="#experience">장점 섹션으로 이동</a>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">이 사례는 반복 방문 가능성과 실사용성을 함께 보여주는 예시입니다. 정보 과잉 대신 판단 보조라는 방향을 어떻게 잡았는지 설명하면 전달력이 좋습니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="experience" data-title="직접 해보니">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">05. 직접 해보니 느낀 점</span>
+              <h2>이론보다 체감이 훨씬 컸습니다</h2>
+            </div>
+            <div class="feature-grid">
+              <article class="card"><h3>생각보다 빨랐습니다</h3><p>머릿속 아이디어가 예상보다 빠르게 형태가 됐습니다. 예전 같으면 기획 문서 단계에서 멈췄을 것들도 실제 화면으로 바로 넘어갔습니다.</p></article>
+              <article class="card"><h3>혼자서도 넓게 갔습니다</h3><p>혼자서도 서비스 틀을 빠르게 만들 수 있었습니다. 이전보다 시작 장벽이 확실히 낮아졌습니다.</p></article>
+              <article class="card"><h3>검증은 꼭 필요했습니다</h3><p>다만 AI 결과를 그대로 믿으면 안 됐습니다. 된 것처럼 보여도 직접 확인해보면 빠진 부분이 있었습니다.</p></article>
+              <article class="card"><h3>결국 방향은 사람이 잡았습니다</h3><p>프롬프트를 어떻게 주느냐에 따라 결과 차이가 컸고, 무엇이 왜 문제인지 정확히 말해야 품질이 올라갔습니다.</p></article>
+            </div>
+            <div class="quote">AI가 대신 개발해주는 느낌보다, 내가 훨씬 빠르게 추진할 수 있게 해주는 느낌에 가까웠습니다.</div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">여기는 체감 중심으로 말하면 됩니다. “개발을 대신했다”보다 “추진 속도를 올려줬다”는 표현이 훨씬 현실적이고 설득력이 있습니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="pros" data-title="장점">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">06. 바이브코딩의 장점</span>
+              <h2>설명 능력과 실행력이 바로 생산성으로 이어졌습니다</h2>
+            </div>
+            <div class="card-grid">
+              <article class="card"><div class="card-icon">1</div><h3>손쉽게 만들 수 있다</h3><p>초기 진입 장벽이 낮아져 바로 시작하기 좋았습니다.</p></article>
+              <article class="card"><div class="card-icon">2</div><h3>아이디어를 빠르게 형태화</h3><p>머릿속 생각이 화면과 기능으로 빠르게 바뀌었습니다.</p></article>
+              <article class="card"><div class="card-icon">3</div><h3>프로토타입 속도 향상</h3><p>검증용 결과물을 만드는 시간이 확실히 줄었습니다.</p></article>
+              <article class="card"><div class="card-icon">4</div><h3>시행착오 비용 감소</h3><p>처음부터 무겁게 만들지 않고 여러 방향을 가볍게 시험할 수 있었습니다.</p></article>
+              <article class="card"><div class="card-icon">5</div><h3>혼자서도 넓은 범위 시도</h3><p>기획, 화면, 배포까지 혼자 커버할 수 있는 범위가 넓어졌습니다.</p></article>
+              <article class="card"><div class="card-icon">6</div><h3>반복 수정 속도 빠름</h3><p>문제점을 정확히 집어주면 수정 반영 속도가 빨랐습니다.</p></article>
+              <article class="card"><div class="card-icon">7</div><h3>설명 능력이 생산성으로 연결</h3><p>무엇을 원하는지 명확히 말하는 힘이 바로 결과 품질로 이어졌습니다.</p></article>
+              <article class="card"><div class="card-icon">8</div><h3>실행력이 높아짐</h3><p>예전 같으면 미뤘을 아이디어도 실제로 만들게 됐습니다.</p></article>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">이 섹션은 장점을 나열하되, “쉽다”보다 “그래서 실제로 더 많이 시도하게 됐다”는 연결이 중요합니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="cons" data-title="주의점">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">07. 단점 / 주의점</span>
+              <h2>빠르게 만드는 것과 제대로 운영하는 것은 다른 문제였습니다</h2>
+            </div>
+            <div class="card-grid">
+              <article class="card"><h3>검증은 아직 필요</h3><p>아직까진 AI가 낸 결과를 그대로 신뢰하면 위험했습니다.</p></article>
+              <article class="card"><h3>보안 고려 누락 가능</h3><p>빠르게 만들다 보면 보안 포인트가 뒤로 밀릴 수 있습니다.</p></article>
+              <article class="card"><h3>영향도 파악 필요</h3><p>추가 개발 시 영향도를 모르고 건드리면 다른 동작이 안 될 수 있습니다.</p></article>
+              <article class="card"><h3>기능이 예상치 않게 깨짐</h3><p>부분 수정이 다른 기능에 연쇄적으로 영향을 주는 경우가 있었습니다.</p></article>
+              <article class="card"><h3>복잡도 증가 시 관리 어려움</h3><p>구조가 커질수록 사람의 설계와 관리 기준이 훨씬 더 중요해졌습니다.</p></article>
+              <article class="card"><h3>프롬프트 품질 편차 큼</h3><p>같은 요청도 표현 방식에 따라 결과 수준 차이가 컸습니다.</p></article>
+              <article class="card"><h3>이해 없이 사용하면 위험</h3><p>결과물을 이해하지 못한 채 쓰면 수정과 운영 모두 어려워집니다.</p></article>
+              <article class="card"><h3>운영 단계 테스트 필수</h3><p>실서비스로 갈수록 테스트와 점검 없이는 안심할 수 없었습니다.</p></article>
+              <article class="card"><h3>된 것처럼 보이는 상태 경계</h3><p>겉으로만 그럴듯한 상태에 속기 쉬워서 끝까지 확인이 필요했습니다.</p></article>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">이 부분은 겁을 주기보다 현실을 말하는 톤이 좋습니다. 빠르게 만드는 장점이 있어도 운영 품질은 별도 기준이 필요하다는 점을 분명히 전달합니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="ai" data-title="AI 비교">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">08. AI 특성 비교</span>
+              <h2>직접 써보니 성격이 꽤 달랐습니다</h2>
+              <p class="lead">표처럼 딱 잘라 말하기보다, 실제로 써본 체감 위주로 정리한 비교입니다.</p>
+            </div>
+            <div class="comparison-grid">
+              <article class="comparison-card">
+                <h3>Claude</h3>
+                <ul class="bullet-list">
+                  <li>무제한이 아닙니다.</li>
+                  <li>정교한 작업에 유리했습니다.</li>
+                  <li>섬세한 구조화와 문장 품질이 좋았습니다.</li>
+                  <li>많이 사용하면 최고 요금제도 힘들어보였습니다.</li>
+                </ul>
+                <p class="body-copy">정밀하게 다듬는 작업에서는 만족도가 높았지만, 사용량 부담은 분명히 느껴졌습니다.</p>
+              </article>
+              <article class="comparison-card">
+                <h3>Gemini</h3>
+                <ul class="bullet-list">
+                  <li>전반적으로 무난했습니다.</li>
+                  <li>특이사항이 크지 않았습니다.</li>
+                  <li>작업 수준도 보통 이상은 유지했습니다.</li>
+                  <li>안정적으로 쓰기 좋다는 느낌이 있었습니다.</li>
+                </ul>
+                <p class="body-copy">큰 장단점이 튀기보다는 안정적으로 받쳐주는 느낌이 강했습니다.</p>
+              </article>
+              <article class="comparison-card">
+                <h3>OpenAI</h3>
+                <ul class="bullet-list">
+                  <li>가장 올라운더스러웠습니다.</li>
+                  <li>무제한처럼 쓰기 좋다는 체감이 있었습니다.</li>
+                  <li>전반적으로 작업을 잘했습니다.</li>
+                  <li>범용성이 좋았습니다.</li>
+                </ul>
+                <p class="body-copy">기획, 수정, 코드, 문장까지 두루 잘 받아줘서 가장 범용적으로 활용하기 좋았습니다.</p>
+              </article>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">이 섹션은 우열을 가르기보다 “용도에 따라 느낌이 달랐다”는 식으로 설명하면 반감 없이 전달됩니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="conclusion" data-title="결론">
+          <div class="section-inner">
+            <div class="section-heading">
+              <span class="eyebrow">09. 결론</span>
+              <h2>완벽하게 아는 것보다, 한 번 직접 해보는 것이 더 중요했습니다</h2>
+            </div>
+            <div class="two-column">
+              <div class="panel soft">
+                <ul class="bullet-list">
+                  <li>사실 이미 한 차례 바이브코딩 발표를 했었습니다.</li>
+                  <li>그래서 이번에는 개념 설명 반복보다 경험 중심으로 말하고 싶었습니다.</li>
+                  <li>직접 해보니 장점도 있었고 주의점도 분명했습니다.</li>
+                  <li>아직 안 해본 사람이 더 많다고 생각합니다.</li>
+                  <li>지금은 구경보다 실행이 필요한 시점이라고 생각합니다.</li>
+                </ul>
+              </div>
+              <div class="panel">
+                <p class="quote">결국 중요한 것은 AI를 아는 것이 아니라, 실제로 써보며 내 일에 연결해보는 것이라고 생각합니다.</p>
+                <p class="body-copy" style="margin-top:14px;">그리고 실제 나와 같이 업무적으로나 좋은 아이디어가 있으면 같이 공유했으면 좋겠습니다. 가까운 미래를 대비할 수 있는 개발팀원이 되었으면 좋겠습니다.</p>
+              </div>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">마무리는 “개념 이해”보다 “업무 연결”에 방점을 찍으면 좋습니다. 발표가 끝난 뒤에도 팀 내 시도와 공유로 이어지게 만드는 문장입니다.</div>
+            </details>
+          </div>
+        </section>
+
+        <section class="section section-enter" id="qa" data-title="Q&A">
+          <div class="section-inner hero" style="min-height:72vh;">
+            <span class="eyebrow">10. Q&A</span>
+            <h2>감사합니다.</h2>
+            <p class="lead">질문 있으시면 편하게 말씀 부탁드립니다.</p>
+            <div class="metrics-grid">
+              <article class="stat-card metric"><strong>실행</strong><span>구경보다 한 번 직접 해보기</span></article>
+              <article class="stat-card metric"><strong>검증</strong><span>빠르게 만들수록 더 꼼꼼히 확인하기</span></article>
+              <article class="stat-card metric"><strong>공유</strong><span>좋은 사례와 프롬프트는 팀 내에서 나누기</span></article>
+              <article class="stat-card metric"><strong>연결</strong><span>AI를 내 일과 서비스에 붙여보기</span></article>
+            </div>
+            <details class="notes">
+              <summary>발표 노트 보기</summary>
+              <div class="notes-content">질문을 받을 때는 속도, 검증, 실제 업무 적용 방식 세 가지 주제로 정리해서 답하면 흐름이 깔끔합니다.</div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <aside class="side-nav" id="sideNav" aria-label="발표 목차">
+      <h2>Contents</h2>
+      <nav class="toc" id="toc"></nav>
+      <div class="side-actions">
+        <button class="icon-toggle" id="themeToggle" type="button"><span>다크모드</span><strong id="themeLabel">OFF</strong></button>
+        <button class="icon-toggle" id="focusToggle" type="button"><span>집중 보기</span><strong id="focusLabel">OFF</strong></button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="floating-stack">
+    <button class="floating-button" id="topButton" type="button" aria-label="맨 위로 이동">↑</button>
+  </div>
+
+  <script>
+    // 발표 자료 제어 스크립트: 진행률, 목차 활성화, 키보드 이동, 토글, 이미지 슬롯 로딩을 담당합니다.
+    const sectionNodes = Array.from(document.querySelectorAll('.section'));
+    const toc = document.getElementById('toc');
+    const progressFill = document.getElementById('progressFill');
+    const progressLabel = document.getElementById('progressLabel');
+    const topButton = document.getElementById('topButton');
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const sideNav = document.getElementById('sideNav');
+    const themeToggle = document.getElementById('themeToggle');
+    const focusToggle = document.getElementById('focusToggle');
+    const themeLabel = document.getElementById('themeLabel');
+    const focusLabel = document.getElementById('focusLabel');
+    let activeIndex = 0;
+
+    function buildToc() {
+      sectionNodes.forEach((section, index) => {
+        const link = document.createElement('a');
+        link.href = `#${section.id}`;
+        link.innerHTML = `<span class="toc-index">${String(index + 1).padStart(2, '0')}</span><span>${section.dataset.title}</span>`;
+        link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+        toc.appendChild(link);
+      });
+    }
+
+    function setActive(index) {
+      activeIndex = Math.max(0, Math.min(index, sectionNodes.length - 1));
+      const links = Array.from(toc.querySelectorAll('a'));
+      links.forEach((link, idx) => link.classList.toggle('active', idx === activeIndex));
+      progressLabel.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(sectionNodes.length).padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressFill.style.width = `${Math.min(100, Math.max(0, ratio))}%`;
+      topButton.style.opacity = window.scrollY > 360 ? '1' : '0';
+      topButton.style.pointerEvents = window.scrollY > 360 ? 'auto' : 'none';
+    }
+
+    function scrollToSection(index) {
+      sectionNodes[Math.max(0, Math.min(index, sectionNodes.length - 1))].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function initObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = sectionNodes.indexOf(entry.target);
+            if (index >= 0) setActive(index);
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.35 });
+      sectionNodes.forEach((node) => observer.observe(node));
+    }
+
+    function initKeyboardNavigation() {
+      window.addEventListener('keydown', (event) => {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault();
+          scrollToSection(activeIndex + 1);
+        }
+        if (['ArrowUp', 'PageUp'].includes(event.key)) {
+          event.preventDefault();
+          scrollToSection(activeIndex - 1);
+        }
+        if (event.key === 'Home') {
+          event.preventDefault();
+          scrollToSection(0);
+        }
+        if (event.key === 'End') {
+          event.preventDefault();
+          scrollToSection(sectionNodes.length - 1);
+        }
+      });
+    }
+
+    function applySavedState() {
+      const theme = localStorage.getItem('ppt-theme');
+      const focus = localStorage.getItem('ppt-focus');
+      if (theme === 'dark') document.body.classList.add('dark');
+      if (focus === 'on') document.body.classList.add('focus-mode');
+      themeLabel.textContent = document.body.classList.contains('dark') ? 'ON' : 'OFF';
+      focusLabel.textContent = document.body.classList.contains('focus-mode') ? 'ON' : 'OFF';
+    }
+
+    function initToggles() {
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        localStorage.setItem('ppt-theme', isDark ? 'dark' : 'light');
+        themeLabel.textContent = isDark ? 'ON' : 'OFF';
+      });
+
+      focusToggle.addEventListener('click', () => {
+        document.body.classList.toggle('focus-mode');
+        const isFocus = document.body.classList.contains('focus-mode');
+        localStorage.setItem('ppt-focus', isFocus ? 'on' : 'off');
+        focusLabel.textContent = isFocus ? 'ON' : 'OFF';
+      });
+
+      mobileNavToggle.addEventListener('click', () => {
+        document.body.classList.toggle('nav-open');
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!document.body.classList.contains('nav-open')) return;
+        if (sideNav.contains(event.target) || mobileNavToggle.contains(event.target)) return;
+        document.body.classList.remove('nav-open');
+      });
+
+      topButton.addEventListener('click', () => scrollToSection(0));
+    }
+
+    function initImageSlots() {
+      const frames = document.querySelectorAll('.media-frame[data-src]');
+      frames.forEach((frame) => {
+        const src = frame.dataset.src;
+        const title = frame.dataset.title || '이미지';
+        const img = new Image();
+        img.alt = title;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = src;
+        img.addEventListener('load', () => {
+          frame.classList.add('is-loaded');
+          frame.innerHTML = '';
+          frame.appendChild(img);
+        });
+      });
+    }
+
+    buildToc();
+    applySavedState();
+    setActive(0);
+    initObserver();
+    initKeyboardNavigation();
+    initToggles();
+    initImageSlots();
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+  </script>
+</body>
+</html>

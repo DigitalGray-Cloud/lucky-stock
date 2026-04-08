@@ -60,7 +60,15 @@ const els = {
   todayVisitorChip: document.getElementById("today-visitor-chip"),
   todayVisitorCount: document.getElementById("today-visitor-count"),
   todayVisitorLabel: document.getElementById("today-visitor-label"),
-  buildNote: document.getElementById("build-note")
+  buildNote: document.getElementById("build-note"),
+  feedbackForm: document.getElementById("feedback-form"),
+  feedbackName: document.getElementById("feedback-name"),
+  feedbackMessage: document.getElementById("feedback-message"),
+  feedbackPassword: document.getElementById("feedback-password"),
+  feedbackSubmitBtn: document.getElementById("feedback-submit-btn"),
+  feedbackRefreshBtn: document.getElementById("feedback-refresh-btn"),
+  feedbackStatus: document.getElementById("feedback-status"),
+  feedbackList: document.getElementById("feedback-list")
 };
 
 let autoCompleteSeq = 0;
@@ -339,11 +347,12 @@ function renderSummaryHtml(summary, code = "") {
         `;
       }
       if (t.startsWith("-> ")) {
-        const boldHtml = escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        const explainText = t.slice(3);
+        const boldHtml = escapeHtml(explainText).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         return `
           <div class="summary-news-explain">
-            <span class="summary-news-explain-label">해석</span>
-            <div>${boldHtml.slice(3)}</div>
+            <span class="summary-news-explain-label">해석 ↗</span>
+            <div>${boldHtml}</div>
           </div>
         `;
       }
@@ -494,6 +503,156 @@ async function apiGet(path) {
   return res.json();
 }
 
+async function apiJson(path, options = {}) {
+  const res = await fetch(path, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+
+  if (res.status === 204) return null;
+
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(payload?.message || `api_error_${res.status}`);
+  }
+  return payload;
+}
+
+function formatFeedbackDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function setFeedbackStatus(message = "", type = "") {
+  if (!els.feedbackStatus) return;
+  els.feedbackStatus.textContent = message;
+  els.feedbackStatus.className = `feedback-status${type ? ` ${type}` : ""}`;
+}
+
+function renderFeedbackItems(items = []) {
+  if (!els.feedbackList) return;
+  if (!items.length) {
+    els.feedbackList.innerHTML = '<div class="feedback-empty">아직 등록된 의견이 없습니다. 첫 의견을 남겨 보세요.</div>';
+    return;
+  }
+
+  els.feedbackList.innerHTML = items.map((item) => `
+    <article class="feedback-item" data-id="${escapeHtml(item.id)}">
+      <div class="feedback-item-main">
+        <div class="feedback-item-meta">
+          <strong class="feedback-item-name">${escapeHtml(item.name || "익명")}</strong>
+          <span class="feedback-item-date">${escapeHtml(formatFeedbackDate(item.updatedAt || item.createdAt))}</span>
+        </div>
+        <div class="feedback-item-message">${escapeHtml(item.message || "")}</div>
+      </div>
+      <div class="feedback-item-actions">
+        <button type="button" data-action="edit">수정</button>
+        <button type="button" data-action="delete">삭제</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+async function loadFeedbackPosts() {
+  if (!els.feedbackList) return;
+  els.feedbackList.innerHTML = '<div class="feedback-empty">불러오는 중...</div>';
+  try {
+    const data = await apiGet("/api/feedback-posts");
+    renderFeedbackItems(Array.isArray(data?.items) ? data.items : []);
+  } catch {
+    els.feedbackList.innerHTML = '<div class="feedback-empty">의견을 불러오지 못했습니다.</div>';
+  }
+}
+
+function initFeedbackBoard() {
+  if (!els.feedbackForm || !els.feedbackList) return;
+
+  els.feedbackForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setFeedbackStatus("등록 중...");
+    try {
+      await apiJson("/api/feedback-posts", {
+        method: "POST",
+        body: JSON.stringify({
+          name: els.feedbackName.value,
+          message: els.feedbackMessage.value,
+          password: els.feedbackPassword.value
+        })
+      });
+      els.feedbackForm.reset();
+      setFeedbackStatus("의견이 등록되었습니다.", "ok");
+      await loadFeedbackPosts();
+    } catch (error) {
+      setFeedbackStatus(error.message || "등록에 실패했습니다.", "error");
+    }
+  });
+
+  if (els.feedbackRefreshBtn) {
+    els.feedbackRefreshBtn.addEventListener("click", () => {
+      setFeedbackStatus("");
+      loadFeedbackPosts();
+    });
+  }
+
+  els.feedbackList.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    const item = e.target.closest(".feedback-item");
+    if (!btn || !item) return;
+    const id = item.dataset.id;
+    const name = item.querySelector(".feedback-item-name")?.textContent || "";
+    const message = item.querySelector(".feedback-item-message")?.textContent || "";
+
+    if (btn.dataset.action === "edit") {
+      const nextName = window.prompt("이름을 입력해 주세요.", name);
+      if (nextName === null) return;
+      const nextMessage = window.prompt("내용을 입력해 주세요.", message);
+      if (nextMessage === null) return;
+      const password = window.prompt("작성 시 입력한 비밀번호를 입력해 주세요.", "");
+      if (password === null) return;
+
+      try {
+        await apiJson(`/api/feedback-posts/${encodeURIComponent(id)}`, {
+          method: "PUT",
+          body: JSON.stringify({ name: nextName, message: nextMessage, password })
+        });
+        setFeedbackStatus("의견이 수정되었습니다.", "ok");
+        await loadFeedbackPosts();
+      } catch (error) {
+        setFeedbackStatus(error.message || "수정에 실패했습니다.", "error");
+      }
+      return;
+    }
+
+    if (btn.dataset.action === "delete") {
+      const password = window.prompt("삭제 비밀번호를 입력해 주세요.", "");
+      if (password === null) return;
+      try {
+        await apiJson(`/api/feedback-posts/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          body: JSON.stringify({ password })
+        });
+        setFeedbackStatus("의견이 삭제되었습니다.", "ok");
+        await loadFeedbackPosts();
+      } catch (error) {
+        setFeedbackStatus(error.message || "삭제에 실패했습니다.", "error");
+      }
+    }
+  });
+
+  loadFeedbackPosts();
+}
+
 async function loadTodayVisitors() {
   if (!els.todayVisitorCount) return;
 
@@ -530,35 +689,21 @@ async function loadTodayVisitors() {
 
 async function loadStaticCache() {
   if (cacheState.loaded) return cacheState;
-  const fetchJson = (path, fallback) =>
-    fetch(path, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : fallback))
-      .catch(() => fallback);
+  const payload = await fetch("/api/home-cache", { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null);
 
-  const [ac, amap, top, recent, themes, news, naverPopular, homeToday, homeTomorrow, homeSignal] = await Promise.all([
-    fetchJson("/data/ui_autocomplete.json", { items: [] }),
-    fetchJson("/data/ui_analysis_map.json", { map: {} }),
-    fetchJson("/data/ui_top_stocks.json", { top: [] }),
-    fetchJson("/data/ui_recent_analysis.json", { items: [] }),
-    fetchJson("/data/ui_theme_ranking.json", { items: [] }),
-    fetchJson("/data/ui_news_map.json", { map: {} }),
-    fetchJson("/data/ui_naver_popular.json", { items: [] }),
-    fetchJson("/data/ui_home_today.json", { items: [] }),
-    fetchJson("/data/ui_home_tomorrow.json", { items: [] }),
-    fetchJson("/data/ui_home_signal.json", { items: [] })
-  ]);
-
-  cacheState.autocomplete = Array.isArray(ac.items) ? ac.items : [];
-  cacheState.analysisMap = amap.map || {};
-  cacheState.top = Array.isArray(top.top) ? top.top : [];
-  cacheState.recent = Array.isArray(recent.items) ? recent.items : [];
-  cacheState.themes = Array.isArray(themes.items) ? themes.items : [];
-  cacheState.newsMap = news.map || {};
-  cacheState.homeToday = Array.isArray(homeToday.items) ? homeToday.items : [];
-  cacheState.homeTomorrow = Array.isArray(homeTomorrow.items) ? homeTomorrow.items : [];
-  cacheState.homeSignal = Array.isArray(homeSignal.items) ? homeSignal.items : [];
-  cacheState.generatedAt = homeToday.generated_at || amap.generated_at || "";
-  cacheState.naverPopular = Array.isArray(naverPopular.items) ? naverPopular.items : [];
+  cacheState.autocomplete = Array.isArray(payload?.autocomplete) ? payload.autocomplete : [];
+  cacheState.analysisMap = payload?.analysis_map || {};
+  cacheState.top = Array.isArray(payload?.top) ? payload.top : [];
+  cacheState.recent = Array.isArray(payload?.recent) ? payload.recent : [];
+  cacheState.themes = Array.isArray(payload?.themes) ? payload.themes : [];
+  cacheState.newsMap = payload?.news_map || {};
+  cacheState.homeToday = Array.isArray(payload?.home_today) ? payload.home_today : [];
+  cacheState.homeTomorrow = Array.isArray(payload?.home_tomorrow) ? payload.home_tomorrow : [];
+  cacheState.homeSignal = Array.isArray(payload?.home_signal) ? payload.home_signal : [];
+  cacheState.generatedAt = payload?.generated_at || "";
+  cacheState.naverPopular = Array.isArray(payload?.naver_popular) ? payload.naver_popular : [];
   cacheState.naverPopularMap = Object.fromEntries(cacheState.naverPopular.map((item) => [item.code, item]));
   cacheState.loaded = true;
   return cacheState;
@@ -971,7 +1116,7 @@ function renderRankCard(a, idx, mode) {
           </div>
           <strong>${a.tomorrow_prob || 0}%</strong>
         </div>
-        <div class="rank-meta"><span class="emph-prob">내일 상승 확률 ${a.tomorrow_prob || 0}%</span> · ${signalEmoji} ${a.signal || "중립"}</div>
+        <div class="rank-meta"><span class="emph-prob">상승 확률 ${a.tomorrow_prob || 0}%</span> · ${signalEmoji} ${a.signal || "중립"}</div>
       </div>
     `;
   }
@@ -1291,3 +1436,4 @@ initRankingClicks();
 initEmptyResultState();
 initFromUrl();
 loadTodayVisitors();
+initFeedbackBoard();

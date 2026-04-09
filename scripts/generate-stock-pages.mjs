@@ -141,6 +141,51 @@ function findNewsLinkForSummaryLine(code, line) {
   return String(hit?.link || "");
 }
 
+function buildCombinedSummaryText(data, fallbackSummary = "") {
+  return [fallbackSummary, String(data?.financial_summary || "").trim()].filter(Boolean).join("\n\n");
+}
+
+function formatFinancialMetricValue(value, type = "number") {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "-";
+  if (type === "won") return `${Math.round(num).toLocaleString("ko-KR")}원`;
+  if (type === "percent") return `${num.toFixed(1)}%`;
+  if (type === "multiple") return `${num.toFixed(1)}배`;
+  if (type === "eok") return `${(num / 100000000).toFixed(1)}억원`;
+  return Math.round(num).toLocaleString("ko-KR");
+}
+
+function renderFinancialMetricsTable(metrics = null) {
+  if (!metrics || typeof metrics !== "object") return "";
+  const rows = [
+    { label: "매출", value: formatFinancialMetricValue(metrics.revenue, "eok"), desc: "회사가 벌어들인 총매출" },
+    { label: "영업이익", value: formatFinancialMetricValue(metrics.operating_income, "eok"), desc: "본업으로 남긴 이익" },
+    { label: "순이익", value: formatFinancialMetricValue(metrics.net_income, "eok"), desc: "최종적으로 남은 이익" },
+    { label: "ROE", value: formatFinancialMetricValue(metrics.roe, "percent"), desc: "자기자본 대비 수익성" },
+    { label: "부채비율", value: formatFinancialMetricValue(metrics.debt_ratio, "percent"), desc: "자기자본 대비 빚 부담" },
+    { label: "영업이익률", value: formatFinancialMetricValue(metrics.operating_margin, "percent"), desc: "매출 대비 본업 마진" },
+    { label: "EPS", value: formatFinancialMetricValue(metrics.eps, "won"), desc: "주당 순이익" },
+    { label: "BPS", value: formatFinancialMetricValue(metrics.bps, "won"), desc: "주당 순자산" },
+    { label: "PER", value: formatFinancialMetricValue(metrics.per, "multiple"), desc: "이익 대비 주가 수준" },
+    { label: "PBR", value: formatFinancialMetricValue(metrics.pbr, "multiple"), desc: "순자산 대비 주가 수준" }
+  ];
+  if (!rows.some((row) => row.value !== "-")) return "";
+  return `
+    <div style="margin-top:0.9rem;padding:1rem 1rem 1.1rem;border:1px solid #dbe7ff;border-radius:14px;background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);box-shadow:0 10px 22px rgba(17,70,167,0.06);">
+      <div style="display:inline-flex;padding:0.2rem 0.55rem;border-radius:999px;background:#dcebff;color:#2753a6;font-size:0.72rem;font-weight:900;letter-spacing:0.03em;">핵심 재무표</div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.65rem;margin-top:0.8rem;">
+        ${rows.map((row) => `
+          <div style="padding:0.75rem 0.85rem;border-radius:12px;background:#fff;border:1px solid #e3ecff;">
+            <div style="font-size:0.74rem;color:#6b7280;">${row.label}</div>
+            <div style="margin-top:0.2rem;font-size:0.95rem;font-weight:800;color:#0f172a;">${row.value}</div>
+            <div style="margin-top:0.22rem;font-size:0.73rem;line-height:1.45;color:#6b7280;">${row.desc}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderSummaryHtml(summary, code = "") {
   const headingSet = new Set([
     "이 회사 뭐 하는 곳인가",
@@ -148,8 +193,9 @@ function renderSummaryHtml(summary, code = "") {
     "뭐가 위험한가",
     "지금 가격이 싼가 비싼가",
     "그래서 지금 사도 되나",
+    "재무제표 및 회사 성적표",
   ]);
-  const headingPrefixes = ["🏢 ", "📈 ", "⚠️ ", "💰 ", "🤔 "];
+  const headingPrefixes = ["🏢 ", "📈 ", "⚠️ ", "💰 ", "🤔 ", "📊 "];
 
   return String(summary || "")
     .split("\n")
@@ -158,7 +204,11 @@ function renderSummaryHtml(summary, code = "") {
       if (!text) return '<div style="height:0.75rem;"></div>';
       const noEmoji = headingPrefixes.reduce((acc, prefix) => acc.replace(prefix, ""), text).trim();
       if (headingPrefixes.some((prefix) => text.startsWith(prefix)) || headingSet.has(noEmoji)) {
-        return `<div style="margin-top:0.9rem;font-size:1rem;font-weight:800;color:#0b357f;">${escapeHtml(text)}</div>`;
+        const headingHtml = `<div style="margin-top:0.9rem;font-size:1rem;font-weight:800;color:#0b357f;">${escapeHtml(text)}</div>`;
+        if (noEmoji === "재무제표 및 회사 성적표") {
+          return `${headingHtml}${renderFinancialMetricsTable(analysisMap[code]?.financial_metrics || null)}`;
+        }
+        return headingHtml;
       }
       if (/^\d{4}-\d{2}-\d{2}\s+['"].+['"]/.test(text)) {
         const href = findNewsLinkForSummaryLine(code, text);
@@ -205,7 +255,7 @@ function buildStockPage(code, data) {
   const bull = Array.isArray(data.bull_points) ? data.bull_points : [];
   const risks = Array.isArray(data.risk_points) ? data.risk_points : [];
 
-  const summaryHtml = renderSummaryHtml(data.summary || "", code);
+  const summaryHtml = renderSummaryHtml(buildCombinedSummaryText(data, data.summary || ""), code);
 
   return `<!doctype html>
 <html lang="ko">

@@ -28,20 +28,23 @@ async function main() {
   console.log("[daily-full-refresh] step3: naver finance popular build");
   await runNode("scripts/build-naver-popular.mjs");
 
-  console.log("[daily-full-refresh] step4: analysis/ranking cache build");
+  console.log("[daily-full-refresh] step4: financial metrics build");
+  await runNode("scripts/build-financials.mjs");
+
+  console.log("[daily-full-refresh] step5: analysis/ranking cache build");
   const cacheArgs = ["--mode=full"];
   if (opts.resetAiSummaries) {
     cacheArgs.push("--reset-ai-summaries");
   }
   await runNode("scripts/build-ui-cache.mjs", cacheArgs);
 
-  console.log("[daily-full-refresh] step5: stock pages regenerate");
+  console.log("[daily-full-refresh] step6: stock pages regenerate");
   await runNode("scripts/generate-stock-pages.mjs");
 
-  console.log("[daily-full-refresh] step6: pages dist sync");
+  console.log("[daily-full-refresh] step7: pages dist sync");
   await runNode("scripts/sync-pages-dist.mjs");
 
-  console.log("[daily-full-refresh] step7: pages deploy");
+  console.log("[daily-full-refresh] step8: pages deploy");
   await runNode("scripts/deploy-pages.mjs");
 
   console.log("[daily-full-refresh] done");

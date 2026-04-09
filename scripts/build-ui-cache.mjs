@@ -72,6 +72,10 @@ if (!analysisCols.includes('theme'))          db.exec(`ALTER TABLE stock_analysi
 if (!analysisCols.includes('risk_points'))    db.exec(`ALTER TABLE stock_analysis ADD COLUMN risk_points TEXT`);
 if (!analysisCols.includes('signal_flags'))   db.exec(`ALTER TABLE stock_analysis ADD COLUMN signal_flags TEXT`);
 if (!analysisCols.includes('summary_source')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN summary_source TEXT DEFAULT 'template'`);
+if (!analysisCols.includes('financial_metrics')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN financial_metrics TEXT`);
+if (!analysisCols.includes('financial_summary')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN financial_summary TEXT`);
+if (!analysisCols.includes('financial_source')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN financial_source TEXT`);
+if (!analysisCols.includes('financial_updated_at')) db.exec(`ALTER TABLE stock_analysis ADD COLUMN financial_updated_at TEXT`);
 
 function hashCode(text) {
   let hash = 0;
@@ -223,6 +227,26 @@ function selectFreshItems(candidates, count, excludedCodes = new Set()) {
     if (picked.length >= count) break;
   }
   return picked;
+}
+
+function fillRemainingItems(baseItems, candidates, count, excludedCodes = new Set()) {
+  const picked = [...(baseItems || [])];
+  const seen = new Set(picked.map((item) => String(item?.code || '')).filter(Boolean));
+
+  for (const item of uniqueByCode(candidates)) {
+    const code = String(item?.code || '');
+    if (!code || seen.has(code) || excludedCodes.has(code)) continue;
+    picked.push(item);
+    seen.add(code);
+    if (picked.length >= count) break;
+  }
+
+  return picked;
+}
+
+function fillRemainingItemsIfNeeded(baseItems, candidates, count, excludedCodes = new Set()) {
+  if ((baseItems || []).length >= count) return (baseItems || []).slice(0, count);
+  return fillRemainingItems(baseItems, candidates, count, excludedCodes);
 }
 
 function pickFirstFreshByTheme(candidates, theme, excludedCodes, selectedCodes) {
@@ -953,6 +977,7 @@ function buildAnalysis(stock) {
     tomorrowProb
   }, newsContext);
   const preservedAiSummary = existingAiSummaryMap.get(stock.code);
+  const existingFinancial = existingFinancialMap.get(stock.code) || {};
 
   return {
     code: stock.code,
@@ -974,7 +999,11 @@ function buildAnalysis(stock) {
     risk_points: JSON.stringify(riskPoints),
     future_outlook: future,
     risk,
-    foreign_flow: flowText
+    foreign_flow: flowText,
+    financial_metrics: existingFinancial.financial_metrics || null,
+    financial_summary: existingFinancial.financial_summary || '',
+    financial_source: existingFinancial.financial_source || '',
+    financial_updated_at: existingFinancial.financial_updated_at || null
   };
 }
 
@@ -989,6 +1018,26 @@ const existingAiSummaryMap = opts.resetAiSummaries
       .map((row) => [String(row.code || ''), String(row.summary || '').trim()])
       .filter(([code, summary]) => code && summary)
   );
+const existingFinancialMap = new Map(
+  db.prepare("SELECT code, financial_metrics, financial_summary, financial_source, financial_updated_at FROM stock_analysis WHERE financial_metrics IS NOT NULL OR financial_summary IS NOT NULL").all()
+    .map((row) => {
+      const code = String(row.code || '').trim();
+      if (!code) return null;
+      let financialMetrics = null;
+      try {
+        financialMetrics = row.financial_metrics ? JSON.parse(row.financial_metrics) : null;
+      } catch {
+        financialMetrics = null;
+      }
+      return [code, {
+        financial_metrics: financialMetrics,
+        financial_summary: String(row.financial_summary || '').trim(),
+        financial_source: String(row.financial_source || '').trim(),
+        financial_updated_at: row.financial_updated_at || null
+      }];
+    })
+    .filter(Boolean)
+);
 
 const stocks = db
   .prepare("SELECT code, name, market, close_price, prev_price, change_rate, volume, high_price, low_price, logo_url FROM stock_master WHERE market IN ('KOSPI','KOSDAQ') ORDER BY code")
@@ -1111,7 +1160,7 @@ const top = ordered.slice(0, 50).map((a, i) => {
   };
 });
 
-const getRecentExcludedCodes = (_listKey, days = 7) => getExposureCodesForAllLists(exposureHistory, todayDateKey, days, true);
+const getRecentExcludedCodes = (listKey, days = 7) => getExposureCodesForRecentDays(exposureHistory, listKey, todayDateKey, days, true);
 const getIntradaySignalExcludedCodes = () => {
   if (opts.mode !== 'intraday') return new Set();
   return getExposureCodes(exposureHistory, 'signal', todayDateKey);
@@ -1237,7 +1286,8 @@ for (const item of selectFreshItems(todayCandidates, 5, todayExcludedCodes)) {
   todaySelectedCodes.add(code);
   if (todaySelected.length >= 5) break;
 }
-const todayHome = todaySelected.slice(0, 5);
+const todayFresh = todaySelected.slice(0, 5);
+const todayHome = fillRemainingItemsIfNeeded(todayFresh, todayCandidates, 5);
 
 const tomorrowCandidates = uniqueByCode(
   [...recent].sort((a, b) =>
@@ -1251,7 +1301,13 @@ const tomorrowExcludedCodes = new Set([
   ...getRecentExcludedCodes('tomorrow', 7),
   ...todayHome.map((item) => String(item?.code || '')).filter(Boolean)
 ]);
-const tomorrowHome = selectFreshItems(tomorrowCandidates, 10, tomorrowExcludedCodes);
+const tomorrowFresh = selectFreshItems(tomorrowCandidates, 10, tomorrowExcludedCodes);
+const tomorrowHome = fillRemainingItemsIfNeeded(
+  tomorrowFresh,
+  tomorrowCandidates,
+  10,
+  new Set(todayHome.map((item) => String(item?.code || '')).filter(Boolean))
+);
 
 const signalCandidates = uniqueByCode(
   [...recent]
@@ -1297,7 +1353,15 @@ for (const item of selectFreshItems(relaxedSignalCandidates, 5, signalExcludedCo
   signalSelectedCodes.add(code);
   if (signalSelected.length >= 5) break;
 }
-const signalHome = signalSelected.slice(0, 5);
+const signalHome = fillRemainingItemsIfNeeded(
+  signalSelected.slice(0, 5),
+  relaxedSignalCandidates,
+  5,
+  new Set([
+    ...todayHome.map((item) => String(item?.code || '')).filter(Boolean),
+    ...tomorrowHome.map((item) => String(item?.code || '')).filter(Boolean)
+  ])
+);
 
 const analysisMap = Object.fromEntries(
   analyses.map((a) => {
@@ -1325,6 +1389,10 @@ const analysisMap = Object.fromEntries(
         risk: a.risk,
         foreign_flow: a.foreign_flow,
         summary_source: a.summary_source,
+        financial_metrics: a.financial_metrics || null,
+        financial_summary: a.financial_summary || '',
+        financial_source: a.financial_source || '',
+        financial_updated_at: a.financial_updated_at || null,
         close_price: s.close_price ?? null,
         logo_url: s.logo_url || null,
         updated_at: now,

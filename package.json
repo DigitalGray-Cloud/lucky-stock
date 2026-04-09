@@ -10,6 +10,7 @@
     "batch:stocks": "node scripts/sync-stocks.mjs",
     "batch:prices": "node scripts/build-stock-master.mjs",
     "batch:logos": "node scripts/build-stock-logos.mjs",
+    "batch:financials": "node scripts/build-financials.mjs",
     "batch:cache": "node scripts/build-ui-cache.mjs --mode=full",
     "batch:cache:intraday": "node scripts/build-ui-cache.mjs --mode=intraday",
     "batch:news": "node scripts/build-news-cache.mjs",

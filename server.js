@@ -337,6 +337,18 @@ app.delete("/api/feedback-posts/:id", (req, res) => {
 });
 
 app.use(express.static(config.staticDir, { index: false }));
+app.get("/stock/:code", (req, res) => {
+  res.sendFile(path.join(config.staticDir, "stock", String(req.params.code || ""), "index.html"));
+});
+app.get("/stock/:code/", (req, res) => {
+  res.sendFile(path.join(config.staticDir, "stock", String(req.params.code || ""), "index.html"));
+});
+app.get("/theme/:slug", (req, res) => {
+  res.sendFile(path.join(config.staticDir, "theme", String(req.params.slug || ""), "index.html"));
+});
+app.get("/theme/:slug/", (req, res) => {
+  res.sendFile(path.join(config.staticDir, "theme", String(req.params.slug || ""), "index.html"));
+});
 app.get("/", (_req, res) => {
   res.sendFile(path.join(config.staticDir, "index.html"));
 });

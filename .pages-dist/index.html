@@ -40,7 +40,7 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vsiiv6kbxt");
   </script>
-  <link rel="stylesheet" href="/style.css?v=20260314b" />
+  <link rel="stylesheet" href="/style.css?v=20260408-feedback" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -360,6 +360,24 @@
       <p class="ad-note">광고 클릭 유도 문구 없이 정보 콘텐츠를 우선 제공합니다.</p>
     </section>
 
+    <section class="card feedback-board-section" aria-labelledby="feedback-board-title">
+      <div class="feedback-board-head">
+        <div>
+          <h2 id="feedback-board-title">의견 및 피드백</h2>
+          <p class="feedback-board-subtitle">로그인 없이 이름과 한 줄 의견을 남기고, 비밀번호로 수정하거나 삭제할 수 있습니다.</p>
+        </div>
+        <button id="feedback-refresh-btn" class="feedback-refresh-btn" type="button">새로고침</button>
+      </div>
+      <form id="feedback-form" class="feedback-form">
+        <input id="feedback-name" name="name" type="text" maxlength="24" placeholder="이름 없으면 자동으로 아무개N 처리" />
+        <input id="feedback-message" name="message" type="text" maxlength="120" placeholder="사이트에 대한 의견이나 요청을 남겨 주세요" required />
+        <input id="feedback-password" name="password" type="password" maxlength="20" placeholder="비밀번호" required />
+        <button id="feedback-submit-btn" type="submit">등록</button>
+      </form>
+      <p id="feedback-status" class="feedback-status" aria-live="polite"></p>
+      <div id="feedback-list" class="feedback-list"></div>
+    </section>
+
     <section class="content-quality card">
       <h2>서비스 운영 원칙</h2>
       <ul class="bullet">
@@ -400,6 +418,7 @@
       </div>
       <p class="ai-models-disclaimer">AI outputs are probabilistic references only. Always conduct your own due diligence before investing.</p>
     </section>
+
   </main>
 
   <footer class="footer">
@@ -414,6 +433,6 @@
     </div>
   </footer>
 
-  <script defer src="/main.js?v=20260314f"></script>
+  <script defer src="/main.js?v=20260408-feedback"></script>
 </body>
 </html>

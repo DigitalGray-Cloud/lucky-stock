@@ -311,22 +311,72 @@ function findNewsLinkForSummaryLine(code, line) {
   return String(hit?.link || "");
 }
 
+function buildCombinedSummaryText(data, fallbackSummary = "") {
+  return [fallbackSummary, String(data?.financial_summary || "").trim()].filter(Boolean).join("\n\n");
+}
+
+function formatFinancialMetricValue(value, type = "number") {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "-";
+  if (type === "won") return `${Math.round(num).toLocaleString("ko-KR")}원`;
+  if (type === "percent") return `${num.toFixed(1)}%`;
+  if (type === "multiple") return `${num.toFixed(1)}배`;
+  if (type === "eok") return `${(num / 100000000).toFixed(1)}억원`;
+  return Math.round(num).toLocaleString("ko-KR");
+}
+
+function renderFinancialMetricsTable(metrics = null) {
+  if (!metrics || typeof metrics !== "object") return "";
+  const rows = [
+    { label: "매출", value: formatFinancialMetricValue(metrics.revenue, "eok"), desc: "회사가 벌어들인 총매출" },
+    { label: "영업이익", value: formatFinancialMetricValue(metrics.operating_income, "eok"), desc: "본업으로 남긴 이익" },
+    { label: "순이익", value: formatFinancialMetricValue(metrics.net_income, "eok"), desc: "최종적으로 남은 이익" },
+    { label: "ROE", value: formatFinancialMetricValue(metrics.roe, "percent"), desc: "자기자본 대비 수익성" },
+    { label: "부채비율", value: formatFinancialMetricValue(metrics.debt_ratio, "percent"), desc: "자기자본 대비 빚 부담" },
+    { label: "영업이익률", value: formatFinancialMetricValue(metrics.operating_margin, "percent"), desc: "매출 대비 본업 마진" },
+    { label: "EPS", value: formatFinancialMetricValue(metrics.eps, "won"), desc: "주당 순이익" },
+    { label: "BPS", value: formatFinancialMetricValue(metrics.bps, "won"), desc: "주당 순자산" },
+    { label: "PER", value: formatFinancialMetricValue(metrics.per, "multiple"), desc: "이익 대비 주가 수준" },
+    { label: "PBR", value: formatFinancialMetricValue(metrics.pbr, "multiple"), desc: "순자산 대비 주가 수준" }
+  ];
+  if (!rows.some((row) => row.value !== "-")) return "";
+  return `
+    <div class="summary-financial-card">
+      <div class="summary-financial-title">핵심 재무표</div>
+      <div class="summary-financial-grid">
+        ${rows.map((row) => `
+          <div class="summary-financial-cell">
+            <span class="summary-financial-label">${row.label}</span>
+            <strong>${row.value}</strong>
+            <small>${row.desc}</small>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderSummaryHtml(summary, code = "") {
   const headingSet = new Set([
     "이 회사 뭐 하는 곳인가",
     "왜 오를 수 있나",
     "뭐가 위험한가",
     "지금 가격이 싼가 비싼가",
-    "그래서 지금 사도 되나"
+    "그래서 지금 사도 되나",
+    "재무제표 및 회사 성적표"
   ]);
   const lines = String(summary || "").split("\n");
   return lines
     .map((line) => {
       const t = line.trim();
       if (!t) return '<div class="summary-gap"></div>';
-      const noEmoji = t.replace(/^[🏢📈⚠️💰🤔]\s*/, "").trim();
-      if (/^[🏢📈⚠️💰🤔]\s/.test(t) || headingSet.has(noEmoji)) {
-        return `<div class="summary-heading">${escapeHtml(t)}</div>`;
+      const noEmoji = t.replace(/^[🏢📈⚠️💰🤔📊]\s*/, "").trim();
+      if (/^[🏢📈⚠️💰🤔📊]\s/.test(t) || headingSet.has(noEmoji)) {
+        const headingHtml = `<div class="summary-heading">${escapeHtml(t)}</div>`;
+        if (noEmoji === "재무제표 및 회사 성적표") {
+          return `${headingHtml}${renderFinancialMetricsTable(cacheState.analysisMap?.[code]?.financial_metrics || null)}`;
+        }
+        return headingHtml;
       }
       if (/^\d{4}-\d{2}-\d{2}\s+['"].+['"]/.test(t)) {
         const href = findNewsLinkForSummaryLine(code, t);
@@ -869,7 +919,8 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
   const summaryText = (typeof data.summary === "string" && data.summary.includes("🏢 이 회사 뭐 하는 곳인가"))
     ? data.summary
     : buildFiveQaSummaryFromData(data, stockMeta);
-  els.decisionDesc.innerHTML = renderSummaryHtml(summaryText || "분석 요약 없음", code);
+  const combinedSummary = buildCombinedSummaryText(data, summaryText || "분석 요약 없음");
+  els.decisionDesc.innerHTML = renderSummaryHtml(combinedSummary, code);
 
   const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [
     `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,

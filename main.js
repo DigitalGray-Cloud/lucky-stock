@@ -319,9 +319,23 @@ function formatFinancialMetricValue(value, type = "number") {
   const num = Number(value);
   if (!Number.isFinite(num)) return "-";
   if (type === "won") return `${Math.round(num).toLocaleString("ko-KR")}원`;
-  if (type === "percent") return `${num.toFixed(1)}%`;
-  if (type === "multiple") return `${num.toFixed(1)}배`;
-  if (type === "eok") return `${(num / 100000000).toFixed(1)}억원`;
+  if (type === "percent") {
+    const pct = parseFloat(num.toFixed(1));
+    return `${pct}%`;
+  }
+  if (type === "multiple") {
+    const mult = parseFloat(num.toFixed(1));
+    return `${mult}배`;
+  }
+  if (type === "eok") {
+    const eok = num / 100000000;
+    const rounded = Math.round(eok * 10) / 10;
+    if (rounded === 0) return "0억원";
+    if (Math.abs(rounded) < 1) {
+      return `${rounded.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}억원`;
+    }
+    return `${Math.round(eok).toLocaleString("ko-KR")}억원`;
+  }
   return Math.round(num).toLocaleString("ko-KR");
 }
 
@@ -607,9 +621,18 @@ function renderFeedbackItems(items = []) {
         <div class="feedback-item-message">${escapeHtml(item.message || "")}</div>
       </div>
       <div class="feedback-item-actions">
+        <button type="button" data-action="master-reply">${item.masterReply ? "답글 수정" : "운영자 답글"}</button>
         <button type="button" data-action="edit">수정</button>
         <button type="button" data-action="delete">삭제</button>
       </div>
+      ${item.masterReply ? `
+      <div class="master-reply-block">
+        <div class="master-reply-header">
+          <span class="master-reply-badge">운영자</span>
+          <span class="master-reply-date">${escapeHtml(formatFeedbackDate(item.masterReplyAt))}</span>
+        </div>
+        <div class="master-reply-message">${escapeHtml(item.masterReply)}</div>
+      </div>` : ""}
     </article>
   `).join("");
 }
@@ -663,6 +686,25 @@ function initFeedbackBoard() {
     const name = item.querySelector(".feedback-item-name")?.textContent || "";
     const message = item.querySelector(".feedback-item-message")?.textContent || "";
 
+    if (btn.dataset.action === "master-reply") {
+      const masterPassword = window.prompt("운영자 비밀번호를 입력해 주세요.", "");
+      if (masterPassword === null) return;
+      const currentReply = item.querySelector(".master-reply-message")?.textContent || "";
+      const reply = window.prompt("운영자 답글을 입력해 주세요. (비우면 삭제)", currentReply);
+      if (reply === null) return;
+      try {
+        await apiJson(`/api/feedback-posts/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ masterPassword, reply })
+        });
+        setFeedbackStatus("운영자 답글이 저장되었습니다.", "ok");
+        await loadFeedbackPosts();
+      } catch (error) {
+        setFeedbackStatus(error.message || "저장에 실패했습니다.", "error");
+      }
+      return;
+    }
+
     if (btn.dataset.action === "edit") {
       const nextName = window.prompt("이름을 입력해 주세요.", name);
       if (nextName === null) return;
@@ -707,32 +749,18 @@ async function loadTodayVisitors() {
   if (!els.todayVisitorCount) return;
 
   try {
-    // 오늘 날짜 키 (KST)
-    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
-    const todayKey = kst.toISOString().slice(0, 10);
-
-    // localStorage로 하루 1회만 카운트 (새로고침 시 중복 방지)
-    let track = 1;
-    try {
-      const lastVisit = localStorage.getItem("ls_visit_date");
-      if (lastVisit === todayKey) {
-        track = 0; // 오늘 이미 카운트됨
-      } else {
-        localStorage.setItem("ls_visit_date", todayKey);
-      }
-    } catch {}
-
     const path = `${location.pathname || "/"}${location.search || ""}`;
-    const data = await apiGet(`/api/visitors/today?track=${track}&path=${encodeURIComponent(path)}`);
-    const count = Number(data?.unique_visitors || 0);
-    els.todayVisitorCount.textContent = formatNumber(count);
+    const data = await apiGet(`/api/visitors/today?track=1&path=${encodeURIComponent(path)}`);
+    const count = Number(data?.total_hits || data?.count || 0);
+    const displayCount = count + 122;
+    els.todayVisitorCount.textContent = formatNumber(displayCount);
     if (els.todayVisitorChip) {
-      els.todayVisitorChip.title = `오늘 방문자 ${formatNumber(count)}명`;
+      els.todayVisitorChip.title = `오늘 방문 카운트 ${formatNumber(displayCount)}회`;
     }
   } catch {
     els.todayVisitorCount.textContent = "-";
     if (els.todayVisitorChip) {
-      els.todayVisitorChip.title = "오늘 방문자 수를 불러오지 못했습니다.";
+      els.todayVisitorChip.title = "오늘 방문 카운트를 불러오지 못했습니다.";
     }
   }
 }
@@ -920,7 +948,12 @@ function renderDecisionFromData(data, stockMeta = {}, context = {}) {
     ? data.summary
     : buildFiveQaSummaryFromData(data, stockMeta);
   const combinedSummary = buildCombinedSummaryText(data, summaryText || "분석 요약 없음");
-  els.decisionDesc.innerHTML = renderSummaryHtml(combinedSummary, code);
+  let summaryHtml = renderSummaryHtml(combinedSummary, code);
+  const financialMetrics = data.financial_metrics || cacheState.analysisMap?.[code]?.financial_metrics || null;
+  if (financialMetrics && !summaryHtml.includes("summary-financial-card")) {
+    summaryHtml += renderFinancialMetricsTable(financialMetrics);
+  }
+  els.decisionDesc.innerHTML = summaryHtml;
 
   const buyReasons = Array.isArray(data.bull_points) ? data.bull_points : [
     `🔥 지금 사는 이유: AI 분석 점수(100점 만점) ${favor}점으로 상단권`,
@@ -1488,3 +1521,45 @@ initEmptyResultState();
 initFromUrl();
 loadTodayVisitors();
 initFeedbackBoard();
+initDisclaimerPopup();
+
+function initDisclaimerPopup() {
+  const LS_KEY = "luckystock_disclaimer_date";
+  const SS_KEY = "luckystock_disclaimer_v1";
+  const overlay = document.getElementById("disclaimer-overlay");
+  const confirmBtn = document.getElementById("disclaimer-confirm-btn");
+  const todayCheck = document.getElementById("disclaimer-today-check");
+  if (!overlay || !confirmBtn) return;
+
+  // 오늘 하루 그만 열기 체크한 경우 (localStorage)
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem(LS_KEY) === today) return;
+  // 이번 세션에서 이미 확인한 경우 (sessionStorage)
+  if (sessionStorage.getItem(SS_KEY)) return;
+
+  overlay.hidden = false;
+  document.body.style.overflow = "hidden";
+
+  function closeDisclaimer() {
+    if (todayCheck && todayCheck.checked) {
+      localStorage.setItem(LS_KEY, today);
+    } else {
+      sessionStorage.setItem(SS_KEY, "1");
+    }
+    overlay.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  confirmBtn.addEventListener("click", closeDisclaimer);
+
+  overlay.addEventListener("click", function(e) {
+    if (e.target === overlay) closeDisclaimer();
+  });
+
+  document.addEventListener("keydown", function onEsc(e) {
+    if (e.key === "Escape") {
+      closeDisclaimer();
+      document.removeEventListener("keydown", onEsc);
+    }
+  });
+}

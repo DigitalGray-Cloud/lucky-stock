@@ -281,8 +281,9 @@ function buildStockPage(code, data) {
   <meta name="twitter:title" content="${escapeHtml(titleStr)}" />
   <meta name="twitter:description" content="${escapeHtml(descStr)}" />
   <meta name="twitter:image" content="https://luckystock.pages.dev/og-image.png" />
-  <link rel="icon" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="/favicon-app.png?v=20260414a" />
+  <link rel="shortcut icon" href="/favicon-app.png?v=20260414a" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260414a" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2579165029846981" crossorigin="anonymous"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7Z766ZWFG"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-R7Z766ZWFG');</script>
@@ -549,8 +550,9 @@ function buildThemePage(theme, ranked, rankingMeta) {
   <meta name="twitter:title" content="${escapeHtml(titleStr)}" />
   <meta name="twitter:description" content="${escapeHtml(description)}" />
   <meta name="twitter:image" content="https://luckystock.pages.dev/og-image.png" />
-  <link rel="icon" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="/favicon-app.png?v=20260414a" />
+  <link rel="shortcut icon" href="/favicon-app.png?v=20260414a" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260414a" />
   <link rel="stylesheet" href="/style.css?v=20260313a" />
   <script type="application/ld+json">
   {

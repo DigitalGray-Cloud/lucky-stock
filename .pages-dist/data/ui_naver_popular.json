@@ -1,76 +1,76 @@
 {
-  "generated_at": "2026-04-09T06:48:38.348Z",
+  "generated_at": "2026-04-14T07:45:50.478Z",
   "source": "https://finance.naver.com/sise/",
   "items": [
     {
       "rank": 1,
       "code": "005930",
       "name": "삼성전자",
-      "price_text": "204,000",
-      "direction": "하락"
+      "price_text": "206,500",
+      "direction": "상승"
     },
     {
       "rank": 2,
       "code": "000660",
       "name": "SK하이닉스",
-      "price_text": "998,000",
-      "direction": "하락"
+      "price_text": "1,103,000",
+      "direction": "상승"
     },
     {
       "rank": 3,
-      "code": "000250",
-      "name": "삼천당제약",
-      "price_text": "504,000",
+      "code": "010170",
+      "name": "대한광통신",
+      "price_text": "20,150",
       "direction": "상승"
     },
     {
       "rank": 4,
       "code": "005380",
       "name": "현대차",
-      "price_text": "489,500",
-      "direction": "하락"
+      "price_text": "491,500",
+      "direction": "상승"
     },
     {
       "rank": 5,
-      "code": "047040",
-      "name": "대우건설",
-      "price_text": "23,350",
+      "code": "006800",
+      "name": "미래에셋증권",
+      "price_text": "72,400",
       "direction": "상승"
     },
     {
       "rank": 6,
-      "code": "035420",
-      "name": "NAVER",
-      "price_text": "",
-      "direction": "보합"
-    },
-    {
-      "rank": 7,
-      "code": "017900",
-      "name": "광전자",
-      "price_text": "10,530",
-      "direction": "상한가"
-    },
-    {
-      "rank": 8,
-      "code": "000270",
-      "name": "기아",
-      "price_text": "150,500",
+      "code": "047040",
+      "name": "대우건설",
+      "price_text": "23,500",
       "direction": "하락"
     },
     {
-      "rank": 9,
-      "code": "079550",
-      "name": "LIG넥스원",
-      "price_text": "887,000",
+      "rank": 7,
+      "code": "046970",
+      "name": "우리로",
+      "price_text": "11,860",
       "direction": "상승"
+    },
+    {
+      "rank": 8,
+      "code": "034020",
+      "name": "두산에너빌리티",
+      "price_text": "99,700",
+      "direction": "상승"
+    },
+    {
+      "rank": 9,
+      "code": "000250",
+      "name": "삼천당제약",
+      "price_text": "520,000",
+      "direction": "하락"
     },
     {
       "rank": 10,
       "code": "006400",
       "name": "삼성SDI",
-      "price_text": "480,000",
-      "direction": "상승"
+      "price_text": "470,500",
+      "direction": "하락"
     }
   ]
 }

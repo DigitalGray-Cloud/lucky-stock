@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의견 및 피드백</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">LuckyStock Local Prototype</p>
+        <h1>의견 및 피드백</h1>
+        <p class="lead">로그인 없이 이름과 한 줄 의견을 남기고, 작성 시 입력한 비밀번호로 수정 또는 삭제하는 로컬 게시판입니다.</p>
+      </section>
+
+      <section class="composer card">
+        <form id="create-form" class="inline-form">
+          <label>
+            <span>이름</span>
+            <input id="name" name="name" type="text" maxlength="24" placeholder="예: 홍길동" required />
+          </label>
+          <label class="message-field">
+            <span>내용</span>
+            <input id="message" name="message" type="text" maxlength="120" placeholder="사이트에 대한 의견이나 요청을 한 줄로 남겨 주세요" required />
+          </label>
+          <label>
+            <span>비밀번호</span>
+            <input id="password" name="password" type="password" maxlength="20" placeholder="예: 1111" required />
+          </label>
+          <button type="submit">등록</button>
+        </form>
+        <p id="form-status" class="status" aria-live="polite"></p>
+      </section>
+
+      <section class="board">
+        <div class="board-head">
+          <h2>최근 의견</h2>
+          <button id="refresh-button" class="ghost-button" type="button">새로고침</button>
+        </div>
+        <ul id="post-list" class="post-list"></ul>
+      </section>
+    </main>
+
+    <template id="post-template">
+      <li class="post card">
+        <div class="post-view">
+          <div class="post-meta">
+            <strong class="post-name"></strong>
+            <span class="post-date"></span>
+          </div>
+          <p class="post-message"></p>
+          <div class="post-actions">
+            <button class="ghost-button edit-trigger" type="button">수정</button>
+            <button class="ghost-button delete-trigger" type="button">삭제</button>
+          </div>
+        </div>
+
+        <form class="edit-form hidden">
+          <label>
+            <span>이름</span>
+            <input name="name" type="text" maxlength="24" required />
+          </label>
+          <label class="message-field">
+            <span>내용</span>
+            <input name="message" type="text" maxlength="120" required />
+          </label>
+          <label>
+            <span>비밀번호</span>
+            <input name="password" type="password" maxlength="20" placeholder="작성 시 비밀번호" required />
+          </label>
+          <div class="edit-actions">
+            <button type="submit">저장</button>
+            <button class="ghost-button cancel-trigger" type="button">취소</button>
+          </div>
+          <p class="status item-status" aria-live="polite"></p>
+        </form>
+      </li>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

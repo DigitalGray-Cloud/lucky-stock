@@ -3,46 +3,91 @@ set -euo pipefail
 
 cd /home/user/luckstock
 
-LOCK_FILE="/tmp/luckystock-market-sync.lock"
+LOCK_DIR="/tmp/luckystock-market-sync.lock"
 LOG_FILE="data/market-sync-loop.log"
+PID_FILE="data/market-sync-loop.pid"
+HEARTBEAT_FILE="data/market-sync-loop.heartbeat"
 MAX_LOG_BYTES=5242880  # 5MB
+SLEEP_SECONDS=600
+SLEEP_SLICE_SECONDS=10
+NPM_BIN="${NPM_BIN:-/usr/bin/npm}"
 
-# 로그 로테이션 (5MB 초과 시 잘라냄)
+log() {
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] $*" >> "$LOG_FILE"
+}
+
 rotate_log() {
   if [ -f "$LOG_FILE" ] && [ "$(wc -c < "$LOG_FILE")" -gt "$MAX_LOG_BYTES" ]; then
     tail -c 2097152 "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
-    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] log rotated" >> "$LOG_FILE"
+    log "log rotated"
   fi
 }
 
-# 이미 실행 중이면 종료 (중복 실행 방지)
-if ! exec 9>"$LOCK_FILE"; then
-  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] failed to open lock file" >> "$LOG_FILE"
-  exit 1
-fi
+write_heartbeat() {
+  date -u +%Y-%m-%dT%H:%M:%SZ > "$HEARTBEAT_FILE"
+}
 
-if ! flock -n 9; then
-  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] already running, skipping" >> "$LOG_FILE"
-  exit 0
-fi
+cleanup() {
+  local exit_code=$?
+  rm -rf "$LOCK_DIR"
+  rm -f "$PID_FILE"
+  log "stopped exit=$exit_code"
+}
 
-trap 'flock -u 9; exec 9>&-; rm -f "$LOCK_FILE"' EXIT
+acquire_lock() {
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    echo "$$" > "$LOCK_DIR/pid"
+    return
+  fi
 
-echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] started pid=$$" >> "$LOG_FILE"
+  local existing_pid=""
+  if [ -f "$LOCK_DIR/pid" ]; then
+    existing_pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+  fi
+
+  if [ -n "$existing_pid" ] && kill -0 "$existing_pid" 2>/dev/null; then
+    log "already running pid=$existing_pid"
+    exit 0
+  fi
+
+  log "stale lock detected pid=${existing_pid:-unknown}; recovering"
+  rm -rf "$LOCK_DIR"
+  mkdir "$LOCK_DIR"
+  echo "$$" > "$LOCK_DIR/pid"
+}
+
+sleep_with_heartbeat() {
+  local remaining=$SLEEP_SECONDS
+  while [ "$remaining" -gt 0 ]; do
+    write_heartbeat
+    sleep "$SLEEP_SLICE_SECONDS"
+    remaining=$((remaining - SLEEP_SLICE_SECONDS))
+  done
+}
+
+trap cleanup EXIT INT TERM
+
+rotate_log
+acquire_lock
+echo "$$" > "$PID_FILE"
+write_heartbeat
+log "started pid=$$"
 
 while true; do
   rotate_log
+  write_heartbeat
 
   START=$(date +%s)
-  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] batch begin" >> "$LOG_FILE"
+  log "batch begin"
 
-  if /usr/bin/npm run batch:market-sync:intraday >> "$LOG_FILE" 2>&1; then
+  if "$NPM_BIN" run batch:market-sync:intraday >> "$LOG_FILE" 2>&1; then
     END=$(date +%s)
-    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] batch ok elapsed=$((END - START))s" >> "$LOG_FILE"
+    log "batch ok elapsed=$((END - START))s"
   else
     END=$(date +%s)
-    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [loop] ERROR batch failed elapsed=$((END - START))s" >> "$LOG_FILE"
+    log "ERROR batch failed elapsed=$((END - START))s"
   fi
 
-  sleep 600
+  write_heartbeat
+  sleep_with_heartbeat
 done

@@ -1,0 +1,260 @@
+:root {
+  color-scheme: light;
+  --bg: #f5efe4;
+  --panel: rgba(255, 252, 246, 0.92);
+  --text: #1f1a14;
+  --muted: #6f6254;
+  --line: rgba(77, 56, 32, 0.16);
+  --accent: #b75d2f;
+  --accent-strong: #8f3f18;
+  --ok: #1b7a4a;
+  --error: #a13a2a;
+  --shadow: 0 24px 60px rgba(80, 53, 25, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 163, 0.45), transparent 28%),
+    linear-gradient(180deg, #f8f2e8 0%, #f1e7d7 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+.hero {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+.post-name {
+  font-family: "Georgia", "Noto Serif KR", serif;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 0.96;
+}
+
+.lead {
+  max-width: 700px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.6;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.composer {
+  padding: 22px;
+}
+
+.inline-form,
+.edit-form {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) 160px 112px;
+  gap: 12px;
+  align-items: end;
+}
+
+.edit-form {
+  grid-template-columns: 140px minmax(0, 1fr) 170px;
+}
+
+label {
+  display: block;
+}
+
+label span {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  color: var(--text);
+  background: #fffdf8;
+  border: 1px solid rgba(104, 74, 37, 0.16);
+  border-radius: 14px;
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(183, 93, 47, 0.6);
+  box-shadow: 0 0 0 4px rgba(183, 93, 47, 0.1);
+}
+
+button {
+  height: 48px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-strong);
+}
+
+.ghost-button {
+  background: transparent;
+  border: 1px solid rgba(104, 74, 37, 0.18);
+  color: var(--text);
+}
+
+.ghost-button:hover {
+  background: rgba(183, 93, 47, 0.08);
+}
+
+.message-field {
+  min-width: 0;
+}
+
+.status {
+  min-height: 24px;
+  margin: 12px 2px 0;
+  font-size: 0.92rem;
+}
+
+.status[data-type="ok"] {
+  color: var(--ok);
+}
+
+.status[data-type="error"] {
+  color: var(--error);
+}
+
+.board {
+  margin-top: 28px;
+}
+
+.board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.board-head h2 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.post-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.post {
+  padding: 18px 18px 16px;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.post-date {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.post-message {
+  margin: 14px 0 12px;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.post-actions,
+.edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.post-actions button,
+.edit-actions button {
+  width: auto;
+  padding: 0 16px;
+}
+
+.empty {
+  padding: 28px 22px;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(255, 252, 246, 0.72);
+  border: 1px dashed rgba(104, 74, 37, 0.16);
+  border-radius: 24px;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .inline-form,
+  .edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  button,
+  .post-actions button,
+  .edit-actions button {
+    width: 100%;
+  }
+
+  .post-actions,
+  .edit-actions {
+    flex-direction: column;
+  }
+
+  .board-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

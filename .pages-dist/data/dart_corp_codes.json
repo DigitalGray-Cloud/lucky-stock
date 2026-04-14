@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-09T06:30:26.256Z",
+  "generated_at": "2026-04-14T07:09:24.928Z",
   "items": [
     {
       "corp_code": "00260985",
@@ -6836,12 +6836,6 @@
       "modify_date": "20230220"
     },
     {
-      "corp_code": "00121543",
-      "corp_name": "무학",
-      "stock_code": "033920",
-      "modify_date": "20230222"
-    },
-    {
       "corp_code": "00359580",
       "corp_name": "아이디스홀딩스",
       "stock_code": "054800",
@@ -12158,12 +12152,6 @@
       "modify_date": "20250225"
     },
     {
-      "corp_code": "00763701",
-      "corp_name": "헥토파이낸셜",
-      "stock_code": "234340",
-      "modify_date": "20241213"
-    },
-    {
       "corp_code": "00166175",
       "corp_name": "대호특수강",
       "stock_code": "021040",
@@ -14042,12 +14030,6 @@
       "modify_date": "20240328"
     },
     {
-      "corp_code": "00261887",
-      "corp_name": "티엘아이",
-      "stock_code": "062860",
-      "modify_date": "20241211"
-    },
-    {
       "corp_code": "00356158",
       "corp_name": "영진코퍼레이션",
       "stock_code": "053330",
@@ -14645,12 +14627,6 @@
       "corp_code": "00361488",
       "corp_name": "텔코웨어",
       "stock_code": "078000",
-      "modify_date": "20250331"
-    },
-    {
-      "corp_code": "00628189",
-      "corp_name": "웅진씽크빅",
-      "stock_code": "095720",
       "modify_date": "20250331"
     },
     {
@@ -15324,6 +15300,48 @@
       "corp_name": "리가켐바이오",
       "stock_code": "141080",
       "modify_date": "20260408"
+    },
+    {
+      "corp_code": "00121543",
+      "corp_name": "무학",
+      "stock_code": "033920",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "00180865",
+      "corp_name": "디에이치엑스컴퍼니",
+      "stock_code": "031860",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "01310269",
+      "corp_name": "IPARK현대산업개발",
+      "stock_code": "294870",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "00524421",
+      "corp_name": "테스",
+      "stock_code": "095610",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "00543204",
+      "corp_name": "스테이지원엔터",
+      "stock_code": "078860",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "00677334",
+      "corp_name": "아하",
+      "stock_code": "102950",
+      "modify_date": "20260410"
+    },
+    {
+      "corp_code": "00966168",
+      "corp_name": "디알젬",
+      "stock_code": "263690",
+      "modify_date": "20260410"
     },
     {
       "corp_code": "00683061",
@@ -16046,12 +16064,6 @@
       "modify_date": "20260325"
     },
     {
-      "corp_code": "00273439",
-      "corp_name": "메디아나",
-      "stock_code": "041920",
-      "modify_date": "20260325"
-    },
-    {
       "corp_code": "00166315",
       "corp_name": "화신",
       "stock_code": "010690",
@@ -16346,12 +16358,6 @@
       "modify_date": "20260312"
     },
     {
-      "corp_code": "00966168",
-      "corp_name": "디알젬",
-      "stock_code": "263690",
-      "modify_date": "20260313"
-    },
-    {
       "corp_code": "00217743",
       "corp_name": "화성밸브",
       "stock_code": "039610",
@@ -16568,12 +16574,6 @@
       "modify_date": "20260324"
     },
     {
-      "corp_code": "00524421",
-      "corp_name": "테스",
-      "stock_code": "095610",
-      "modify_date": "20260324"
-    },
-    {
       "corp_code": "01316227",
       "corp_name": "효성티앤씨",
       "stock_code": "298020",
@@ -16590,6 +16590,12 @@
       "corp_name": "솔디펜스",
       "stock_code": "215090",
       "modify_date": "20250814"
+    },
+    {
+      "corp_code": "00353018",
+      "corp_name": "헬스커넥트",
+      "stock_code": "058530",
+      "modify_date": "20260413"
     },
     {
       "corp_code": "00371740",
@@ -16766,12 +16772,6 @@
       "modify_date": "20260319"
     },
     {
-      "corp_code": "00252269",
-      "corp_name": "아이에이",
-      "stock_code": "038880",
-      "modify_date": "20260319"
-    },
-    {
       "corp_code": "00454937",
       "corp_name": "덕신이피씨",
       "stock_code": "090410",
@@ -16800,6 +16800,18 @@
       "corp_name": "한화솔루션",
       "stock_code": "009830",
       "modify_date": "20250725"
+    },
+    {
+      "corp_code": "00656021",
+      "corp_name": "BF랩스",
+      "stock_code": "139050",
+      "modify_date": "20260409"
+    },
+    {
+      "corp_code": "00763701",
+      "corp_name": "헥토파이낸셜",
+      "stock_code": "234340",
+      "modify_date": "20260409"
     },
     {
       "corp_code": "00110060",
@@ -17132,12 +17144,6 @@
       "modify_date": "20260224"
     },
     {
-      "corp_code": "00543204",
-      "corp_name": "스테이지원엔터",
-      "stock_code": "078860",
-      "modify_date": "20260330"
-    },
-    {
       "corp_code": "00157104",
       "corp_name": "대동전자",
       "stock_code": "008110",
@@ -17370,12 +17376,6 @@
       "corp_name": "정원엔시스",
       "stock_code": "045510",
       "modify_date": "20260304"
-    },
-    {
-      "corp_code": "00677334",
-      "corp_name": "아하",
-      "stock_code": "102950",
-      "modify_date": "20250923"
     },
     {
       "corp_code": "01706794",
@@ -17930,12 +17930,6 @@
       "modify_date": "20260330"
     },
     {
-      "corp_code": "00353018",
-      "corp_name": "파나케이아",
-      "stock_code": "058530",
-      "modify_date": "20251114"
-    },
-    {
       "corp_code": "00105873",
       "corp_name": "LG디스플레이",
       "stock_code": "034220",
@@ -18296,6 +18290,12 @@
       "modify_date": "20260114"
     },
     {
+      "corp_code": "00220057",
+      "corp_name": "GC메디아이",
+      "stock_code": "032620",
+      "modify_date": "20260413"
+    },
+    {
       "corp_code": "01565054",
       "corp_name": "그래피",
       "stock_code": "318060",
@@ -18306,12 +18306,6 @@
       "corp_name": "텔콘RF제약",
       "stock_code": "200230",
       "modify_date": "20250825"
-    },
-    {
-      "corp_code": "00656021",
-      "corp_name": "BF랩스",
-      "stock_code": "139050",
-      "modify_date": "20260123"
     },
     {
       "corp_code": "00990396",
@@ -18737,12 +18731,6 @@
       "corp_code": "00426086",
       "corp_name": "티케이지휴켐스",
       "stock_code": "069260",
-      "modify_date": "20260130"
-    },
-    {
-      "corp_code": "00180865",
-      "corp_name": "디에이치엑스컴퍼니",
-      "stock_code": "031860",
       "modify_date": "20260130"
     },
     {
@@ -19356,6 +19344,12 @@
       "corp_name": "HLB생명과학",
       "stock_code": "067630",
       "modify_date": "20260401"
+    },
+    {
+      "corp_code": "01399071",
+      "corp_name": "고바이오랩",
+      "stock_code": "348150",
+      "modify_date": "20260413"
     },
     {
       "corp_code": "00807555",
@@ -20342,12 +20336,6 @@
       "modify_date": "20260327"
     },
     {
-      "corp_code": "01399071",
-      "corp_name": "고바이오랩",
-      "stock_code": "348150",
-      "modify_date": "20260327"
-    },
-    {
       "corp_code": "00459871",
       "corp_name": "농심홀딩스",
       "stock_code": "072710",
@@ -20369,12 +20357,6 @@
       "corp_code": "01205842",
       "corp_name": "HD건설기계",
       "stock_code": "267270",
-      "modify_date": "20260327"
-    },
-    {
-      "corp_code": "01310269",
-      "corp_name": "HDC현대산업개발",
-      "stock_code": "294870",
       "modify_date": "20260327"
     },
     {
@@ -21392,6 +21374,18 @@
       "modify_date": "20260303"
     },
     {
+      "corp_code": "00261887",
+      "corp_name": "티엘아이",
+      "stock_code": "062860",
+      "modify_date": "20260409"
+    },
+    {
+      "corp_code": "00252269",
+      "corp_name": "아이에이",
+      "stock_code": "038880",
+      "modify_date": "20260409"
+    },
+    {
       "corp_code": "00137359",
       "corp_name": "신풍제약",
       "stock_code": "019170",
@@ -22310,12 +22304,6 @@
       "modify_date": "20260331"
     },
     {
-      "corp_code": "00470829",
-      "corp_name": "인티큐브",
-      "stock_code": "070590",
-      "modify_date": "20260331"
-    },
-    {
       "corp_code": "00491938",
       "corp_name": "GH신소재",
       "stock_code": "130500",
@@ -22572,6 +22560,12 @@
       "corp_name": "서희건설",
       "stock_code": "035890",
       "modify_date": "20260323"
+    },
+    {
+      "corp_code": "00628189",
+      "corp_name": "웅진씽크빅",
+      "stock_code": "095720",
+      "modify_date": "20260410"
     },
     {
       "corp_code": "00964595",
@@ -23090,6 +23084,18 @@
       "modify_date": "20260401"
     },
     {
+      "corp_code": "00273439",
+      "corp_name": "메디아나",
+      "stock_code": "041920",
+      "modify_date": "20260409"
+    },
+    {
+      "corp_code": "00470829",
+      "corp_name": "인티큐브",
+      "stock_code": "070590",
+      "modify_date": "20260409"
+    },
+    {
       "corp_code": "00453488",
       "corp_name": "다이나믹디자인",
       "stock_code": "145210",
@@ -23484,12 +23490,6 @@
       "corp_name": "맵스리얼티",
       "stock_code": "094800",
       "modify_date": "20251031"
-    },
-    {
-      "corp_code": "00220057",
-      "corp_name": "유비케어",
-      "stock_code": "032620",
-      "modify_date": "20251103"
     },
     {
       "corp_code": "00109693",

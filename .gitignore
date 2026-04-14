@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.db
+*.db-shm
+*.db-wal
+data/*.log
+data/*.pid
+data/*.heartbeat
+data/*.nohup.log
+.wrangler/
+.pages-dist/.wrangler/
+node_modules/.cache/

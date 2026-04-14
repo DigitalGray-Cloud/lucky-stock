@@ -43,6 +43,8 @@ async function main() {
 
   await runNode("scripts/build-ui-cache.mjs", ["--mode=full"]);
   await runNode("scripts/generate-stock-pages.mjs");
+  await runNode("scripts/sync-pages-dist.mjs");
+  await runNode("scripts/deploy-pages.mjs");
   console.log("[searched-refresh] done");
 }
 

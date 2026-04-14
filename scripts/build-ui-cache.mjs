@@ -135,6 +135,10 @@ function writeJsonFile(filePath, value) {
   fs.writeFileSync(filePath, JSON.stringify(value, null, 2));
 }
 
+function writePublicJsonFile(filePath, value) {
+  fs.writeFileSync(filePath, JSON.stringify(value));
+}
+
 function createEmptyExposureHistory() {
   return {
     generated_at: '',
@@ -1411,15 +1415,15 @@ const autocomplete = stocks.map((s) => ({
   logo_url: s.logo_url || null
 }));
 
-fs.writeFileSync(path.join(OUT_DIR, 'ui_top_stocks.json'), JSON.stringify({ generated_at: now, top }, null, 2));
-fs.writeFileSync(path.join(OUT_DIR, 'ui_recent_analysis.json'), JSON.stringify({ generated_at: now, items: recent }, null, 2));
-fs.writeFileSync(path.join(OUT_DIR, 'ui_analysis_map.json'), JSON.stringify({ generated_at: now, map: analysisMap }, null, 2));
-fs.writeFileSync(path.join(OUT_DIR, 'ui_autocomplete.json'), JSON.stringify({ generated_at: now, items: autocomplete }, null, 2));
-fs.writeFileSync(path.join(OUT_DIR, 'ui_theme_ranking.json'), JSON.stringify({ generated_at: now, items: themeRanking }, null, 2));
-fs.writeFileSync(HOME_TODAY_PATH, JSON.stringify({ generated_at: now, mode: opts.mode, items: todayHome }, null, 2));
-fs.writeFileSync(HOME_SIGNAL_PATH, JSON.stringify({ generated_at: now, mode: opts.mode, items: signalHome }, null, 2));
+writePublicJsonFile(path.join(OUT_DIR, 'ui_top_stocks.json'), { generated_at: now, top });
+writePublicJsonFile(path.join(OUT_DIR, 'ui_recent_analysis.json'), { generated_at: now, items: recent });
+writePublicJsonFile(path.join(OUT_DIR, 'ui_analysis_map.json'), { generated_at: now, map: analysisMap });
+writePublicJsonFile(path.join(OUT_DIR, 'ui_autocomplete.json'), { generated_at: now, items: autocomplete });
+writePublicJsonFile(path.join(OUT_DIR, 'ui_theme_ranking.json'), { generated_at: now, items: themeRanking });
+writePublicJsonFile(HOME_TODAY_PATH, { generated_at: now, mode: opts.mode, items: todayHome });
+writePublicJsonFile(HOME_SIGNAL_PATH, { generated_at: now, mode: opts.mode, items: signalHome });
 if (opts.mode === 'full' || !fs.existsSync(HOME_TOMORROW_PATH)) {
-  fs.writeFileSync(HOME_TOMORROW_PATH, JSON.stringify({ generated_at: now, mode: opts.mode, items: tomorrowHome }, null, 2));
+  writePublicJsonFile(HOME_TOMORROW_PATH, { generated_at: now, mode: opts.mode, items: tomorrowHome });
 }
 mergeExposureCodes(exposureHistory, 'today', todayDateKey, todayHome);
 mergeExposureCodes(exposureHistory, 'signal', todayDateKey, signalHome);
